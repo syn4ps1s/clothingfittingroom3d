@@ -2,7 +2,12 @@
  * @fitroom/catalog — datos de catálogo, repositorio en memoria, recomendación de talla y propuestas de prendas/conjuntos.
  * Paquete PURO (sin DOM, three ni React). Todo texto del catálogo debe renderizarse como TEXTO (nunca como HTML).
  */
-export { CatalogDataError, SizingInputError, type CatalogIssue, type SizingErrorCode } from './errors.js';
+export {
+  CatalogDataError,
+  SizingInputError,
+  type CatalogIssue,
+  type SizingErrorCode,
+} from './errors.js';
 export { loadCatalogData } from './loader.js';
 export { CATALOG_VERSION } from './version.js';
 export {
@@ -26,11 +31,7 @@ export {
   type EaseRule,
   type TemplateProfile,
 } from './sizing/profiles.js';
-export {
-  TEMPLATE_PARAM_SPECS,
-  templateParam,
-  type ParamSpec,
-} from './params.js';
+export { TEMPLATE_PARAM_SPECS, templateParam, type ParamSpec } from './params.js';
 export {
   fitQuality,
   garmentScore,

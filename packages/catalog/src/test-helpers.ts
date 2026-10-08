@@ -19,7 +19,8 @@ export const stretchOf = (g: GarmentDefinition): { stretch: number } => ({
   stretch: fabricById.get(g.fabricId)!.stretch,
 });
 
-const tenths = (min: number, max: number) => fc.integer({ min: min * 10, max: max * 10 }).map((n) => n / 10);
+const tenths = (min: number, max: number) =>
+  fc.integer({ min: min * 10, max: max * 10 }).map((n) => n / 10);
 
 /** Cuerpo humano plausible (rangos amplios: de la talla más pequeña a la más grande de las referencias y algo más). */
 export const arbBody: fc.Arbitrary<Measurements> = fc.record({
@@ -37,7 +38,9 @@ export const arbBody: fc.Arbitrary<Measurements> = fc.record({
 });
 
 /** Id de prenda (los contraejemplos de fast-check muestran sólo el id, no la prenda entera). */
-export const arbGarmentId: fc.Arbitrary<string> = fc.constantFrom(...catalog.garments.map((g) => g.id));
+export const arbGarmentId: fc.Arbitrary<string> = fc.constantFrom(
+  ...catalog.garments.map((g) => g.id),
+);
 const garmentsById = new Map<string, GarmentDefinition>(catalog.garments.map((g) => [g.id, g]));
 export const garmentOf = (id: string): GarmentDefinition => garmentsById.get(id)!;
 
@@ -53,7 +56,10 @@ const GROWING: readonly MeasurementKey[] = [
 ];
 
 /** Suma `delta` (≥ 0) a todas las medidas que "crecen con el cuerpo", respetando los límites de plausibilidad. */
-export function growBody(m: Measurements, delta: Readonly<Partial<Record<MeasurementKey, number>>>): Measurements {
+export function growBody(
+  m: Measurements,
+  delta: Readonly<Partial<Record<MeasurementKey, number>>>,
+): Measurements {
   const out: Record<string, number | string> = { ...m };
   for (const k of GROWING) {
     const lim = MEASUREMENT_LIMITS[k];
@@ -62,7 +68,8 @@ export function growBody(m: Measurements, delta: Readonly<Partial<Record<Measure
   return out as unknown as Measurements;
 }
 
-export const idxOf = (g: GarmentDefinition, label: string): number => g.sizes.findIndex((s) => s.label === label);
+export const idxOf = (g: GarmentDefinition, label: string): number =>
+  g.sizes.findIndex((s) => s.label === label);
 
 const clampTo = (key: MeasurementKey, v: number): number =>
   Math.min(MEASUREMENT_LIMITS[key].max, Math.max(MEASUREMENT_LIMITS[key].min, v));

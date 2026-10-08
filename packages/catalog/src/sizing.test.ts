@@ -31,7 +31,12 @@ describe('recommendSize — casos de referencia', () => {
 
   it('los pantalones se tallan por cintura/cadera/entrepierna', () => {
     const r = rec('jeans-straight-raw', REFERENCE_MEASUREMENTS.adultB);
-    expect(r.dimensions.map((d) => d.dimension)).toEqual(['waistCm', 'hipCm', 'thighCm', 'inseamCm']);
+    expect(r.dimensions.map((d) => d.dimension)).toEqual([
+      'waistCm',
+      'hipCm',
+      'thighCm',
+      'inseamCm',
+    ]);
     expect(['28', '30']).toContain(r.size);
   });
 
@@ -44,7 +49,13 @@ describe('recommendSize — casos de referencia', () => {
 
   it('la preferencia desplaza la talla cerca de una frontera', () => {
     // pecho 100.5: dentro de L [99,105] pero cerca de M [93,99]
-    const m = { ...REFERENCE_MEASUREMENTS.adultA, chestCm: 100.5, shoulderWidthCm: 42.5, waistCm: 84, hipCm: 99.5 };
+    const m = {
+      ...REFERENCE_MEASUREMENTS.adultA,
+      chestCm: 100.5,
+      shoulderWidthCm: 42.5,
+      waistCm: 84,
+      hipCm: 99.5,
+    };
     const regular = rec('tee-essential', m);
     const snug = rec('tee-essential', m, { preference: 'snug' });
     const roomy = rec('tee-essential', m, { preference: 'roomy' });
@@ -55,10 +66,22 @@ describe('recommendSize — casos de referencia', () => {
   });
 
   it('avisa de talla fuera de tabla, estatura y medidas poco fiables', () => {
-    const tiny = { ...REFERENCE_MEASUREMENTS.small, chestCm: 66, waistCm: 52, hipCm: 74, shoulderWidthCm: 30 };
+    const tiny = {
+      ...REFERENCE_MEASUREMENTS.small,
+      chestCm: 66,
+      waistCm: 52,
+      hipCm: 74,
+      shoulderWidthCm: 30,
+    };
     expect(rec('tee-essential', tiny).notes).toContain('below-smallest-size');
     expect(rec('tee-essential', tiny).confidence).toBeLessThanOrEqual(0.4);
-    const huge = { ...REFERENCE_MEASUREMENTS.large, chestCm: 150, waistCm: 140, hipCm: 150, shoulderWidthCm: 60 };
+    const huge = {
+      ...REFERENCE_MEASUREMENTS.large,
+      chestCm: 150,
+      waistCm: 140,
+      hipCm: 150,
+      shoulderWidthCm: 60,
+    };
     expect(rec('tee-essential', huge).notes).toContain('above-largest-size');
     const tall = { ...REFERENCE_MEASUREMENTS.adultB, heightCm: 205 };
     expect(rec('tee-essential', tall).notes).toContain('height-out-of-range');
@@ -71,7 +94,14 @@ describe('recommendSize — casos de referencia', () => {
   });
 
   it('en una frontera exacta marca between-sizes y baja la confianza', () => {
-    const m = { ...REFERENCE_MEASUREMENTS.adultA, chestCm: 99, shoulderWidthCm: 42.5, waistCm: 82.5, hipCm: 99.5, heightCm: 175 };
+    const m = {
+      ...REFERENCE_MEASUREMENTS.adultA,
+      chestCm: 99,
+      shoulderWidthCm: 42.5,
+      waistCm: 82.5,
+      hipCm: 99.5,
+      heightCm: 175,
+    };
     const r = rec('tee-essential', m);
     expect(r.notes).toContain('between-sizes');
     expect(r.confidence).toBeLessThan(0.9);
@@ -94,8 +124,16 @@ describe('recommendSize — casos de referencia', () => {
 
   it('usa la elasticidad de la tela: más estirable tolera menos holgura mínima', () => {
     const base = { ...REFERENCE_MEASUREMENTS.adultA };
-    const woven = recommendSize({ garment: garment('tank-rib'), measurements: base, fabric: { stretch: 0 } });
-    const knit = recommendSize({ garment: garment('tank-rib'), measurements: base, fabric: { stretch: 1 } });
+    const woven = recommendSize({
+      garment: garment('tank-rib'),
+      measurements: base,
+      fabric: { stretch: 0 },
+    });
+    const knit = recommendSize({
+      garment: garment('tank-rib'),
+      measurements: base,
+      fabric: { stretch: 1 },
+    });
     expect(woven.size).toBeDefined();
     expect(knit.size).toBeDefined();
   });
@@ -160,27 +198,33 @@ describe('recommendSize — entradas inválidas → SizingInputError', () => {
     ['no es objeto', 5],
     ['array', [1]],
   ])('sigma inválida (%s)', (_name, sigmaCm) => {
-    expect(() => recommendSize({ garment: g, measurements: ok, sigmaCm: sigmaCm as never })).toThrow(
-      expect.objectContaining({ code: 'invalid-sigma' }),
-    );
+    expect(() =>
+      recommendSize({ garment: g, measurements: ok, sigmaCm: sigmaCm as never }),
+    ).toThrow(expect.objectContaining({ code: 'invalid-sigma' }));
   });
 
   it('preferencia inválida', () => {
-    expect(() => recommendSize({ garment: g, measurements: ok, preference: 'tight' as never })).toThrow(
-      expect.objectContaining({ code: 'invalid-preference' }),
-    );
+    expect(() =>
+      recommendSize({ garment: g, measurements: ok, preference: 'tight' as never }),
+    ).toThrow(expect.objectContaining({ code: 'invalid-preference' }));
   });
 
   it('prendas inválidas', () => {
     const bad = (patch: Partial<GarmentDefinition> | Record<string, unknown>) =>
       recommendSize({ garment: { ...g, ...patch } as never, measurements: ok });
     expect(() => bad({ sizes: [] })).toThrow(expect.objectContaining({ code: 'invalid-garment' }));
-    expect(() => bad({ template: 'capa' })).toThrow(expect.objectContaining({ code: 'invalid-garment' }));
-    expect(() => bad({ template: '__proto__' })).toThrow(expect.objectContaining({ code: 'invalid-garment' }));
-    expect(() => bad({ fit: 'skinny' })).toThrow(expect.objectContaining({ code: 'invalid-garment' }));
-    expect(() => bad({ sizes: [{ label: 'M', body: { chestCm: [Number.NaN, 3] }, garment: {} }] })).toThrow(
+    expect(() => bad({ template: 'capa' })).toThrow(
       expect.objectContaining({ code: 'invalid-garment' }),
     );
+    expect(() => bad({ template: '__proto__' })).toThrow(
+      expect.objectContaining({ code: 'invalid-garment' }),
+    );
+    expect(() => bad({ fit: 'skinny' })).toThrow(
+      expect.objectContaining({ code: 'invalid-garment' }),
+    );
+    expect(() =>
+      bad({ sizes: [{ label: 'M', body: { chestCm: [Number.NaN, 3] }, garment: {} }] }),
+    ).toThrow(expect.objectContaining({ code: 'invalid-garment' }));
     expect(() => bad({ sizes: [{ label: 'M', body: { chestCm: [5, 3] }, garment: {} }] })).toThrow(
       expect.objectContaining({ code: 'invalid-garment' }),
     );
@@ -190,10 +234,15 @@ describe('recommendSize — entradas inválidas → SizingInputError', () => {
     expect(() =>
       bad({ sizes: [{ label: 'M', body: {}, garment: { chestCm: Number.NaN } }] }),
     ).toThrow(expect.objectContaining({ code: 'invalid-garment' }));
+    expect(() => bad({ sizes: Array.from({ length: 100 }, () => g.sizes[0]) })).toThrow(
+      expect.objectContaining({ code: 'invalid-garment' }),
+    );
     expect(() => recommendSize(null as never)).toThrow(SizingInputError);
-    expect(() => recommendSize({ garment: null as never, measurements: ok })).toThrow(SizingInputError);
-    expect(() => recommendSize({ garment: g, measurements: ok, fabric: { stretch: Number.NaN } })).toThrow(
+    expect(() => recommendSize({ garment: null as never, measurements: ok })).toThrow(
       SizingInputError,
     );
+    expect(() =>
+      recommendSize({ garment: g, measurements: ok, fabric: { stretch: Number.NaN } }),
+    ).toThrow(SizingInputError);
   });
 });

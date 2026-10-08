@@ -51,7 +51,7 @@ const COLLAR = {
 const PANTS = {
   /** contorno de la rodilla / contorno del muslo de la prenda */
   kneeRatio: p(0.6, 1.05, 0.85),
-  waistbandHeightCm: p(2, 7, 4),
+  waistbandCm: p(2, 7, 4),
   /** vuelta del bajo (cm), 0 = sin vuelta */
   cuffFoldCm: p(0, 6, 0),
   flyLengthCm: p(8, 18, 14),
@@ -116,7 +116,7 @@ export const TEMPLATE_PARAM_SPECS: Readonly<Record<GarmentTemplate, TemplatePara
   shorts: { required: PANTS, optional: {} },
   skirt: {
     required: {
-      waistbandHeightCm: p(1, 8, 3.5),
+      waistbandCm: p(1, 8, 3.5),
       /** nº de pliegues (0 = falda lisa/acampanada) */
       pleatCount: p(0, 120, 0),
       pleatDepthCm: p(0, 6, 2),

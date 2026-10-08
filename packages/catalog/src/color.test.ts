@@ -14,7 +14,11 @@ import {
 import { FC } from './test-helpers.js';
 
 const hex = fc
-  .tuple(fc.integer({ min: 0, max: 255 }), fc.integer({ min: 0, max: 255 }), fc.integer({ min: 0, max: 255 }))
+  .tuple(
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+  )
   .map(([r, g, b]) => `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`);
 
 const H = (h: string) => hexToOklch(h);
@@ -61,12 +65,16 @@ describe('hueDistance', () => {
     expect(hueDistance(0, 180)).toBe(180);
     expect(hueDistance(90, 90)).toBe(0);
     fc.assert(
-      fc.property(fc.double({ min: 0, max: 360, noNaN: true }), fc.double({ min: 0, max: 360, noNaN: true }), (a, b) => {
-        const d = hueDistance(a, b);
-        expect(d).toBeGreaterThanOrEqual(0);
-        expect(d).toBeLessThanOrEqual(180);
-        expect(d).toBeCloseTo(hueDistance(b, a), 9);
-      }),
+      fc.property(
+        fc.double({ min: 0, max: 360, noNaN: true }),
+        fc.double({ min: 0, max: 360, noNaN: true }),
+        (a, b) => {
+          const d = hueDistance(a, b);
+          expect(d).toBeGreaterThanOrEqual(0);
+          expect(d).toBeLessThanOrEqual(180);
+          expect(d).toBeCloseTo(hueDistance(b, a), 9);
+        },
+      ),
       FC,
     );
   });
@@ -118,7 +126,12 @@ describe('armonía de color', () => {
   });
 
   it('paletteOf pondera el color base y los del estampado; variantHarmony es simétrica', () => {
-    const solid: SwatchVariant = { id: 'a', name: { es: 'a', en: 'a' }, color: '#22304a', pattern: { type: 'solid' } };
+    const solid: SwatchVariant = {
+      id: 'a',
+      name: { es: 'a', en: 'a' },
+      color: '#22304a',
+      pattern: { type: 'solid' },
+    };
     const floral: SwatchVariant = {
       id: 'b',
       name: { es: 'b', en: 'b' },
@@ -128,7 +141,10 @@ describe('armonía de color', () => {
     expect(paletteOf(solid)).toHaveLength(1);
     const pf = paletteOf(floral);
     expect(pf.map((p) => p.weight)).toEqual([1, 0.4, 0.2]);
-    expect(variantHarmony(paletteOf(solid), pf)).toBeCloseTo(variantHarmony(pf, paletteOf(solid)), 9);
+    expect(variantHarmony(paletteOf(solid), pf)).toBeCloseTo(
+      variantHarmony(pf, paletteOf(solid)),
+      9,
+    );
     expect(variantHarmony([], pf)).toBe(0);
   });
 

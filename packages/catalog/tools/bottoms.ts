@@ -48,7 +48,7 @@ export const BOTTOMS: readonly GarmentSource[] = [
     },
     params: {
       kneeRatio: 0.86,
-      waistbandHeightCm: 4,
+      waistbandCm: 4,
       cuffFoldCm: 0,
       flyLengthCm: 14,
       backRiseExtraCm: 4.5,
@@ -88,7 +88,7 @@ export const BOTTOMS: readonly GarmentSource[] = [
     },
     params: {
       kneeRatio: 0.74,
-      waistbandHeightCm: 3.5,
+      waistbandCm: 3.5,
       cuffFoldCm: 0,
       flyLengthCm: 13,
       backRiseExtraCm: 4,
@@ -122,7 +122,7 @@ export const BOTTOMS: readonly GarmentSource[] = [
     },
     params: {
       kneeRatio: 0.8,
-      waistbandHeightCm: 4,
+      waistbandCm: 4,
       cuffFoldCm: 0,
       flyLengthCm: 13.5,
       backRiseExtraCm: 4,
@@ -166,7 +166,7 @@ export const BOTTOMS: readonly GarmentSource[] = [
     },
     params: {
       kneeRatio: 0.93,
-      waistbandHeightCm: 4,
+      waistbandCm: 4,
       cuffFoldCm: 3.5,
       flyLengthCm: 15,
       backRiseExtraCm: 5,
@@ -200,7 +200,7 @@ export const BOTTOMS: readonly GarmentSource[] = [
     },
     params: {
       kneeRatio: 1,
-      waistbandHeightCm: 4,
+      waistbandCm: 4,
       cuffFoldCm: 2.5,
       flyLengthCm: 14,
       backRiseExtraCm: 4,
@@ -246,7 +246,7 @@ export const BOTTOMS: readonly GarmentSource[] = [
       },
     },
     params: {
-      waistbandHeightCm: 3.5,
+      waistbandCm: 3.5,
       pleatCount: 48,
       pleatDepthCm: 2,
       slitLengthCm: 0,

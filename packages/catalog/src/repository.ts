@@ -45,10 +45,14 @@ function buildIndex(data: CatalogData): IndexEntry[] {
     return {
       garment,
       order,
-      name: normalizeText(`${garment.name.es} ${garment.name.en} ${garment.template.replace(/_/g, ' ')}`),
+      name: normalizeText(
+        `${garment.name.es} ${garment.name.en} ${garment.template.replace(/_/g, ' ')}`,
+      ),
       brand: normalizeText(garment.brand),
       tags: normalizeText(`${garment.tags.join(' ')} ${garment.category} ${garment.slot}`),
-      variants: normalizeText(garment.variants.map((v) => `${v.name.es} ${v.name.en} ${v.pattern.type}`).join(' ')),
+      variants: normalizeText(
+        garment.variants.map((v) => `${v.name.es} ${v.name.en} ${v.pattern.type}`).join(' '),
+      ),
       fabric: normalizeText(fabricNames.join(' ')),
       description: normalizeText(`${garment.description.es} ${garment.description.en}`),
     };
@@ -96,7 +100,8 @@ export function createStaticCatalog(data?: CatalogData): StaticCatalog {
       let entries = index;
       if (filter !== undefined && filter !== null && typeof filter === 'object') {
         const { category, slot, text } = filter;
-        if (category !== undefined) entries = entries.filter((e) => e.garment.category === category);
+        if (category !== undefined)
+          entries = entries.filter((e) => e.garment.category === category);
         if (slot !== undefined) entries = entries.filter((e) => e.garment.slot === slot);
         if (typeof text === 'string') {
           const tokens = normalizeText(text.slice(0, MAX_QUERY_CHARS))

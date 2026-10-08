@@ -68,7 +68,7 @@ export const FABRICS: readonly FabricDef[] = [
     roughness: 0.62,
     sheen: 0.16,
     threadsPerCm: 38,
-    tileCm: 3.5,
+    tileCm: 6,
     thicknessMm: 0.22,
   },
   {
@@ -198,7 +198,7 @@ export const FABRICS: readonly FabricDef[] = [
     roughness: 0.55,
     sheen: 0.35,
     threadsPerCm: 50,
-    tileCm: 3,
+    tileCm: 6,
     thicknessMm: 0.25,
   },
   {

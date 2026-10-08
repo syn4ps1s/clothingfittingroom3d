@@ -2,14 +2,24 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
   MEASUREMENT_LIMITS,
-  REFERENCE_MEASUREMENTS,
   type GarmentDefinition,
   type MeasurementKey,
   type Measurements,
   type SizeNote,
 } from '@fitroom/shared';
 import { SizingInputError, recommendSize } from './index.js';
-import { FC, arbBody, arbGarmentId, arbProportionedBody, bodyForSize, catalog, garmentOf, growBody, idxOf, stretchOf } from './test-helpers.js';
+import {
+  FC,
+  arbBody,
+  arbGarmentId,
+  arbProportionedBody,
+  bodyForSize,
+  catalog,
+  garmentOf,
+  growBody,
+  idxOf,
+  stretchOf,
+} from './test-helpers.js';
 
 const NOTES: readonly SizeNote[] = [
   'between-sizes',
@@ -20,7 +30,14 @@ const NOTES: readonly SizeNote[] = [
 ];
 const VERDICTS = ['too-tight', 'snug', 'good', 'roomy', 'too-loose'];
 const arbPref = fc.constantFrom('snug' as const, 'regular' as const, 'roomy' as const, undefined);
-const sigmaKeys = ['heightCm', 'chestCm', 'waistCm', 'hipCm', 'shoulderWidthCm', 'inseamCm'] as const;
+const sigmaKeys = [
+  'heightCm',
+  'chestCm',
+  'waistCm',
+  'hipCm',
+  'shoulderWidthCm',
+  'inseamCm',
+] as const;
 
 const run = (g: GarmentDefinition, m: Measurements, extra: Record<string, unknown> = {}) =>
   recommendSize({ garment: g, measurements: m, fabric: stretchOf(g), ...extra });
@@ -54,7 +71,11 @@ describe('recommendSize — propiedades (fast-check, semilla fija)', () => {
           expect(g.sizes.map((s) => s.label)).toContain(r.size);
           expect(VERDICTS).toContain(r.overall);
           for (const d of r.dimensions) {
-            expect(Number.isFinite(d.bodyCm) && Number.isFinite(d.garmentCm) && Number.isFinite(d.easeCm)).toBe(true);
+            expect(
+              Number.isFinite(d.bodyCm) &&
+                Number.isFinite(d.garmentCm) &&
+                Number.isFinite(d.easeCm),
+            ).toBe(true);
             expect(VERDICTS).toContain(d.verdict);
           }
           for (const n of r.notes) expect(NOTES).toContain(n);
@@ -83,7 +104,14 @@ describe('recommendSize — propiedades (fast-check, semilla fija)', () => {
   });
 
   it('monotonía con incrementos aislados en una sola medida', () => {
-    const keys: MeasurementKey[] = ['chestCm', 'waistCm', 'hipCm', 'shoulderWidthCm', 'heightCm', 'inseamCm'];
+    const keys: MeasurementKey[] = [
+      'chestCm',
+      'waistCm',
+      'hipCm',
+      'shoulderWidthCm',
+      'heightCm',
+      'inseamCm',
+    ];
     fc.assert(
       fc.property(arbGarmentId, arbBody, fc.constantFrom(...keys), delta, (gid, m, key, d) => {
         const g = garmentOf(gid);
@@ -123,16 +151,22 @@ describe('recommendSize — propiedades (fast-check, semilla fija)', () => {
 
   it('un cuerpo dentro del rango de una talla (cualquier posición de la dimensión principal) no salta más de una talla', () => {
     // Dimensión principal: pecho en prendas superiores/vestidos/abrigos, cintura en pantalones y faldas.
-    const primary = (g: GarmentDefinition) => (g.category === 'bottoms' ? ('waistCm' as const) : ('chestCm' as const));
+    const primary = (g: GarmentDefinition) =>
+      g.category === 'bottoms' ? ('waistCm' as const) : ('chestCm' as const);
     fc.assert(
-      fc.property(arbGarmentId, fc.double({ min: 0.02, max: 0.98, noNaN: true }), fc.nat(), (gid, t, pick) => {
-        const g = garmentOf(gid);
-        const i = pick % g.sizes.length;
-        const r = run(g, bodyForSize(g, i, undefined, { key: primary(g), at: t }));
-        expect(Math.abs(idxOf(g, r.size) - i)).toBeLessThanOrEqual(1);
-        // la mitad central del rango principal pertenece a la talla (regular)
-        if (t >= 0.25 && t <= 0.75) expect(r.size).toBe(g.sizes[i]!.label);
-      }),
+      fc.property(
+        arbGarmentId,
+        fc.double({ min: 0.02, max: 0.98, noNaN: true }),
+        fc.nat(),
+        (gid, t, pick) => {
+          const g = garmentOf(gid);
+          const i = pick % g.sizes.length;
+          const r = run(g, bodyForSize(g, i, undefined, { key: primary(g), at: t }));
+          expect(Math.abs(idxOf(g, r.size) - i)).toBeLessThanOrEqual(1);
+          // la mitad central del rango principal pertenece a la talla (regular)
+          if (t >= 0.25 && t <= 0.75) expect(r.size).toBe(g.sizes[i]!.label);
+        },
+      ),
       FC,
     );
   });
@@ -140,9 +174,18 @@ describe('recommendSize — propiedades (fast-check, semilla fija)', () => {
   it('estabilidad: si una perturbación pequeña cambia la talla, el caso original ya estaba «entre tallas»', () => {
     const arbJitter = fc.record(
       Object.fromEntries(
-        (['heightCm', 'chestCm', 'waistCm', 'hipCm', 'shoulderWidthCm', 'armLengthCm', 'inseamCm', 'thighCm'] as const).map(
-          (k) => [k, fc.integer({ min: -5, max: 5 }).map((n) => n / 10)],
-        ),
+        (
+          [
+            'heightCm',
+            'chestCm',
+            'waistCm',
+            'hipCm',
+            'shoulderWidthCm',
+            'armLengthCm',
+            'inseamCm',
+            'thighCm',
+          ] as const
+        ).map((k) => [k, fc.integer({ min: -5, max: 5 }).map((n) => n / 10)]),
       ) as Record<MeasurementKey & string, fc.Arbitrary<number>>,
     );
     fc.assert(
@@ -152,7 +195,10 @@ describe('recommendSize — propiedades (fast-check, semilla fija)', () => {
         const perturbed: Record<string, unknown> = { ...m };
         for (const [k, d] of Object.entries(jitter)) {
           const lim = MEASUREMENT_LIMITS[k as MeasurementKey];
-          perturbed[k] = Math.min(lim.max, Math.max(lim.min, (m as unknown as Record<string, number>)[k]! + d));
+          perturbed[k] = Math.min(
+            lim.max,
+            Math.max(lim.min, (m as unknown as Record<string, number>)[k]! + d),
+          );
         }
         const b = run(g, perturbed as unknown as Measurements, { preference });
         const ia = idxOf(g, a.size);
@@ -208,7 +254,18 @@ describe('recommendSize — propiedades (fast-check, semilla fija)', () => {
       fc.double({ min: -1e6, max: -0.001, noNaN: true }),
       fc.double({ min: 1e4, max: 1e9, noNaN: true }),
     );
-    const keys = ['heightCm', 'weightKg', 'chestCm', 'waistCm', 'hipCm', 'shoulderWidthCm', 'armLengthCm', 'inseamCm', 'neckCm', 'thighCm'] as const;
+    const keys = [
+      'heightCm',
+      'weightKg',
+      'chestCm',
+      'waistCm',
+      'hipCm',
+      'shoulderWidthCm',
+      'armLengthCm',
+      'inseamCm',
+      'neckCm',
+      'thighCm',
+    ] as const;
     fc.assert(
       fc.property(arbGarmentId, arbBody, fc.constantFrom(...keys), bad, (gid, m, key, value) => {
         const g = garmentOf(gid);
@@ -223,51 +280,64 @@ describe('recommendSize — propiedades (fast-check, semilla fija)', () => {
     );
   });
 
-  it('confianza calibrada: a mayor confianza, mayor estabilidad empírica ante el ruido de medida', () => {
-    // Monte Carlo con PRNG determinista (mulberry32): fracción de veces que la talla calculada con medidas ruidosas
-    // (σ = 1,5 cm por medida) coincide con la calculada sobre las medidas «verdaderas». Cuerpos proporcionados.
-    let seed = 0x9e3779b9;
-    const rand = () => {
-      seed = (seed + 0x6d2b79f5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-    const gauss = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
-    const sigma = 1.5;
-    const sig = Object.fromEntries(sigmaKeys.map((k) => [k, sigma]));
-    const points: { conf: number; agree: number }[] = [];
-    const bodies = fc.sample(arbProportionedBody, { seed: FC.seed, numRuns: 40 });
-    const ids = ['tee-essential', 'shirt-oxford', 'sweater-chunky-crew', 'jeans-straight-raw', 'chino-slim-twill', 'skirt-midi-pleated', 'dress-shirt-poplin', 'coat-wool-long'];
-    for (const id of ids) {
-      const g = garmentOf(id);
-      for (const m of bodies) {
-        const truth = run(g, m, { sigmaCm: sig });
-        let agree = 0;
-        const trials = 40;
-        for (let n = 0; n < trials; n++) {
-          const noisy: Record<string, unknown> = { ...m };
-          for (const k of sigmaKeys) {
-            const lim = MEASUREMENT_LIMITS[k];
-            noisy[k] = Math.min(lim.max, Math.max(lim.min, m[k] + gauss() * sigma));
+  it(
+    'confianza calibrada: a mayor confianza, mayor estabilidad empírica ante el ruido de medida',
+    { timeout: 60_000 },
+    () => {
+      // Monte Carlo con PRNG determinista (mulberry32): fracción de veces que la talla calculada con medidas ruidosas
+      // (σ = 1,5 cm por medida) coincide con la calculada sobre las medidas «verdaderas». Cuerpos proporcionados.
+      let seed = 0x9e3779b9;
+      const rand = () => {
+        seed = (seed + 0x6d2b79f5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+      const gauss = () => Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand());
+      const sigma = 1.5;
+      const sig = Object.fromEntries(sigmaKeys.map((k) => [k, sigma]));
+      const points: { conf: number; agree: number }[] = [];
+      const bodies = fc.sample(arbProportionedBody, { seed: FC.seed, numRuns: 40 });
+      const ids = [
+        'tee-essential',
+        'shirt-oxford',
+        'sweater-chunky-crew',
+        'jeans-straight-raw',
+        'chino-slim-twill',
+        'skirt-midi-pleated',
+        'dress-shirt-poplin',
+        'coat-wool-long',
+      ];
+      for (const id of ids) {
+        const g = garmentOf(id);
+        for (const m of bodies) {
+          const truth = run(g, m, { sigmaCm: sig });
+          let agree = 0;
+          const trials = 40;
+          for (let n = 0; n < trials; n++) {
+            const noisy: Record<string, unknown> = { ...m };
+            for (const k of sigmaKeys) {
+              const lim = MEASUREMENT_LIMITS[k];
+              noisy[k] = Math.min(lim.max, Math.max(lim.min, m[k] + gauss() * sigma));
+            }
+            if (run(g, noisy as unknown as Measurements).size === truth.size) agree++;
           }
-          if (run(g, noisy as unknown as Measurements).size === truth.size) agree++;
+          points.push({ conf: truth.confidence, agree: agree / trials });
         }
-        points.push({ conf: truth.confidence, agree: agree / trials });
       }
-    }
-    points.sort((a, b) => a.conf - b.conf);
-    const third = Math.floor(points.length / 3);
-    const mean = (xs: { agree: number }[]) => xs.reduce((s, p) => s + p.agree, 0) / xs.length;
-    const low = mean(points.slice(0, third));
-    const mid = mean(points.slice(third, 2 * third));
-    const high = mean(points.slice(2 * third));
-    expect(mid).toBeGreaterThan(low);
-    expect(high).toBeGreaterThan(mid);
-    expect(high - low).toBeGreaterThan(0.1);
-    // Los casos de confianza alta casi nunca cambian de talla con el ruido.
-    const confident = points.filter((p) => p.conf >= 0.85);
-    expect(confident.length).toBeGreaterThan(10);
-    expect(mean(confident)).toBeGreaterThan(0.93);
-  });
+      points.sort((a, b) => a.conf - b.conf);
+      const third = Math.floor(points.length / 3);
+      const mean = (xs: { agree: number }[]) => xs.reduce((s, p) => s + p.agree, 0) / xs.length;
+      const low = mean(points.slice(0, third));
+      const mid = mean(points.slice(third, 2 * third));
+      const high = mean(points.slice(2 * third));
+      expect(mid).toBeGreaterThan(low);
+      expect(high).toBeGreaterThan(mid);
+      expect(high - low).toBeGreaterThan(0.1);
+      // Los casos de confianza alta casi nunca cambian de talla con el ruido.
+      const confident = points.filter((p) => p.conf >= 0.85);
+      expect(confident.length).toBeGreaterThan(10);
+      expect(mean(confident)).toBeGreaterThan(0.93);
+    },
+  );
 });

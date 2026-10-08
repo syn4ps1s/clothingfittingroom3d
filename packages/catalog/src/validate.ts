@@ -95,7 +95,11 @@ export function scanRawCatalog(raw: unknown): CatalogIssue[] {
         push([...path, k], 'propiedades con getter/setter no permitidas');
         continue;
       }
-      stack.push({ value: desc?.value, path: [...path, Array.isArray(value) ? Number(k) : k], depth: depth + 1 });
+      stack.push({
+        value: desc?.value,
+        path: [...path, Array.isArray(value) ? Number(k) : k],
+        depth: depth + 1,
+      });
     }
   }
   const top = raw as Record<string, unknown>;
@@ -149,11 +153,19 @@ type Add = (path: readonly PropertyKey[], message: string) => void;
 
 function checkText(value: string, path: readonly PropertyKey[], add: Add): void {
   if (hasUnsafeText(value)) {
-    add(path, 'contiene caracteres no permitidos (HTML, control, bidi o ancho cero); el texto debe ser plano');
+    add(
+      path,
+      'contiene caracteres no permitidos (HTML, control, bidi o ancho cero); el texto debe ser plano',
+    );
   }
 }
 
-function checkGarment(g: GarmentDefinition, gi: number, fabricIds: ReadonlySet<string>, add: Add): void {
+function checkGarment(
+  g: GarmentDefinition,
+  gi: number,
+  fabricIds: ReadonlySet<string>,
+  add: Add,
+): void {
   const p = (...rest: PropertyKey[]): PropertyKey[] => ['garments', gi, ...rest];
   checkText(g.name.es, p('name', 'es'), add);
   checkText(g.name.en, p('name', 'en'), add);
@@ -162,10 +174,16 @@ function checkGarment(g: GarmentDefinition, gi: number, fabricIds: ReadonlySet<s
   checkText(g.brand, p('brand'), add);
 
   if (TEMPLATE_CATEGORY[g.template] !== g.category) {
-    add(p('category'), `la plantilla «${g.template}» pertenece a «${TEMPLATE_CATEGORY[g.template]}», no a «${g.category}»`);
+    add(
+      p('category'),
+      `la plantilla «${g.template}» pertenece a «${TEMPLATE_CATEGORY[g.template]}», no a «${g.category}»`,
+    );
   }
   if (CATEGORY_SLOT[g.category] !== g.slot) {
-    add(p('slot'), `la categoría «${g.category}» ocupa la ranura «${CATEGORY_SLOT[g.category]}», no «${g.slot}»`);
+    add(
+      p('slot'),
+      `la categoría «${g.category}» ocupa la ranura «${CATEGORY_SLOT[g.category]}», no «${g.slot}»`,
+    );
   }
   if (!fabricIds.has(g.fabricId)) add(p('fabricId'), `la tela «${g.fabricId}» no existe`);
   if (g.trimFabricId !== undefined && !fabricIds.has(g.trimFabricId)) {
@@ -173,13 +191,15 @@ function checkGarment(g: GarmentDefinition, gi: number, fabricIds: ReadonlySet<s
   }
 
   g.tags.forEach((tag, ti) => {
-    if (!TAG_RE.test(tag)) add(p('tags', ti), 'las etiquetas deben ser kebab-case en minúsculas (a-z, 0-9, «-»)');
+    if (!TAG_RE.test(tag))
+      add(p('tags', ti), 'las etiquetas deben ser kebab-case en minúsculas (a-z, 0-9, «-»)');
   });
   if (new Set(g.tags).size !== g.tags.length) add(p('tags'), 'etiquetas duplicadas');
 
   if (g.params) {
     for (const key of Object.keys(g.params)) {
-      if (!PARAM_KEY_RE.test(key)) add(p('params', key), 'clave de parámetro inválida (camelCase alfanumérico)');
+      if (!PARAM_KEY_RE.test(key))
+        add(p('params', key), 'clave de parámetro inválida (camelCase alfanumérico)');
     }
   }
 
@@ -265,7 +285,9 @@ export function parseCatalogData(raw: unknown): CatalogData {
   const result = CatalogDataStrictSchema.safeParse(raw);
   if (!result.success) {
     throw new CatalogDataError(
-      result.error.issues.slice(0, 50).map((i) => ({ path: formatPath(i.path), message: i.message })),
+      result.error.issues
+        .slice(0, 50)
+        .map((i) => ({ path: formatPath(i.path), message: i.message })),
     );
   }
   return deepFreeze(result.data);

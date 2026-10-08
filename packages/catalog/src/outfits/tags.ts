@@ -55,7 +55,9 @@ export interface OccasionAssessment {
 }
 
 /** Coherencia de ocasión de un conjunto: formalidad homogénea, misma estación y sin ocasiones incompatibles. */
-export function assessOccasion(garments: readonly Pick<GarmentDefinition, 'tags'>[]): OccasionAssessment {
+export function assessOccasion(
+  garments: readonly Pick<GarmentDefinition, 'tags'>[],
+): OccasionAssessment {
   const levels = garments.map(formalityOf);
   const spread = Math.max(...levels) - Math.min(...levels);
   const mean = levels.reduce((a, b) => a + b, 0) / levels.length;

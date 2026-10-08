@@ -25,7 +25,11 @@ export function formatPath(path: readonly PropertyKey[]): string {
   let out = '';
   for (const seg of path) {
     if (typeof seg === 'number') out += `[${seg}]`;
-    else out += out === '' ? sanitizeForMessage(String(seg), 40) : `.${sanitizeForMessage(String(seg), 40)}`;
+    else
+      out +=
+        out === ''
+          ? sanitizeForMessage(String(seg), 40)
+          : `.${sanitizeForMessage(String(seg), 40)}`;
   }
   return out === '' ? '(raíz)' : out;
 }
@@ -35,7 +39,8 @@ function summarize(prefix: string, issues: readonly CatalogIssue[]): string {
     .slice(0, MAX_ISSUES_SHOWN)
     .map((i) => `${i.path}: ${sanitizeForMessage(i.message)}`)
     .join('; ');
-  const more = issues.length > MAX_ISSUES_SHOWN ? ` (+${issues.length - MAX_ISSUES_SHOWN} más)` : '';
+  const more =
+    issues.length > MAX_ISSUES_SHOWN ? ` (+${issues.length - MAX_ISSUES_SHOWN} más)` : '';
   return `${prefix} (${issues.length} problema${issues.length === 1 ? '' : 's'}): ${shown}${more}`;
 }
 
@@ -54,10 +59,7 @@ export class CatalogDataError extends Error {
 }
 
 export type SizingErrorCode =
-  | 'invalid-measurements'
-  | 'invalid-sigma'
-  | 'invalid-preference'
-  | 'invalid-garment';
+  'invalid-measurements' | 'invalid-sigma' | 'invalid-preference' | 'invalid-garment';
 
 /** Entrada inválida para el tallaje (medidas fuera de rango/NaN, sigma negativa, prenda sin tabla, etc.). */
 export class SizingInputError extends Error {

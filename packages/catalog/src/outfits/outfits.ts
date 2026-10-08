@@ -122,7 +122,12 @@ interface HarmonyEval {
 /** Pares evaluados y su peso para 1–3 prendas (la prenda principal manda; el exterior pesa menos). */
 function pairsFor(n: number): readonly (readonly [number, number, number])[] {
   if (n === 2) return [[0, 1, 1]];
-  if (n === 3) return [[0, 1, 0.5], [0, 2, 0.25], [1, 2, 0.25]];
+  if (n === 3)
+    return [
+      [0, 1, 0.5],
+      [0, 2, 0.25],
+      [1, 2, 0.25],
+    ];
   return [];
 }
 
@@ -209,7 +214,10 @@ function assess(items: readonly Candidate[], harmony: HarmonyEval): Assessment {
   const fit = fitOf(items);
   const layered = items.some((i) => i.role === 'outer');
   const total = clamp01(
-    W_FIT * fit + W_COLOR * harmony.score + W_OCCASION * occasion.score + (layered ? LAYER_BONUS : 0),
+    W_FIT * fit +
+      W_COLOR * harmony.score +
+      W_OCCASION * occasion.score +
+      (layered ? LAYER_BONUS : 0),
   );
   return { fit, occasion, layered, total };
 }
@@ -340,7 +348,9 @@ export function suggestOutfitsSync(
     readonly key: string;
   }
   const better = (a: Option, b: Option | undefined): boolean =>
-    b === undefined || a.assessment.total > b.assessment.total + 1e-12 || (Math.abs(a.assessment.total - b.assessment.total) <= 1e-12 && a.key < b.key);
+    b === undefined ||
+    a.assessment.total > b.assessment.total + 1e-12 ||
+    (Math.abs(a.assessment.total - b.assessment.total) <= 1e-12 && a.key < b.key);
 
   const pairCache = new Map<number, number>();
   const candidates: Built[] = [];
@@ -351,7 +361,9 @@ export function suggestOutfitsSync(
         items,
         harmony,
         assessment: assess(items, harmony),
-        key: items.map((i, k) => `${i.ranked.garment.id}:${i.cells[harmony.choice[k]!]!.variant.id}`).join('+'),
+        key: items
+          .map((i, k) => `${i.ranked.garment.id}:${i.cells[harmony.choice[k]!]!.variant.id}`)
+          .join('+'),
       };
     };
     const plain = optionOf(base);
@@ -361,7 +373,10 @@ export function suggestOutfitsSync(
       if (better(option, bestLayered)) bestLayered = option;
     }
     let chosen: Option | undefined = outerMode === 'always' && bestLayered ? undefined : plain;
-    if (bestLayered && (chosen === undefined || bestLayered.assessment.total >= chosen.assessment.total - 0.005)) {
+    if (
+      bestLayered &&
+      (chosen === undefined || bestLayered.assessment.total >= chosen.assessment.total - 0.005)
+    ) {
       chosen = bestLayered;
     }
     if (chosen) candidates.push(build(chosen.items, chosen.harmony, chosen.assessment));
@@ -369,7 +384,8 @@ export function suggestOutfitsSync(
 
   candidates.sort(
     (a, b) =>
-      b.suggestion.score - a.suggestion.score || (a.suggestion.id < b.suggestion.id ? -1 : a.suggestion.id > b.suggestion.id ? 1 : 0),
+      b.suggestion.score - a.suggestion.score ||
+      (a.suggestion.id < b.suggestion.id ? -1 : a.suggestion.id > b.suggestion.id ? 1 : 0),
   );
   // Selección voraz con diversidad: cada repetición de una prenda ya elegida resta DIVERSITY_PENALTY a la puntuación.
   const used = new Map<string, number>();

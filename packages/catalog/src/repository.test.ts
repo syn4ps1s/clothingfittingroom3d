@@ -67,7 +67,9 @@ describe('createStaticCatalog', () => {
     const r = await repo.listGarments({ text: 'jeans' });
     const again = await repo.listGarments({ text: 'jeans' });
     expect(r.map((g) => g.id)).toEqual(again.map((g) => g.id));
-    expect(r.map((g) => g.id)).toEqual(expect.arrayContaining(['jeans-straight-raw', 'jeans-slim-stretch']));
+    expect(r.map((g) => g.id)).toEqual(
+      expect.arrayContaining(['jeans-straight-raw', 'jeans-slim-stretch']),
+    );
   });
 
   it('ignora texto vacío o sólo espacios y acota consultas enormes', async () => {

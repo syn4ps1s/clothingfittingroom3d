@@ -8,7 +8,8 @@ export interface Oklch {
   readonly h: number;
 }
 
-const srgbToLinear = (v: number): number => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+const srgbToLinear = (v: number): number =>
+  v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
 
 /** `#rrggbb` → OKLCH (Björn Ottosson). Lanza si el formato no es válido. */
 export function hexToOklch(hex: string): Oklch {
@@ -83,7 +84,8 @@ export function paletteOf(variant: SwatchVariant): PaletteColor[] {
   const p = variant.pattern;
   if (p.type !== 'solid') {
     out.push({ color: hexToOklch(p.color2), weight: 0.4 });
-    if ('color3' in p && p.color3 !== undefined) out.push({ color: hexToOklch(p.color3), weight: 0.2 });
+    if ('color3' in p && p.color3 !== undefined)
+      out.push({ color: hexToOklch(p.color3), weight: 0.2 });
   }
   return out;
 }
@@ -103,13 +105,7 @@ export function variantHarmony(a: readonly PaletteColor[], b: readonly PaletteCo
 }
 
 export type HarmonyKind =
-  | 'neutral'
-  | 'accent'
-  | 'monochrome'
-  | 'analogous'
-  | 'complementary'
-  | 'triadic'
-  | 'clash';
+  'neutral' | 'accent' | 'monochrome' | 'analogous' | 'complementary' | 'triadic' | 'clash';
 
 /** Clasifica un conjunto por sus colores base (uno por prenda). */
 export function classifyHarmony(bases: readonly Oklch[]): HarmonyKind {

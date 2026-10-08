@@ -35,6 +35,8 @@ export interface SizingInputEx extends SizingInput {
 
 // ---------- Constantes del algoritmo (documentadas en docs/sizing.md) ----------
 
+/** Tope de tallas por prenda (el esquema del catálogo admite 12; el margen acota el coste ante entradas hostiles). */
+const MAX_SIZES = 64;
 /** Peso del término «cercanía al centro del rango» (desempata tallas con distancia 0 al rango). */
 const CENTER_EPS = 0.05;
 /** Desplazamiento por preferencia, en fracción del escalón de talla (snug −, roomy +). */
@@ -118,13 +120,19 @@ interface Prepared {
   /** fracción del peso de puntuación de la plantilla que la tabla cubre */
   readonly coverage: number;
   readonly rules: readonly EaseRule[];
+  /** peso normalizado de cada regla (suma 1) */
+  readonly ruleWeights: readonly number[];
   readonly stretch: number;
   readonly scales: Readonly<Record<NumericMeasurementKey, number>>;
 }
 
 // ---------- Validación de entrada ----------
 
-function fail(code: ConstructorParameters<typeof SizingInputError>[0], path: string, message: string): never {
+function fail(
+  code: ConstructorParameters<typeof SizingInputError>[0],
+  path: string,
+  message: string,
+): never {
   throw new SizingInputError(code, [{ path, message }]);
 }
 
@@ -186,14 +194,22 @@ const RANGE_KEYS: readonly BodyRangeKey[] = [
   'shoulderWidthCm',
   'inseamCm',
 ];
-const SHIFTABLE: ReadonlySet<BodyRangeKey> = new Set(['chestCm', 'waistCm', 'hipCm', 'shoulderWidthCm']);
+const SHIFTABLE: ReadonlySet<BodyRangeKey> = new Set([
+  'chestCm',
+  'waistCm',
+  'hipCm',
+  'shoulderWidthCm',
+]);
 
 function prepare(garment: GarmentDefinition, fabricStretch: number | undefined): Prepared {
-  if (garment === null || typeof garment !== 'object') fail('invalid-garment', 'garment', 'no es un objeto');
+  if (garment === null || typeof garment !== 'object')
+    fail('invalid-garment', 'garment', 'no es un objeto');
   const { sizes, template, fit } = garment;
   if (!Array.isArray(sizes) || sizes.length === 0) {
     fail('invalid-garment', 'garment.sizes', 'la prenda no tiene tabla de tallas');
   }
+  if (sizes.length > MAX_SIZES)
+    fail('invalid-garment', 'garment.sizes', `demasiadas tallas (> ${MAX_SIZES})`);
   if (typeof template !== 'string' || !Object.hasOwn(TEMPLATE_PROFILES, template)) {
     fail('invalid-garment', 'garment.template', 'plantilla desconocida');
   }
@@ -219,7 +235,13 @@ function prepare(garment: GarmentDefinition, fabricStretch: number | undefined):
         complete = false;
         break;
       }
-      if (!Array.isArray(r) || r.length !== 2 || !isFiniteNumber(r[0]) || !isFiniteNumber(r[1]) || r[0] > r[1]) {
+      if (
+        !Array.isArray(r) ||
+        r.length !== 2 ||
+        !isFiniteNumber(r[0]) ||
+        !isFiniteNumber(r[1]) ||
+        r[0] > r[1]
+      ) {
         fail('invalid-garment', `garment.sizes[${i}].body.${key}`, 'rango corporal inválido');
       }
       lo.push(r[0]);
@@ -232,7 +254,10 @@ function prepare(garment: GarmentDefinition, fabricStretch: number | undefined):
     rawDims.push({ key, scale, shiftable: SHIFTABLE.has(key), lo, hi, center });
     availableWeight += w;
   }
-  const dims: PreparedDim[] = rawDims.map((d) => ({ ...d, weight: (profile.score[d.key] ?? 0) / availableWeight }));
+  const dims: PreparedDim[] = rawDims.map((d) => ({
+    ...d,
+    weight: (profile.score[d.key] ?? 0) / availableWeight,
+  }));
   const coverage = totalWeight > 0 ? availableWeight / totalWeight : 0;
 
   // Reglas de holgura aplicables: la prenda debe tener la medida en TODAS las tallas.
@@ -247,7 +272,11 @@ function prepare(garment: GarmentDefinition, fabricStretch: number | undefined):
         break;
       }
       if (!isFiniteNumber(v)) {
-        fail('invalid-garment', `garment.sizes[${i}].garment.${rule.dimension}`, 'medida de prenda inválida');
+        fail(
+          'invalid-garment',
+          `garment.sizes[${i}].garment.${rule.dimension}`,
+          'medida de prenda inválida',
+        );
       }
       max = Math.max(max, v);
     }
@@ -257,23 +286,30 @@ function prepare(garment: GarmentDefinition, fabricStretch: number | undefined):
     rules.push(rule);
   }
   if (dims.length === 0 && rules.length === 0) {
-    fail('invalid-garment', 'garment.sizes', 'la tabla no tiene ninguna medida comparable con el cuerpo');
+    fail(
+      'invalid-garment',
+      'garment.sizes',
+      'la tabla no tiene ninguna medida comparable con el cuerpo',
+    );
   }
 
-  const scales = { ...DEFAULT_SCALE_CM };
-  for (const d of dims) {
-    if (d.key === 'heightCm' || d.key === 'chestCm' || d.key === 'waistCm' || d.key === 'hipCm') scales[d.key] = d.scale;
-    else if (d.key === 'shoulderWidthCm') scales.shoulderWidthCm = d.scale;
-    else scales.inseamCm = d.scale;
-  }
+  const scales: Record<NumericMeasurementKey, number> = { ...DEFAULT_SCALE_CM };
+  for (const d of dims) scales[d.key] = d.scale;
 
+  const wTotal = rules.reduce((sum, r) => sum + r.weight, 0);
+  const ruleWeights = rules.map((r) => r.weight / wTotal);
   const stretch = clamp01(fabricStretch ?? profile.defaultStretch);
-  return { garment, profile, dims, coverage, rules, stretch, scales };
+  return { garment, profile, dims, coverage, rules, ruleWeights, stretch, scales };
 }
 
 // ---------- Evaluación de tallas ----------
 
-function classify(ease: number, rule: EaseRule, fit: GarmentDefinition['fit'], stretch: number): FitVerdict {
+function classify(
+  ease: number,
+  rule: EaseRule,
+  fit: GarmentDefinition['fit'],
+  stretch: number,
+): FitVerdict {
   if (ease < rule.floorCm - rule.stretchReliefCm * stretch) return 'too-tight';
   const unit = rule.unitCm * FIT_TOLERANCE_SCALE[fit];
   const x = (ease - nominalEase(rule, fit)) / unit;
@@ -300,19 +336,30 @@ function easeDimensions(p: Prepared, index: number, body: Vec): FitDimension[] {
   });
 }
 
-/** Veredicto global: lo ceñido manda (una dimensión importante «too-tight» basta); el resto, media ponderada. */
-function overallVerdict(p: Prepared, dims: readonly FitDimension[]): FitVerdict {
-  if (dims.length === 0) return 'good';
-  let wsum = 0;
+/** Clasifica el veredicto de una regla sin asignar objetos (se usa en el bucle caliente de selección). */
+function ruleVerdict(p: Prepared, rule: EaseRule, index: number, body: Vec): FitVerdict {
+  return classify(
+    p.garment.sizes[index]!.garment[rule.dimension]! - body[rule.body],
+    rule,
+    p.garment.fit,
+    p.stretch,
+  );
+}
+
+/**
+ * Veredicto global de una talla: lo ceñido manda (una dimensión importante «too-tight» basta);
+ * el resto, media ponderada de los veredictos por dimensión.
+ */
+function overallVerdict(p: Prepared, index: number, body: Vec): FitVerdict {
+  if (p.rules.length === 0) return 'good';
   let mean = 0;
-  const weights = dims.map((d) => p.rules.find((r) => r.dimension === d.dimension)!.weight);
-  for (const w of weights) wsum += w;
   let tightSignificant = false;
-  dims.forEach((d, i) => {
-    const w = weights[i]! / wsum;
-    mean += w * VERDICT_ORD[d.verdict];
-    if (d.verdict === 'too-tight' && w >= 0.2) tightSignificant = true;
-  });
+  for (let k = 0; k < p.rules.length; k++) {
+    const verdict = ruleVerdict(p, p.rules[k]!, index, body);
+    const w = p.ruleWeights[k]!;
+    mean += w * VERDICT_ORD[verdict];
+    if (verdict === 'too-tight' && w >= 0.2) tightSignificant = true;
+  }
   if (tightSignificant || mean <= -1.5) return 'too-tight';
   if (mean <= -0.5) return 'snug';
   if (mean <= 0.5) return 'good';
@@ -339,21 +386,19 @@ function selectSize(p: Prepared, body: Vec, preference: FitPreference): Selectio
       const off = (b - d.center[i]!) / d.scale;
       cost += d.weight * (dist * dist + CENTER_EPS * off * off);
     }
-    const dims = easeDimensions(p, i, body);
     if (p.dims.length === 0) {
       // Sin tabla corporal: el coste sale de la desviación de la holgura respecto a la nominal.
-      let wsum = 0;
-      for (const r of p.rules) wsum += r.weight;
-      for (const dim of dims) {
-        const rule = p.rules.find((r) => r.dimension === dim.dimension)!;
+      for (let k = 0; k < p.rules.length; k++) {
+        const rule = p.rules[k]!;
+        const ease = p.garment.sizes[i]!.garment[rule.dimension]! - body[rule.body];
         const x =
-          (dim.easeCm - nominalEase(rule, p.garment.fit) - shiftSteps * rule.unitCm) /
+          (ease - nominalEase(rule, p.garment.fit) - shiftSteps * rule.unitCm) /
           (rule.unitCm * FIT_TOLERANCE_SCALE[p.garment.fit]);
-        cost += (rule.weight / wsum) * 0.25 * x * x;
+        cost += p.ruleWeights[k]! * 0.25 * x * x;
       }
     }
     costs[i] = cost;
-    verdicts[i] = overallVerdict(p, dims);
+    verdicts[i] = overallVerdict(p, i, body);
   }
   // Veto de tallas no vestibles. `first` = primera talla que no es «demasiado ajustada»; `loose` = primera
   // «demasiado holgada». Se elige dentro de [first, loose) y, si ese intervalo queda vacío (cuerpo
@@ -384,11 +429,13 @@ function shiftBody(body: Vec, delta: (key: NumericMeasurementKey) => number): Ve
  * Lanza `SizingInputError` ante medidas fuera de rango/NaN, sigmas inválidas o una prenda sin tabla utilizable.
  */
 export function recommendSize(input: SizingInputEx): SizeRecommendation {
-  if (input === null || typeof input !== 'object') fail('invalid-garment', 'input', 'entrada vacía');
+  if (input === null || typeof input !== 'object')
+    fail('invalid-garment', 'input', 'entrada vacía');
   const measurements = validateMeasurements(input.measurements);
   const sigma = validateSigma(input.sigmaCm);
   const preference = input.preference ?? 'regular';
-  if (!FIT_PREFERENCES.includes(preference)) fail('invalid-preference', 'preference', 'preferencia desconocida');
+  if (!FIT_PREFERENCES.includes(preference))
+    fail('invalid-preference', 'preference', 'preferencia desconocida');
   const stretchRaw = input.fabric?.stretch;
   if (stretchRaw !== undefined && !isFiniteNumber(stretchRaw)) {
     fail('invalid-garment', 'fabric.stretch', 'elasticidad inválida');
@@ -420,8 +467,8 @@ export function recommendSize(input: SizingInputEx): SizeRecommendation {
     // Sólo los contornos deciden «fuera de tabla»; estatura y entrepierna (longitudes) tienen su propio aviso.
     if (d.key !== 'heightCm' && d.key !== 'inseamCm') {
       circWeight += d.weight;
-      below += d.weight * Math.max(0, lo - b) / d.scale;
-      above += d.weight * Math.max(0, b - hi) / d.scale;
+      below += (d.weight * Math.max(0, lo - b)) / d.scale;
+      above += (d.weight * Math.max(0, b - hi)) / d.scale;
     }
   }
   if (circWeight > 0) {
@@ -439,15 +486,24 @@ export function recommendSize(input: SizingInputEx): SizeRecommendation {
 
   const margin = (k: NumericMeasurementKey) =>
     Math.max(BETWEEN_STEP_FRACTION * p.scales[k], BETWEEN_MIN_CM) + 0.5 * sigmaOf(k);
-  const lowIdx = selectSize(p, shiftBody(body, (k) => -margin(k)), preference).index;
-  const highIdx = selectSize(p, shiftBody(body, (k) => margin(k)), preference).index;
+  const lowIdx = selectSize(
+    p,
+    shiftBody(body, (k) => -margin(k)),
+    preference,
+  ).index;
+  const highIdx = selectSize(
+    p,
+    shiftBody(body, (k) => margin(k)),
+    preference,
+  ).index;
   const between = lowIdx !== highIdx;
   if (between) notes.push('between-sizes');
 
   const heightRange = size.body.heightCm;
   const heightOut =
     heightRange !== undefined &&
-    (body.heightCm < heightRange[0] - HEIGHT_TOLERANCE_CM || body.heightCm > heightRange[1] + HEIGHT_TOLERANCE_CM);
+    (body.heightCm < heightRange[0] - HEIGHT_TOLERANCE_CM ||
+      body.heightCm > heightRange[1] + HEIGHT_TOLERANCE_CM);
   if (heightOut) notes.push('height-out-of-range');
 
   let sigmaRms = 0;
@@ -469,10 +525,16 @@ export function recommendSize(input: SizingInputEx): SizeRecommendation {
     if (selectSize(p, probe, preference).index === idx) stable += node.w;
   }
   const sigmaTerm = 1 / (1 + (sigmaRms / 0.5) ** 2);
-  const verdictTerm = overall === 'good' ? 1 : overall === 'snug' || overall === 'roomy' ? 0.93 : 0.55;
+  const verdictTerm =
+    overall === 'good' ? 1 : overall === 'snug' || overall === 'roomy' ? 0.93 : 0.55;
   const coverageTerm = 0.6 + 0.4 * p.coverage;
   let confidence =
-    fitTerm * stable * (0.75 + 0.25 * sigmaTerm) * verdictTerm * coverageTerm * (heightOut ? 0.9 : 1);
+    fitTerm *
+    stable *
+    (0.75 + 0.25 * sigmaTerm) *
+    verdictTerm *
+    coverageTerm *
+    (heightOut ? 0.9 : 1);
   if (belowSmallest || aboveLargest) confidence = Math.min(confidence, 0.4);
 
   // (f) alternativas ordenadas por coste (empates: talla menor primero).

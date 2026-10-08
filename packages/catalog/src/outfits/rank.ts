@@ -62,7 +62,11 @@ const VERDICT_ORD: Readonly<Record<FitVerdict, number>> = {
   roomy: 1,
   'too-loose': 2,
 };
-const PREFERENCE_TARGET: Readonly<Record<FitPreference, number>> = { snug: -0.5, regular: 0, roomy: 0.5 };
+const PREFERENCE_TARGET: Readonly<Record<FitPreference, number>> = {
+  snug: -0.5,
+  regular: 0,
+  roomy: 0.5,
+};
 
 export function fitQuality(overall: FitVerdict, preference: FitPreference = 'regular'): number {
   const d = Math.abs(VERDICT_ORD[overall] - PREFERENCE_TARGET[preference]);
@@ -84,11 +88,18 @@ function reasonsOf(rec: SizeRecommendation): RankReason[] {
   return out;
 }
 
-export function garmentScore(rec: SizeRecommendation, preference: FitPreference = 'regular'): number {
+export function garmentScore(
+  rec: SizeRecommendation,
+  preference: FitPreference = 'regular',
+): number {
   let notes = 1;
-  if (rec.notes.includes('below-smallest-size') || rec.notes.includes('above-largest-size')) notes *= 0.5;
+  if (rec.notes.includes('below-smallest-size') || rec.notes.includes('above-largest-size'))
+    notes *= 0.5;
   if (rec.notes.includes('height-out-of-range')) notes *= 0.9;
-  return round(clamp01(fitQuality(rec.overall, preference) * (0.55 + 0.45 * rec.confidence) * notes), 4);
+  return round(
+    clamp01(fitQuality(rec.overall, preference) * (0.55 + 0.45 * rec.confidence) * notes),
+    4,
+  );
 }
 
 /** Núcleo síncrono y puro: ordena las prendas de unos datos de catálogo para unas medidas. */
@@ -100,7 +111,12 @@ export function rankGarmentsSync(
   const fabrics = new Map<string, FabricDef>(data.fabrics.map((f) => [f.id, f]));
   const preference = opts.preference ?? 'regular';
   const minScore = opts.minScore ?? 0;
-  const scored: { garment: GarmentDefinition; order: number; recommendation: SizeRecommendation; score: number }[] = [];
+  const scored: {
+    garment: GarmentDefinition;
+    order: number;
+    recommendation: SizeRecommendation;
+    score: number;
+  }[] = [];
   data.garments.forEach((garment, order) => {
     if (opts.category !== undefined && garment.category !== opts.category) return;
     if (opts.slot !== undefined && garment.slot !== opts.slot) return;
@@ -122,7 +138,8 @@ export function rankGarmentsSync(
       b.recommendation.confidence - a.recommendation.confidence ||
       a.order - b.order,
   );
-  const limited = opts.limit !== undefined ? scored.slice(0, Math.max(0, Math.floor(opts.limit))) : scored;
+  const limited =
+    opts.limit !== undefined ? scored.slice(0, Math.max(0, Math.floor(opts.limit))) : scored;
   return Object.freeze(
     limited.map((r, i) =>
       Object.freeze({

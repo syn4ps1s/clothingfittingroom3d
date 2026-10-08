@@ -50,7 +50,7 @@
         "body": {
           "heightCm": [148, 164],
           "chestCm": [79, 87],
-          "waistCm": [61, 69],
+          "waistCm": [61, 70],
           "hipCm": [84, 90.5],
           "shoulderWidthCm": [33.5, 37.5]
         },
@@ -69,7 +69,7 @@
         "body": {
           "heightCm": [160, 172],
           "chestCm": [87, 93],
-          "waistCm": [69, 75.5],
+          "waistCm": [70, 76.5],
           "hipCm": [90.5, 95],
           "shoulderWidthCm": [37.5, 40]
         },
@@ -88,7 +88,7 @@
         "body": {
           "heightCm": [168, 180],
           "chestCm": [93, 99],
-          "waistCm": [75.5, 82.5],
+          "waistCm": [76.5, 83.5],
           "hipCm": [95, 99.5],
           "shoulderWidthCm": [40, 42.5]
         },
@@ -107,7 +107,7 @@
         "body": {
           "heightCm": [175, 186],
           "chestCm": [99, 105],
-          "waistCm": [82.5, 89.5],
+          "waistCm": [83.5, 90.5],
           "hipCm": [99.5, 104],
           "shoulderWidthCm": [42.5, 45]
         },
@@ -126,7 +126,7 @@
         "body": {
           "heightCm": [181, 192],
           "chestCm": [105, 111],
-          "waistCm": [89.5, 96.5],
+          "waistCm": [90.5, 97.5],
           "hipCm": [104, 108.5],
           "shoulderWidthCm": [45, 47.5]
         },
@@ -145,7 +145,7 @@
         "body": {
           "heightCm": [186, 196],
           "chestCm": [111, 117],
-          "waistCm": [96.5, 104],
+          "waistCm": [97.5, 104.5],
           "hipCm": [108.5, 113],
           "shoulderWidthCm": [47.5, 50]
         },
@@ -164,7 +164,7 @@
         "body": {
           "heightCm": [190, 200],
           "chestCm": [117, 123],
-          "waistCm": [104, 112],
+          "waistCm": [104.5, 111.5],
           "hipCm": [113, 117.5],
           "shoulderWidthCm": [50, 52.5]
         },
@@ -181,9 +181,9 @@
       {
         "label": "4XL",
         "body": {
-          "heightCm": [192, 208],
+          "heightCm": [194, 208],
           "chestCm": [123, 131],
-          "waistCm": [112, 122],
+          "waistCm": [111.5, 120.5],
           "hipCm": [117.5, 124],
           "shoulderWidthCm": [52.5, 55.5]
         },
@@ -264,7 +264,7 @@
         "body": {
           "heightCm": [148, 164],
           "chestCm": [79, 87],
-          "waistCm": [61, 69],
+          "waistCm": [61, 70],
           "hipCm": [84, 90.5],
           "shoulderWidthCm": [33.5, 37.5]
         },
@@ -283,7 +283,7 @@
         "body": {
           "heightCm": [160, 172],
           "chestCm": [87, 93],
-          "waistCm": [69, 75.5],
+          "waistCm": [70, 76.5],
           "hipCm": [90.5, 95],
           "shoulderWidthCm": [37.5, 40]
         },
@@ -302,7 +302,7 @@
         "body": {
           "heightCm": [168, 180],
           "chestCm": [93, 99],
-          "waistCm": [75.5, 82.5],
+          "waistCm": [76.5, 83.5],
           "hipCm": [95, 99.5],
           "shoulderWidthCm": [40, 42.5]
         },
@@ -321,7 +321,7 @@
         "body": {
           "heightCm": [175, 186],
           "chestCm": [99, 105],
-          "waistCm": [82.5, 89.5],
+          "waistCm": [83.5, 90.5],
           "hipCm": [99.5, 104],
           "shoulderWidthCm": [42.5, 45]
         },
@@ -340,7 +340,7 @@
         "body": {
           "heightCm": [181, 192],
           "chestCm": [105, 111],
-          "waistCm": [89.5, 96.5],
+          "waistCm": [90.5, 97.5],
           "hipCm": [104, 108.5],
           "shoulderWidthCm": [45, 47.5]
         },
@@ -359,7 +359,7 @@
         "body": {
           "heightCm": [186, 196],
           "chestCm": [111, 117],
-          "waistCm": [96.5, 104],
+          "waistCm": [97.5, 104.5],
           "hipCm": [108.5, 113],
           "shoulderWidthCm": [47.5, 50]
         },
@@ -378,7 +378,7 @@
         "body": {
           "heightCm": [190, 200],
           "chestCm": [117, 123],
-          "waistCm": [104, 112],
+          "waistCm": [104.5, 111.5],
           "hipCm": [113, 117.5],
           "shoulderWidthCm": [50, 52.5]
         },
@@ -395,9 +395,9 @@
       {
         "label": "4XL",
         "body": {
-          "heightCm": [192, 208],
+          "heightCm": [194, 208],
           "chestCm": [123, 131],
-          "waistCm": [112, 122],
+          "waistCm": [111.5, 120.5],
           "hipCm": [117.5, 124],
           "shoulderWidthCm": [52.5, 55.5]
         },
@@ -472,7 +472,7 @@
         "body": {
           "heightCm": [148, 164],
           "chestCm": [79, 87],
-          "waistCm": [61, 69],
+          "waistCm": [61, 70],
           "hipCm": [84, 90.5],
           "shoulderWidthCm": [33.5, 37.5]
         },
@@ -491,7 +491,7 @@
         "body": {
           "heightCm": [160, 172],
           "chestCm": [87, 93],
-          "waistCm": [69, 75.5],
+          "waistCm": [70, 76.5],
           "hipCm": [90.5, 95],
           "shoulderWidthCm": [37.5, 40]
         },
@@ -510,7 +510,7 @@
         "body": {
           "heightCm": [168, 180],
           "chestCm": [93, 99],
-          "waistCm": [75.5, 82.5],
+          "waistCm": [76.5, 83.5],
           "hipCm": [95, 99.5],
           "shoulderWidthCm": [40, 42.5]
         },
@@ -529,7 +529,7 @@
         "body": {
           "heightCm": [175, 186],
           "chestCm": [99, 105],
-          "waistCm": [82.5, 89.5],
+          "waistCm": [83.5, 90.5],
           "hipCm": [99.5, 104],
           "shoulderWidthCm": [42.5, 45]
         },
@@ -548,7 +548,7 @@
         "body": {
           "heightCm": [181, 192],
           "chestCm": [105, 111],
-          "waistCm": [89.5, 96.5],
+          "waistCm": [90.5, 97.5],
           "hipCm": [104, 108.5],
           "shoulderWidthCm": [45, 47.5]
         },
@@ -567,7 +567,7 @@
         "body": {
           "heightCm": [186, 196],
           "chestCm": [111, 117],
-          "waistCm": [96.5, 104],
+          "waistCm": [97.5, 104.5],
           "hipCm": [108.5, 113],
           "shoulderWidthCm": [47.5, 50]
         },
@@ -586,7 +586,7 @@
         "body": {
           "heightCm": [190, 200],
           "chestCm": [117, 123],
-          "waistCm": [104, 112],
+          "waistCm": [104.5, 111.5],
           "hipCm": [113, 117.5],
           "shoulderWidthCm": [50, 52.5]
         },
@@ -603,9 +603,9 @@
       {
         "label": "4XL",
         "body": {
-          "heightCm": [192, 208],
+          "heightCm": [194, 208],
           "chestCm": [123, 131],
-          "waistCm": [112, 122],
+          "waistCm": [111.5, 120.5],
           "hipCm": [117.5, 124],
           "shoulderWidthCm": [52.5, 55.5]
         },
@@ -686,7 +686,7 @@
         "body": {
           "heightCm": [148, 164],
           "chestCm": [79, 87],
-          "waistCm": [61, 69],
+          "waistCm": [61, 70],
           "hipCm": [84, 90.5],
           "shoulderWidthCm": [33.5, 37.5]
         },
@@ -705,7 +705,7 @@
         "body": {
           "heightCm": [160, 172],
           "chestCm": [87, 93],
-          "waistCm": [69, 75.5],
+          "waistCm": [70, 76.5],
           "hipCm": [90.5, 95],
           "shoulderWidthCm": [37.5, 40]
         },
@@ -724,7 +724,7 @@
         "body": {
           "heightCm": [168, 180],
           "chestCm": [93, 99],
-          "waistCm": [75.5, 82.5],
+          "waistCm": [76.5, 83.5],
           "hipCm": [95, 99.5],
           "shoulderWidthCm": [40, 42.5]
         },
@@ -743,7 +743,7 @@
         "body": {
           "heightCm": [175, 186],
           "chestCm": [99, 105],
-          "waistCm": [82.5, 89.5],
+          "waistCm": [83.5, 90.5],
           "hipCm": [99.5, 104],
           "shoulderWidthCm": [42.5, 45]
         },
@@ -762,7 +762,7 @@
         "body": {
           "heightCm": [181, 192],
           "chestCm": [105, 111],
-          "waistCm": [89.5, 96.5],
+          "waistCm": [90.5, 97.5],
           "hipCm": [104, 108.5],
           "shoulderWidthCm": [45, 47.5]
         },
@@ -781,7 +781,7 @@
         "body": {
           "heightCm": [186, 196],
           "chestCm": [111, 117],
-          "waistCm": [96.5, 104],
+          "waistCm": [97.5, 104.5],
           "hipCm": [108.5, 113],
           "shoulderWidthCm": [47.5, 50]
         },
@@ -800,7 +800,7 @@
         "body": {
           "heightCm": [190, 200],
           "chestCm": [117, 123],
-          "waistCm": [104, 112],
+          "waistCm": [104.5, 111.5],
           "hipCm": [113, 117.5],
           "shoulderWidthCm": [50, 52.5]
         },
@@ -817,9 +817,9 @@
       {
         "label": "4XL",
         "body": {
-          "heightCm": [192, 208],
+          "heightCm": [194, 208],
           "chestCm": [123, 131],
-          "waistCm": [112, 122],
+          "waistCm": [111.5, 120.5],
           "hipCm": [117.5, 124],
           "shoulderWidthCm": [52.5, 55.5]
         },

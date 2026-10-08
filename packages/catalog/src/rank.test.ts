@@ -30,10 +30,20 @@ describe('fitQuality / garmentScore', () => {
 
   it('garmentScore penaliza estar fuera de tabla y la estatura incompatible', () => {
     const g = catalog.garments.find((x) => x.id === 'tee-essential')!;
-    const ok = recommendSize({ garment: g, measurements: REFERENCE_MEASUREMENTS.adultA, fabric: stretchOf(g) });
+    const ok = recommendSize({
+      garment: g,
+      measurements: REFERENCE_MEASUREMENTS.adultA,
+      fabric: stretchOf(g),
+    });
     const out = recommendSize({
       garment: g,
-      measurements: { ...REFERENCE_MEASUREMENTS.large, chestCm: 150, waistCm: 140, hipCm: 150, shoulderWidthCm: 60 },
+      measurements: {
+        ...REFERENCE_MEASUREMENTS.large,
+        chestCm: 150,
+        waistCm: 140,
+        hipCm: 150,
+        shoulderWidthCm: 60,
+      },
       fabric: stretchOf(g),
     });
     expect(garmentScore(ok)).toBeGreaterThan(garmentScore(out));
@@ -66,32 +76,54 @@ describe('rankGarments', () => {
 
   it('filtra por categoría, ranura, ocasión, puntuación mínima y límite', () => {
     const m = REFERENCE_MEASUREMENTS.adultA;
-    expect(rankGarmentsSync(catalog, m, { category: 'bottoms' }).every((r) => r.garment.category === 'bottoms')).toBe(true);
-    expect(rankGarmentsSync(catalog, m, { slot: 'outer' }).every((r) => r.garment.slot === 'outer')).toBe(true);
+    expect(
+      rankGarmentsSync(catalog, m, { category: 'bottoms' }).every(
+        (r) => r.garment.category === 'bottoms',
+      ),
+    ).toBe(true);
+    expect(
+      rankGarmentsSync(catalog, m, { slot: 'outer' }).every((r) => r.garment.slot === 'outer'),
+    ).toBe(true);
     const beach = rankGarmentsSync(catalog, m, { occasion: 'beach' });
     expect(beach.length).toBeGreaterThan(0);
     expect(beach.every((r) => r.garment.tags.includes('beach'))).toBe(true);
     expect(rankGarmentsSync(catalog, m, { limit: 3 })).toHaveLength(3);
     expect(rankGarmentsSync(catalog, m, { limit: 0 })).toHaveLength(0);
-    expect(rankGarmentsSync(catalog, m, { minScore: 0.99 }).every((r) => r.score >= 0.99)).toBe(true);
+    expect(rankGarmentsSync(catalog, m, { minScore: 0.99 }).every((r) => r.score >= 0.99)).toBe(
+      true,
+    );
   });
 
   it('la preferencia y la incertidumbre se propagan a cada recomendación', () => {
     const m = REFERENCE_MEASUREMENTS.adultA;
     const snug = rankGarmentsSync(catalog, m, { preference: 'snug', category: 'tops' });
     const roomy = rankGarmentsSync(catalog, m, { preference: 'roomy', category: 'tops' });
-    const idx = (r: (typeof snug)[number]) => r.garment.sizes.findIndex((s) => s.label === r.recommendation.size);
+    const idx = (r: (typeof snug)[number]) =>
+      r.garment.sizes.findIndex((s) => s.label === r.recommendation.size);
     const byId = new Map(roomy.map((r) => [r.garment.id, idx(r)]));
     for (const r of snug) expect(idx(r)).toBeLessThanOrEqual(byId.get(r.garment.id)!);
-    const noisy = rankGarmentsSync(catalog, m, { sigmaCm: { chestCm: 4, waistCm: 4, hipCm: 4 }, category: 'tops' });
+    const noisy = rankGarmentsSync(catalog, m, {
+      sigmaCm: { chestCm: 4, waistCm: 4, hipCm: 4 },
+      category: 'tops',
+    });
     expect(noisy.some((r) => r.reasons.includes('uncertain-measurements'))).toBe(true);
   });
 
   it('señala motivos: entre tallas, fuera de tabla y estatura', () => {
-    const tiny = { ...REFERENCE_MEASUREMENTS.small, chestCm: 66, waistCm: 52, hipCm: 74, shoulderWidthCm: 30 };
+    const tiny = {
+      ...REFERENCE_MEASUREMENTS.small,
+      chestCm: 66,
+      waistCm: 52,
+      hipCm: 74,
+      shoulderWidthCm: 30,
+    };
     const r = rankGarmentsSync(catalog, tiny, { category: 'tops' });
     expect(r.every((x) => x.reasons.includes('out-of-size-range'))).toBe(true);
-    const tall = rankGarmentsSync(catalog, { ...REFERENCE_MEASUREMENTS.adultB, heightCm: 205 }, { category: 'tops' });
+    const tall = rankGarmentsSync(
+      catalog,
+      { ...REFERENCE_MEASUREMENTS.adultB, heightCm: 205 },
+      { category: 'tops' },
+    );
     expect(tall.some((x) => x.reasons.includes('height-mismatch'))).toBe(true);
   });
 
@@ -109,7 +141,9 @@ describe('rankGarments', () => {
   });
 
   it('medidas inválidas → SizingInputError (no resultados parciales)', () => {
-    expect(() => rankGarmentsSync(catalog, { ...REFERENCE_MEASUREMENTS.adultA, chestCm: Number.NaN })).toThrow(SizingInputError);
+    expect(() =>
+      rankGarmentsSync(catalog, { ...REFERENCE_MEASUREMENTS.adultA, chestCm: Number.NaN }),
+    ).toThrow(SizingInputError);
   });
 
   it('acepta datos, repositorio estático y repositorios ajenos (asíncronos)', async () => {
@@ -128,7 +162,10 @@ describe('rankGarments', () => {
     };
     const fromExternal = await rankGarments(external, m);
     expect(fromExternal.length).toBe(catalog.garments.length);
-    const evil = { ...external, listGarments: () => Promise.resolve([{ ...catalog.garments[0]!, fabricId: '../x' }]) };
+    const evil = {
+      ...external,
+      listGarments: () => Promise.resolve([{ ...catalog.garments[0]!, fabricId: '../x' }]),
+    };
     await expect(rankGarments(evil as never, m)).rejects.toThrow();
   });
 

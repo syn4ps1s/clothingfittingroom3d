@@ -41,4 +41,6 @@ export interface SizingInput {
   readonly preference?: FitPreference;
   /** sigma (cm) por medida, si proviene de un escaneo; aumenta la incertidumbre/penaliza confianza */
   readonly sigmaCm?: Partial<Record<keyof Measurements, number>>;
+  /** elasticidad de la tela (FabricDef.stretch, 0..1): una tela elástica relaja el suelo de holgura; opcional. */
+  readonly fabric?: { readonly stretch: number };
 }

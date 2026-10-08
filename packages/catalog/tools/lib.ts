@@ -14,11 +14,7 @@ import type {
   SizeBodyRange,
   SwatchVariant,
 } from '@fitroom/shared';
-import {
-  TEMPLATE_PROFILES,
-  nominalEase,
-  type EaseRule,
-} from '../src/sizing/profiles.js';
+import { TEMPLATE_PROFILES, nominalEase, type EaseRule } from '../src/sizing/profiles.js';
 
 export const round05 = (x: number): number => Math.round(x * 2) / 2;
 
@@ -48,7 +44,7 @@ export interface SizeSystem {
 const ALPHA: SizeSystem = {
   labels: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'],
   chest: [84, 90, 96, 102, 108, 114, 120, 126],
-  waist: [66, 72, 79, 86, 93, 100, 108, 116],
+  waist: [66.5, 73, 80, 87, 94, 101, 108, 115],
   hip: [88, 92.5, 97, 101.5, 106, 110.5, 115, 120],
   shoulder: [36, 38.5, 41, 43.5, 46, 48.5, 51, 53.5],
   thigh: [49, 53, 57, 60.5, 64, 67.5, 71, 74.5],
@@ -62,7 +58,7 @@ const ALPHA: SizeSystem = {
     [181, 192],
     [186, 196],
     [190, 200],
-    [192, 208],
+    [194, 208],
   ],
 };
 
@@ -74,18 +70,18 @@ const INCH: SizeSystem = {
   thigh: [48, 50, 53, 55.5, 58, 60.5, 63, 65.5, 68, 70, 72, 74],
   inseam: [70, 72, 75, 77, 79.5, 81, 82.5, 84, 85, 86, 87, 88],
   height: [
-    [148, 162],
-    [152, 166],
-    [158, 172],
+    [148, 160],
+    [152, 164],
+    [156, 168],
+    [160, 172],
     [164, 176],
     [168, 180],
     [172, 184],
     [176, 188],
     [180, 192],
     [184, 196],
-    [186, 198],
     [188, 200],
-    [190, 206],
+    [192, 206],
   ],
 };
 
@@ -98,25 +94,35 @@ const EUW: SizeSystem = {
   shoulder: [34.5, 35.5, 36.5, 37.5, 38.5, 39.5, 41, 42.5, 44.5, 46.5, 48.5, 50.5],
   arm: [52, 53.5, 55, 56.5, 58, 59.5, 61, 62.5, 64, 65, 66, 67],
   height: [
-    [150, 164],
-    [153, 167],
-    [156, 170],
-    [159, 173],
-    [162, 176],
-    [165, 179],
-    [168, 182],
-    [171, 185],
-    [174, 189],
-    [177, 193],
-    [180, 197],
-    [183, 201],
+    [150, 162],
+    [154, 166],
+    [158, 170],
+    [162, 174],
+    [166, 178],
+    [170, 182],
+    [174, 186],
+    [178, 190],
+    [182, 194],
+    [186, 198],
+    [190, 202],
+    [194, 206],
   ],
 };
 
-export const SYSTEMS: Readonly<Record<SystemId, SizeSystem>> = { alpha: ALPHA, inch: INCH, euw: EUW };
+export const SYSTEMS: Readonly<Record<SystemId, SizeSystem>> = {
+  alpha: ALPHA,
+  inch: INCH,
+  euw: EUW,
+};
 
 /** Cuánto se «abre hacia fuera» el rango de la primera/última talla para cubrir cuerpos extremos. */
-const OPEN_CM: Readonly<Record<BodyKey, number>> = { chest: 2, waist: 2, hip: 1.5, shoulder: 1, inseam: 1 };
+const OPEN_CM: Readonly<Record<BodyKey, number>> = {
+  chest: 2,
+  waist: 2,
+  hip: 1.5,
+  shoulder: 1,
+  inseam: 1,
+};
 
 /** Centros corporales de UNA talla (cm) + posición relativa `s` (escalones de 6 cm de pecho respecto a M). */
 export interface Center {
@@ -155,10 +161,7 @@ function contiguousRanges(centers: readonly number[], open: number): [number, nu
   for (let i = 0; i < n - 1; i++) bounds.push(round05((centers[i]! + centers[i + 1]!) / 2));
   const out: [number, number][] = [];
   for (let i = 0; i < n; i++) {
-    const lo =
-      i === 0
-        ? round05(centers[0]! - (bounds[0]! - centers[0]!) - open)
-        : bounds[i - 1]!;
+    const lo = i === 0 ? round05(centers[0]! - (bounds[0]! - centers[0]!) - open) : bounds[i - 1]!;
     const hi =
       i === n - 1
         ? round05(centers[n - 1]! + (centers[n - 1]! - bounds[n - 2]!) + open)
@@ -188,7 +191,9 @@ export function buildSizes(src: SizeTableSource): GarmentSizeSpec[] {
   const labels = src.labels ?? slice(labelsAll);
   if (labels.length !== to - from + 1) throw new Error('labels no coincide con el rango de tallas');
 
-  const centersOf = (key: 'chest' | 'waist' | 'hip' | 'shoulder' | 'thigh' | 'inseam' | 'arm'): number[] => {
+  const centersOf = (
+    key: 'chest' | 'waist' | 'hip' | 'shoulder' | 'thigh' | 'inseam' | 'arm',
+  ): number[] => {
     const arr = sys[key];
     if (!arr) return missing(key, src.system);
     return slice(arr);
@@ -200,8 +205,9 @@ export function buildSizes(src: SizeTableSource): GarmentSizeSpec[] {
   }
   const heights = slice(sys.height);
 
-  const get = (key: 'chest' | 'waist' | 'hip' | 'shoulder' | 'thigh' | 'inseam' | 'arm'): number[] | null =>
-    sys[key] ? slice(sys[key]!) : null;
+  const get = (
+    key: 'chest' | 'waist' | 'hip' | 'shoulder' | 'thigh' | 'inseam' | 'arm',
+  ): number[] | null => (sys[key] ? slice(sys[key]!) : null);
   const chest = get('chest');
   const waist = get('waist');
   const hip = get('hip');
@@ -239,9 +245,14 @@ export function buildSizes(src: SizeTableSource): GarmentSizeSpec[] {
 }
 
 /** Holgura nominal de una dimensión para una plantilla y un ajuste (misma tabla que el clasificador). */
-export function ease(template: GarmentTemplate, fit: GarmentFit, dimension: EaseRule['dimension']): number {
+export function ease(
+  template: GarmentTemplate,
+  fit: GarmentFit,
+  dimension: EaseRule['dimension'],
+): number {
   const rule = TEMPLATE_PROFILES[template].ease.find((r) => r.dimension === dimension);
-  if (!rule) throw new Error(`La plantilla ${template} no tiene regla de holgura para ${dimension}`);
+  if (!rule)
+    throw new Error(`La plantilla ${template} no tiene regla de holgura para ${dimension}`);
   return nominalEase(rule, fit);
 }
 

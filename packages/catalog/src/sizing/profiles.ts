@@ -91,7 +91,12 @@ const chestTop: EaseRule = {
   floorCm: 5,
   stretchReliefCm: 12,
 };
-const chestOuter: EaseRule = { ...chestTop, nominal: [8, 14, 20, 28], floorCm: 8, stretchReliefCm: 6 };
+const chestOuter: EaseRule = {
+  ...chestTop,
+  nominal: [8, 14, 20, 28],
+  floorCm: 8,
+  stretchReliefCm: 6,
+};
 const shoulder: EaseRule = {
   dimension: 'shoulderWidthCm',
   body: 'shoulderWidthCm',
@@ -227,11 +232,7 @@ export const TEMPLATE_PROFILES: Readonly<Record<GarmentTemplate, TemplateProfile
     template: 'shorts',
     defaultStretch: 0.05,
     score: { waistCm: 0.5, hipCm: 0.43, heightCm: 0.07 },
-    ease: [
-      { ...waistPants, weight: 0.45 },
-      { ...hipPants, weight: 0.35 },
-      thighPants,
-    ],
+    ease: [{ ...waistPants, weight: 0.45 }, { ...hipPants, weight: 0.35 }, thighPants],
   },
   skirt: {
     template: 'skirt',

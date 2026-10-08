@@ -19,7 +19,11 @@ const solid = (id: string, color: string): SwatchVariant => ({
 });
 
 /** Catálogo mínimo: una camiseta, un vaquero y una cazadora con muestras elegidas a propósito. */
-function miniCatalog(variants: { tee: SwatchVariant[]; jeans: SwatchVariant[]; jacket?: SwatchVariant[] }): CatalogData {
+function miniCatalog(variants: {
+  tee: SwatchVariant[];
+  jeans: SwatchVariant[];
+  jacket?: SwatchVariant[];
+}): CatalogData {
   const tee = { ...garmentOf('tee-essential'), variants: variants.tee };
   const jeans = { ...garmentOf('jeans-straight-raw'), variants: variants.jeans };
   const garments: GarmentDefinition[] = [tee, jeans];
@@ -48,16 +52,28 @@ describe('suggestOutfits — estructura', () => {
       expect(roles.filter((r) => r === 'outer').length).toBeLessThanOrEqual(1);
       if (roles.includes('outer')) expect(roles.at(-1)).toBe('outer');
       for (const item of o.items) {
-        const expectedSlot = { top: 'upper', bottom: 'lower', full: 'full', outer: 'outer' }[item.role];
+        const expectedSlot = { top: 'upper', bottom: 'lower', full: 'full', outer: 'outer' }[
+          item.role
+        ];
         expect(item.garment.slot).toBe(expectedSlot);
         expect(item.garment.variants.map((v) => v.id)).toContain(item.variant.id);
         expect(item.garment.sizes.map((s) => s.label)).toContain(item.recommendation.size);
         expect(['too-tight', 'too-loose']).not.toContain(item.recommendation.overall);
         // la talla coincide con la recomendación individual
-        const direct = recommendSize({ garment: item.garment, measurements: m, fabric: item.fabric });
+        const direct = recommendSize({
+          garment: item.garment,
+          measurements: m,
+          fabric: item.fabric,
+        });
         expect(item.recommendation.size).toBe(direct.size);
       }
-      for (const x of [o.score, o.breakdown.fit, o.breakdown.color, o.breakdown.occasion, o.harmony.score]) {
+      for (const x of [
+        o.score,
+        o.breakdown.fit,
+        o.breakdown.color,
+        o.breakdown.occasion,
+        o.harmony.score,
+      ]) {
         expect(x).toBeGreaterThanOrEqual(0);
         expect(x).toBeLessThanOrEqual(1);
       }
@@ -73,11 +89,15 @@ describe('suggestOutfits — estructura', () => {
   });
 
   it('el primero es el de mayor puntuación y se respeta el límite y la diversidad', () => {
-    const outfits = suggestOutfitsSync(catalog, REFERENCE_MEASUREMENTS.adultA, { limit: 8, maxPerGarment: 2 });
+    const outfits = suggestOutfitsSync(catalog, REFERENCE_MEASUREMENTS.adultA, {
+      limit: 8,
+      maxPerGarment: 2,
+    });
     expect(outfits.length).toBeLessThanOrEqual(8);
     expect(Math.max(...outfits.map((o) => o.score))).toBe(outfits[0]!.score);
     const uses = new Map<string, number>();
-    for (const o of outfits) for (const i of o.items) uses.set(i.garment.id, (uses.get(i.garment.id) ?? 0) + 1);
+    for (const o of outfits)
+      for (const i of o.items) uses.set(i.garment.id, (uses.get(i.garment.id) ?? 0) + 1);
     for (const n of uses.values()) expect(n).toBeLessThanOrEqual(2);
     expect(suggestOutfitsSync(catalog, REFERENCE_MEASUREMENTS.adultA, { limit: 0 })).toEqual([]);
   });
@@ -95,7 +115,10 @@ describe('suggestOutfits — estructura', () => {
   });
 
   it('el filtro de ocasión sólo usa prendas con esa etiqueta', () => {
-    const beach = suggestOutfitsSync(catalog, REFERENCE_MEASUREMENTS.adultA, { occasion: 'beach', outer: 'never' });
+    const beach = suggestOutfitsSync(catalog, REFERENCE_MEASUREMENTS.adultA, {
+      occasion: 'beach',
+      outer: 'never',
+    });
     expect(beach.length).toBeGreaterThan(0);
     for (const o of beach) for (const i of o.items) expect(i.garment.tags).toContain('beach');
   });
@@ -108,7 +131,10 @@ describe('suggestOutfits — estructura', () => {
     };
     expect(suggestOutfitsSync(onlyTops, REFERENCE_MEASUREMENTS.adultA)).toEqual([]);
     const withDress = suggestOutfitsSync(
-      { ...catalog, garments: catalog.garments.filter((g) => g.category === 'tops' || g.category === 'dresses') },
+      {
+        ...catalog,
+        garments: catalog.garments.filter((g) => g.category === 'tops' || g.category === 'dresses'),
+      },
       REFERENCE_MEASUREMENTS.adultB,
       { outer: 'never' },
     );
@@ -120,20 +146,26 @@ describe('suggestOutfits — estructura', () => {
     const m = REFERENCE_MEASUREMENTS.small;
     const a = await suggestOutfits(catalog, m, { limit: 3 });
     expect(a).toEqual(suggestOutfitsSync(catalog, m, { limit: 3 }));
-    await expect(suggestOutfits(catalog, { ...m, heightCm: -4 })).rejects.toBeInstanceOf(SizingInputError);
+    await expect(suggestOutfits(catalog, { ...m, heightCm: -4 })).rejects.toBeInstanceOf(
+      SizingInputError,
+    );
   });
 
   it('propiedad: nunca NaN, ids únicos y puntuaciones válidas para cualquier cuerpo', () => {
     fc.assert(
-      fc.property(arbBody, fc.constantFrom('snug' as const, 'regular' as const, 'roomy' as const), (m, preference) => {
-        const outfits = suggestOutfitsSync(catalog, m, { preference, limit: 4 });
-        expect(new Set(outfits.map((o) => o.id)).size).toBe(outfits.length);
-        for (const o of outfits) {
-          expect(Number.isFinite(o.score)).toBe(true);
-          expect(o.score).toBeGreaterThanOrEqual(0);
-          expect(o.score).toBeLessThanOrEqual(1);
-        }
-      }),
+      fc.property(
+        arbBody,
+        fc.constantFrom('snug' as const, 'regular' as const, 'roomy' as const),
+        (m, preference) => {
+          const outfits = suggestOutfitsSync(catalog, m, { preference, limit: 4 });
+          expect(new Set(outfits.map((o) => o.id)).size).toBe(outfits.length);
+          for (const o of outfits) {
+            expect(Number.isFinite(o.score)).toBe(true);
+            expect(o.score).toBeGreaterThanOrEqual(0);
+            expect(o.score).toBeLessThanOrEqual(1);
+          }
+        },
+      ),
       { ...FC, numRuns: 25 },
     );
   });
@@ -164,7 +196,10 @@ describe('suggestOutfits — armonía de color', () => {
   });
 
   it('con sólo muestras chocantes baja la puntuación de color y lo señala', () => {
-    const clash = miniCatalog({ tee: [solid('orange', '#ff6a00')], jeans: [solid('pink', '#e91e8c')] });
+    const clash = miniCatalog({
+      tee: [solid('orange', '#ff6a00')],
+      jeans: [solid('pink', '#e91e8c')],
+    });
     const fine = miniCatalog({ tee: [solid('ink', '#1c1d21')], jeans: [solid('ecru', '#ede6d6')] });
     const [a] = suggestOutfitsSync(clash, REFERENCE_MEASUREMENTS.adultB, { outer: 'never' });
     const [b] = suggestOutfitsSync(fine, REFERENCE_MEASUREMENTS.adultB, { outer: 'never' });
@@ -206,7 +241,10 @@ describe('suggestOutfits — armonía de color', () => {
 
 describe('suggestOutfits — coherencia de ocasión', () => {
   it('prefiere conjuntos de formalidad homogénea', () => {
-    const [best] = suggestOutfitsSync(catalog, REFERENCE_MEASUREMENTS.adultA, { outer: 'never', limit: 1 });
+    const [best] = suggestOutfitsSync(catalog, REFERENCE_MEASUREMENTS.adultA, {
+      outer: 'never',
+      limit: 1,
+    });
     expect(best!.breakdown.occasion).toBeGreaterThan(0.85);
     // blazer de tweed + bermudas es un mal conjunto: puntuación de ocasión baja
     const mixed: CatalogData = {
@@ -214,7 +252,9 @@ describe('suggestOutfits — coherencia de ocasión', () => {
       fabrics: catalog.fabrics,
       garments: ['tee-essential', 'shorts-linen', 'coat-wool-long'].map(garmentOf),
     };
-    const [withCoat] = suggestOutfitsSync(mixed, REFERENCE_MEASUREMENTS.adultA, { outer: 'always' });
+    const [withCoat] = suggestOutfitsSync(mixed, REFERENCE_MEASUREMENTS.adultA, {
+      outer: 'always',
+    });
     expect(withCoat!.breakdown.occasion).toBeLessThan(0.5);
     expect(withCoat!.reasons).toContain('season-clash');
     const [without] = suggestOutfitsSync(mixed, REFERENCE_MEASUREMENTS.adultA, { outer: 'never' });
@@ -223,12 +263,25 @@ describe('suggestOutfits — coherencia de ocasión', () => {
 
   it('la talla de cada prenda sigue la preferencia', () => {
     const m = REFERENCE_MEASUREMENTS.adultA;
-    const snug = suggestOutfitsSync(catalog, m, { preference: 'snug', outer: 'never', limit: 1 })[0]!;
-    const roomy = suggestOutfitsSync(catalog, m, { preference: 'roomy', outer: 'never', limit: 1 })[0]!;
+    const snug = suggestOutfitsSync(catalog, m, {
+      preference: 'snug',
+      outer: 'never',
+      limit: 1,
+    })[0]!;
+    const roomy = suggestOutfitsSync(catalog, m, {
+      preference: 'roomy',
+      outer: 'never',
+      limit: 1,
+    })[0]!;
     expect(snug.items.length).toBeGreaterThan(0);
     expect(roomy.items.length).toBeGreaterThan(0);
     for (const item of snug.items) {
-      const direct = recommendSize({ garment: item.garment, measurements: m, preference: 'snug', fabric: stretchOf(item.garment) });
+      const direct = recommendSize({
+        garment: item.garment,
+        measurements: m,
+        preference: 'snug',
+        fabric: stretchOf(item.garment),
+      });
       expect(item.recommendation.size).toBe(direct.size);
     }
   });
