@@ -1,0 +1,778 @@
+[
+  {
+    "id": "dress-shirt-poplin",
+    "name": { "es": "Vestido camisero de popelín", "en": "Poplin Shirt Dress" },
+    "description": {
+      "es": "Popelín de algodón de 110 g/m² con abotonadura frontal, cuello de camisa y cinturilla con lazada. Falda con ligero vuelo, por debajo de la rodilla. Corte regular.",
+      "en": "110 gsm cotton poplin with a full button front, shirt collar and a tie waist. A gently flared skirt falling below the knee. Regular cut."
+    },
+    "brand": "Maison Verbena",
+    "category": "dresses",
+    "template": "dress",
+    "slot": "full",
+    "fit": "regular",
+    "fabricId": "poplin-cotton-110",
+    "variants": [
+      {
+        "id": "navy-dots",
+        "name": { "es": "Lunares marino sobre blanco", "en": "Navy dots on white" },
+        "color": "#F4F1EA",
+        "pattern": { "type": "dots", "color2": "#22304A", "radiusMm": 2.5, "spacingMm": 12 }
+      },
+      {
+        "id": "rose-floral",
+        "name": { "es": "Floral rosa y salvia", "en": "Rose and sage floral" },
+        "color": "#EDE6D6",
+        "pattern": { "type": "floral", "color2": "#D5A9A0", "color3": "#8E9F86", "scaleMm": 60 }
+      },
+      {
+        "id": "sky",
+        "name": { "es": "Azul cielo", "en": "Sky blue" },
+        "color": "#A9C4DB",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "sage-stripe",
+        "name": { "es": "Rayas salvia", "en": "Sage stripe" },
+        "color": "#F4F1EA",
+        "pattern": {
+          "type": "stripes",
+          "color2": "#8E9F86",
+          "widthMm": 6,
+          "gapMm": 8,
+          "angleDeg": 90
+        }
+      },
+      {
+        "id": "terracotta",
+        "name": { "es": "Terracota", "en": "Terracotta" },
+        "color": "#B4624A",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "34",
+        "body": {
+          "heightCm": [150, 164],
+          "chestCm": [76, 82],
+          "waistCm": [58, 64],
+          "hipCm": [84.5, 90]
+        },
+        "garment": {
+          "chestCm": 88,
+          "waistCm": 68,
+          "hipCm": 96,
+          "hemCm": 136,
+          "shoulderWidthCm": 37,
+          "lengthCm": 103,
+          "sleeveLengthCm": 22
+        }
+      },
+      {
+        "label": "36",
+        "body": {
+          "heightCm": [153, 167],
+          "chestCm": [82, 86],
+          "waistCm": [64, 68],
+          "hipCm": [90, 94]
+        },
+        "garment": {
+          "chestCm": 92,
+          "waistCm": 72,
+          "hipCm": 100,
+          "hemCm": 140,
+          "shoulderWidthCm": 38,
+          "lengthCm": 104.5,
+          "sleeveLengthCm": 22.5
+        }
+      },
+      {
+        "label": "38",
+        "body": {
+          "heightCm": [156, 170],
+          "chestCm": [86, 90],
+          "waistCm": [68, 72],
+          "hipCm": [94, 98]
+        },
+        "garment": {
+          "chestCm": 96,
+          "waistCm": 76,
+          "hipCm": 104,
+          "hemCm": 144,
+          "shoulderWidthCm": 39,
+          "lengthCm": 105.5,
+          "sleeveLengthCm": 23
+        }
+      },
+      {
+        "label": "40",
+        "body": {
+          "heightCm": [159, 173],
+          "chestCm": [90, 94],
+          "waistCm": [72, 76],
+          "hipCm": [98, 102]
+        },
+        "garment": {
+          "chestCm": 100,
+          "waistCm": 80,
+          "hipCm": 108,
+          "hemCm": 148,
+          "shoulderWidthCm": 40,
+          "lengthCm": 107,
+          "sleeveLengthCm": 23.5
+        }
+      },
+      {
+        "label": "42",
+        "body": {
+          "heightCm": [162, 176],
+          "chestCm": [94, 98],
+          "waistCm": [76, 80],
+          "hipCm": [102, 106]
+        },
+        "garment": {
+          "chestCm": 104,
+          "waistCm": 84,
+          "hipCm": 112,
+          "hemCm": 152,
+          "shoulderWidthCm": 41,
+          "lengthCm": 108,
+          "sleeveLengthCm": 24
+        }
+      },
+      {
+        "label": "44",
+        "body": {
+          "heightCm": [165, 179],
+          "chestCm": [98, 102],
+          "waistCm": [80, 84.5],
+          "hipCm": [106, 110]
+        },
+        "garment": {
+          "chestCm": 108,
+          "waistCm": 88,
+          "hipCm": 116,
+          "hemCm": 156,
+          "shoulderWidthCm": 42,
+          "lengthCm": 109,
+          "sleeveLengthCm": 24.5
+        }
+      },
+      {
+        "label": "46",
+        "body": {
+          "heightCm": [168, 182],
+          "chestCm": [102, 106.5],
+          "waistCm": [84.5, 90],
+          "hipCm": [110, 114]
+        },
+        "garment": {
+          "chestCm": 112,
+          "waistCm": 93,
+          "hipCm": 120,
+          "hemCm": 160,
+          "shoulderWidthCm": 43.5,
+          "lengthCm": 110.5,
+          "sleeveLengthCm": 25
+        }
+      },
+      {
+        "label": "48",
+        "body": {
+          "heightCm": [171, 185],
+          "chestCm": [106.5, 111.5],
+          "waistCm": [90, 96],
+          "hipCm": [114, 118]
+        },
+        "garment": {
+          "chestCm": 117,
+          "waistCm": 99,
+          "hipCm": 124,
+          "hemCm": 164,
+          "shoulderWidthCm": 45,
+          "lengthCm": 112,
+          "sleeveLengthCm": 25.5
+        }
+      },
+      {
+        "label": "50",
+        "body": {
+          "heightCm": [174, 189],
+          "chestCm": [111.5, 116.5],
+          "waistCm": [96, 102],
+          "hipCm": [118, 122]
+        },
+        "garment": {
+          "chestCm": 122,
+          "waistCm": 105,
+          "hipCm": 128,
+          "hemCm": 168,
+          "shoulderWidthCm": 47,
+          "lengthCm": 113.5,
+          "sleeveLengthCm": 26
+        }
+      },
+      {
+        "label": "52",
+        "body": {
+          "heightCm": [177, 193],
+          "chestCm": [116.5, 121.5],
+          "waistCm": [102, 108],
+          "hipCm": [122, 126]
+        },
+        "garment": {
+          "chestCm": 127,
+          "waistCm": 111,
+          "hipCm": 132,
+          "hemCm": 172,
+          "shoulderWidthCm": 49,
+          "lengthCm": 115,
+          "sleeveLengthCm": 26.5
+        }
+      },
+      {
+        "label": "54",
+        "body": {
+          "heightCm": [180, 197],
+          "chestCm": [121.5, 126.5],
+          "waistCm": [108, 114],
+          "hipCm": [126, 130]
+        },
+        "garment": {
+          "chestCm": 132,
+          "waistCm": 117,
+          "hipCm": 136,
+          "hemCm": 176,
+          "shoulderWidthCm": 51,
+          "lengthCm": 116.5,
+          "sleeveLengthCm": 27.5
+        }
+      },
+      {
+        "label": "56",
+        "body": {
+          "heightCm": [183, 201],
+          "chestCm": [126.5, 133.5],
+          "waistCm": [114, 122],
+          "hipCm": [130, 135.5]
+        },
+        "garment": {
+          "chestCm": 137,
+          "waistCm": 123,
+          "hipCm": 140,
+          "hemCm": 180,
+          "shoulderWidthCm": 53,
+          "lengthCm": 118,
+          "sleeveLengthCm": 28
+        }
+      }
+    ],
+    "params": {
+      "neckWidthRatio": 0.38,
+      "neckDropCm": 7,
+      "neckDropBackCm": 2.5,
+      "armholeDepthRatio": 0.205,
+      "sleeveTaper": 0.85,
+      "collarHeightCm": 4,
+      "placketLengthCm": 70,
+      "buttonCount": 9,
+      "waistLevelRatio": 0.38,
+      "gatherRatio": 0.15,
+      "slitLengthCm": 0
+    },
+    "price": { "amount": 119, "currency": "EUR" },
+    "tags": ["smart-casual", "summer", "office", "weekend"]
+  },
+  {
+    "id": "dress-satin-slip",
+    "name": { "es": "Vestido lencero de satén", "en": "Satin Slip Dress" },
+    "description": {
+      "es": "Satén de crepé cortado al bies para una caída líquida y brillo suave. Escote en pico, tirantes finos ajustables y abertura lateral. Largo midi, corte entallado.",
+      "en": "Bias-cut crepe-back satin for a liquid drape and soft sheen. V-neck, thin adjustable straps and a side slit. Midi length, slim cut."
+    },
+    "brand": "Maison Verbena",
+    "category": "dresses",
+    "template": "dress",
+    "slot": "full",
+    "fit": "slim",
+    "fabricId": "satin-crepe-back-130",
+    "variants": [
+      {
+        "id": "champagne",
+        "name": { "es": "Champán", "en": "Champagne" },
+        "color": "#E3CDB0",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "emerald",
+        "name": { "es": "Esmeralda", "en": "Emerald" },
+        "color": "#1F6B53",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "burgundy",
+        "name": { "es": "Burdeos", "en": "Burgundy" },
+        "color": "#6B2737",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "midnight",
+        "name": { "es": "Azul medianoche", "en": "Midnight blue" },
+        "color": "#171F3A",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "ink",
+        "name": { "es": "Negro tinta", "en": "Ink black" },
+        "color": "#1C1D21",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "34",
+        "body": {
+          "heightCm": [150, 164],
+          "chestCm": [76, 82],
+          "waistCm": [58, 64],
+          "hipCm": [84.5, 90]
+        },
+        "garment": {
+          "chestCm": 84,
+          "waistCm": 64,
+          "hipCm": 92,
+          "hemCm": 128,
+          "shoulderWidthCm": 27.5,
+          "lengthCm": 107,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "36",
+        "body": {
+          "heightCm": [153, 167],
+          "chestCm": [82, 86],
+          "waistCm": [64, 68],
+          "hipCm": [90, 94]
+        },
+        "garment": {
+          "chestCm": 88,
+          "waistCm": 68,
+          "hipCm": 96,
+          "hemCm": 132,
+          "shoulderWidthCm": 28.5,
+          "lengthCm": 108.5,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "38",
+        "body": {
+          "heightCm": [156, 170],
+          "chestCm": [86, 90],
+          "waistCm": [68, 72],
+          "hipCm": [94, 98]
+        },
+        "garment": {
+          "chestCm": 92,
+          "waistCm": 72,
+          "hipCm": 100,
+          "hemCm": 136,
+          "shoulderWidthCm": 29,
+          "lengthCm": 109.5,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "40",
+        "body": {
+          "heightCm": [159, 173],
+          "chestCm": [90, 94],
+          "waistCm": [72, 76],
+          "hipCm": [98, 102]
+        },
+        "garment": {
+          "chestCm": 96,
+          "waistCm": 76,
+          "hipCm": 104,
+          "hemCm": 140,
+          "shoulderWidthCm": 30,
+          "lengthCm": 111,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "42",
+        "body": {
+          "heightCm": [162, 176],
+          "chestCm": [94, 98],
+          "waistCm": [76, 80],
+          "hipCm": [102, 106]
+        },
+        "garment": {
+          "chestCm": 100,
+          "waistCm": 80,
+          "hipCm": 108,
+          "hemCm": 144,
+          "shoulderWidthCm": 31,
+          "lengthCm": 112,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "44",
+        "body": {
+          "heightCm": [165, 179],
+          "chestCm": [98, 102],
+          "waistCm": [80, 84.5],
+          "hipCm": [106, 110]
+        },
+        "garment": {
+          "chestCm": 104,
+          "waistCm": 84,
+          "hipCm": 112,
+          "hemCm": 148,
+          "shoulderWidthCm": 31.5,
+          "lengthCm": 113,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "46",
+        "body": {
+          "heightCm": [168, 182],
+          "chestCm": [102, 106.5],
+          "waistCm": [84.5, 90],
+          "hipCm": [110, 114]
+        },
+        "garment": {
+          "chestCm": 108,
+          "waistCm": 89,
+          "hipCm": 116,
+          "hemCm": 152,
+          "shoulderWidthCm": 33,
+          "lengthCm": 114.5,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "48",
+        "body": {
+          "heightCm": [171, 185],
+          "chestCm": [106.5, 111.5],
+          "waistCm": [90, 96],
+          "hipCm": [114, 118]
+        },
+        "garment": {
+          "chestCm": 113,
+          "waistCm": 95,
+          "hipCm": 120,
+          "hemCm": 156,
+          "shoulderWidthCm": 34,
+          "lengthCm": 116,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "50",
+        "body": {
+          "heightCm": [174, 189],
+          "chestCm": [111.5, 116.5],
+          "waistCm": [96, 102],
+          "hipCm": [118, 122]
+        },
+        "garment": {
+          "chestCm": 118,
+          "waistCm": 101,
+          "hipCm": 124,
+          "hemCm": 160,
+          "shoulderWidthCm": 35.5,
+          "lengthCm": 117.5,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "52",
+        "body": {
+          "heightCm": [177, 193],
+          "chestCm": [116.5, 121.5],
+          "waistCm": [102, 108],
+          "hipCm": [122, 126]
+        },
+        "garment": {
+          "chestCm": 123,
+          "waistCm": 107,
+          "hipCm": 128,
+          "hemCm": 164,
+          "shoulderWidthCm": 37,
+          "lengthCm": 119,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "54",
+        "body": {
+          "heightCm": [180, 197],
+          "chestCm": [121.5, 126.5],
+          "waistCm": [108, 114],
+          "hipCm": [126, 130]
+        },
+        "garment": {
+          "chestCm": 128,
+          "waistCm": 113,
+          "hipCm": 132,
+          "hemCm": 168,
+          "shoulderWidthCm": 39,
+          "lengthCm": 120.5,
+          "sleeveLengthCm": 0
+        }
+      },
+      {
+        "label": "56",
+        "body": {
+          "heightCm": [183, 201],
+          "chestCm": [126.5, 133.5],
+          "waistCm": [114, 122],
+          "hipCm": [130, 135.5]
+        },
+        "garment": {
+          "chestCm": 133,
+          "waistCm": 119,
+          "hipCm": 136,
+          "hemCm": 172,
+          "shoulderWidthCm": 40.5,
+          "lengthCm": 122,
+          "sleeveLengthCm": 0
+        }
+      }
+    ],
+    "params": {
+      "neckWidthRatio": 0.52,
+      "neckDropCm": 18,
+      "neckDropBackCm": 12,
+      "armholeDepthRatio": 0.24,
+      "strapWidthCm": 0.8,
+      "waistLevelRatio": 0.4,
+      "gatherRatio": 0,
+      "slitLengthCm": 28
+    },
+    "price": { "amount": 129, "currency": "EUR" },
+    "tags": ["formal", "evening", "minimal"]
+  },
+  {
+    "id": "dress-knit-merino",
+    "name": {
+      "es": "Vestido de punto de merino con cuello alto",
+      "en": "Merino Turtleneck Knit Dress"
+    },
+    "description": {
+      "es": "Punto fino de merino con cuello alto doblado, manga larga y canalé en puños y bajo. Cálido sin peso y con algo de cuerpo. Largo por la rodilla, corte holgado ideal con botas.",
+      "en": "Fine merino knit with a folded high neck, long sleeves and ribbed cuffs and hem. Warm without weight, with a little body. Knee length, relaxed cut — made for boots."
+    },
+    "brand": "Lana Bruma",
+    "category": "dresses",
+    "template": "dress",
+    "slot": "full",
+    "fit": "relaxed",
+    "fabricId": "merino-fine-gg12",
+    "variants": [
+      {
+        "id": "camel",
+        "name": { "es": "Camel", "en": "Camel" },
+        "color": "#B38A5B",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "charcoal",
+        "name": { "es": "Gris marengo", "en": "Charcoal" },
+        "color": "#3C4048",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "burgundy",
+        "name": { "es": "Burdeos", "en": "Burgundy" },
+        "color": "#6B2737",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "forest",
+        "name": { "es": "Verde bosque", "en": "Forest green" },
+        "color": "#2F4A3B",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "camel-ecru-stripe",
+        "name": { "es": "Rayas camel y crudo", "en": "Camel and ecru stripe" },
+        "color": "#EDE6D6",
+        "pattern": {
+          "type": "stripes",
+          "color2": "#B38A5B",
+          "widthMm": 14,
+          "gapMm": 14,
+          "angleDeg": 0
+        }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "XS",
+        "body": {
+          "heightCm": [148, 164],
+          "chestCm": [79, 87],
+          "waistCm": [61, 69],
+          "hipCm": [84, 90.5]
+        },
+        "garment": {
+          "chestCm": 98,
+          "waistCm": 80,
+          "hipCm": 104,
+          "hemCm": 108,
+          "shoulderWidthCm": 40,
+          "lengthCm": 94.5,
+          "sleeveLengthCm": 54.5
+        }
+      },
+      {
+        "label": "S",
+        "body": {
+          "heightCm": [160, 172],
+          "chestCm": [87, 93],
+          "waistCm": [69, 75.5],
+          "hipCm": [90.5, 95]
+        },
+        "garment": {
+          "chestCm": 104,
+          "waistCm": 86,
+          "hipCm": 108.5,
+          "hemCm": 112.5,
+          "shoulderWidthCm": 42.5,
+          "lengthCm": 96,
+          "sleeveLengthCm": 58
+        }
+      },
+      {
+        "label": "M",
+        "body": {
+          "heightCm": [168, 180],
+          "chestCm": [93, 99],
+          "waistCm": [75.5, 82.5],
+          "hipCm": [95, 99.5]
+        },
+        "garment": {
+          "chestCm": 110,
+          "waistCm": 93,
+          "hipCm": 113,
+          "hemCm": 117,
+          "shoulderWidthCm": 45,
+          "lengthCm": 98,
+          "sleeveLengthCm": 61
+        }
+      },
+      {
+        "label": "L",
+        "body": {
+          "heightCm": [175, 186],
+          "chestCm": [99, 105],
+          "waistCm": [82.5, 89.5],
+          "hipCm": [99.5, 104]
+        },
+        "garment": {
+          "chestCm": 116,
+          "waistCm": 100,
+          "hipCm": 117.5,
+          "hemCm": 121.5,
+          "shoulderWidthCm": 47.5,
+          "lengthCm": 100,
+          "sleeveLengthCm": 63.5
+        }
+      },
+      {
+        "label": "XL",
+        "body": {
+          "heightCm": [181, 192],
+          "chestCm": [105, 111],
+          "waistCm": [89.5, 96.5],
+          "hipCm": [104, 108.5]
+        },
+        "garment": {
+          "chestCm": 122,
+          "waistCm": 107,
+          "hipCm": 122,
+          "hemCm": 126,
+          "shoulderWidthCm": 50,
+          "lengthCm": 101.5,
+          "sleeveLengthCm": 65.5
+        }
+      },
+      {
+        "label": "XXL",
+        "body": {
+          "heightCm": [186, 196],
+          "chestCm": [111, 117],
+          "waistCm": [96.5, 104],
+          "hipCm": [108.5, 113]
+        },
+        "garment": {
+          "chestCm": 128,
+          "waistCm": 114,
+          "hipCm": 126.5,
+          "hemCm": 130.5,
+          "shoulderWidthCm": 52.5,
+          "lengthCm": 103.5,
+          "sleeveLengthCm": 67
+        }
+      },
+      {
+        "label": "3XL",
+        "body": {
+          "heightCm": [190, 200],
+          "chestCm": [117, 123],
+          "waistCm": [104, 112],
+          "hipCm": [113, 117.5]
+        },
+        "garment": {
+          "chestCm": 134,
+          "waistCm": 122,
+          "hipCm": 131,
+          "hemCm": 135,
+          "shoulderWidthCm": 55,
+          "lengthCm": 105,
+          "sleeveLengthCm": 68.5
+        }
+      },
+      {
+        "label": "4XL",
+        "body": {
+          "heightCm": [192, 208],
+          "chestCm": [123, 131],
+          "waistCm": [112, 122],
+          "hipCm": [117.5, 124]
+        },
+        "garment": {
+          "chestCm": 140,
+          "waistCm": 130,
+          "hipCm": 136,
+          "hemCm": 140,
+          "shoulderWidthCm": 57.5,
+          "lengthCm": 107,
+          "sleeveLengthCm": 70
+        }
+      }
+    ],
+    "params": {
+      "neckWidthRatio": 0.34,
+      "neckDropCm": 0,
+      "neckDropBackCm": 0,
+      "armholeDepthRatio": 0.22,
+      "sleeveTaper": 0.72,
+      "collarHeightCm": 8,
+      "ribHeightCm": 6,
+      "waistLevelRatio": 0.4,
+      "gatherRatio": 0,
+      "slitLengthCm": 0
+    },
+    "price": { "amount": 139, "currency": "EUR" },
+    "tags": ["smart-casual", "winter", "office", "minimal"]
+  }
+]

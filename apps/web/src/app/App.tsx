@@ -1,21 +1,131 @@
-import { Canvas } from '@react-three/fiber';
-import { JOINT_COUNT } from '@fitroom/shared';
+import { Suspense, lazy, useEffect, useState } from 'react';
+import { useAppCamera } from '../world/api/camera';
+import { useLang, useT } from '../i18n';
+import { stageWantsCamera } from '../state/flow';
+import { appStore, useApp } from '../state/store';
+import { viewStore, useView } from '../world/viewStore';
+import { CameraProvider } from './CameraContext';
+import { ErrorBoundary } from './ErrorBoundary';
+import { useLayoutWatcher, useMotionWatcher } from './hooks';
+import { appParams } from './params';
+import { hasWebgl2 } from './webgl';
+import { CameraPanel, HeightPanel } from '../ui/CameraScreen';
+import { BookScreenStage } from '../ui/BookStage';
+import { CatalogPanel } from '../ui/CatalogScreen';
+import { DebugHud } from '../ui/DebugHud';
+import { LiveRegion } from '../ui/LiveRegion';
+import { SettingsDrawer } from '../ui/SettingsDrawer';
+import { Toasts } from '../ui/Toasts';
+import { TopBar } from '../ui/TopBar';
+import { MirrorCta, WelcomePanel } from '../ui/WelcomeScreen';
 
-/** Placeholder de la fundación: el agente WORLD lo reemplaza por el mundo 3D completo. */
-export function App() {
+const Scene = lazy(() => import('../world/Scene'));
+const ScanPanel = lazy(() => import('../ui/ScanScreen'));
+const FittingPanels = lazy(() => import('../ui/FittingScreen').then((m) => ({ default: m.FittingPanels })));
+
+function Shell() {
+  const t = useT();
+  const lang = useLang();
+  const camera = useAppCamera();
+  const stage = useApp((s) => s.flow.stage);
+  const layout = useView((s) => s.layout);
+  const sceneStatus = useView((s) => s.sceneStatus);
+  const [webgl] = useState(() => hasWebgl2());
+
+  useLayoutWatcher();
+  useMotionWatcher();
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.title = t('app.name');
+  }, [lang, t]);
+
+  useEffect(() => {
+    viewStore.getState().setSceneStatus(webgl ? 'loading' : 'none');
+  }, [webgl]);
+
+  // Cámara: se pasa a «lista» cuando el permiso se concede, y se apaga en cuanto no hace falta (privacidad).
+  useEffect(() => {
+    if (stage === 'camera' && camera.status === 'ready') appStore().getState().send({ type: 'CAMERA_READY' });
+  }, [stage, camera.status]);
+  useEffect(() => {
+    if (!stageWantsCamera(stage) && camera.status !== 'idle') camera.stop();
+    // `camera` cambia de identidad con su estado; basta reaccionar a la pantalla y al estado.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage, camera.status]);
+  useEffect(() => () => camera.stop(), []);
+
+  const params = appParams();
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#0b0b10' }}>
-      <Canvas camera={{ position: [0, 1.4, 3], fov: 50 }}>
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[2, 4, 3]} intensity={2} />
-        <mesh rotation={[0.4, 0.6, 0]}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="#c9a46c" roughness={0.4} />
-        </mesh>
-      </Canvas>
-      <p style={{ position: 'absolute', top: 12, left: 12, color: '#ddd', font: '14px system-ui' }}>
-        Probador 3D · esqueleto de {JOINT_COUNT} articulaciones
-      </p>
-    </div>
+    <CameraProvider camera={camera}>
+      <div className="app" data-stage={stage} data-layout={layout} data-scene={sceneStatus}>
+        <a className="skip-link" href="#main">
+          {t('app.skipToContent')}
+        </a>
+        {webgl && (
+          <div className="scene-layer" aria-hidden="true" data-testid="scene-layer">
+            <ErrorBoundary
+              fallback={() => null}
+              onError={() => viewStore.getState().setSceneStatus('failed')}
+            >
+              <Suspense fallback={null}>
+                <Scene camera={camera} />
+              </Suspense>
+            </ErrorBoundary>
+          </div>
+        )}
+        <TopBar />
+        <main id="main" className="stage" tabIndex={-1}>
+          <div className="css3d" aria-hidden="false">
+            <div id="css3d-camera" className="css3d__camera" />
+          </div>
+          <div className="hud">
+            {stage === 'welcome' && (
+              <>
+                <WelcomePanel />
+                <MirrorCta />
+              </>
+            )}
+            {stage === 'camera' && <CameraPanel />}
+            {stage === 'height' && <HeightPanel />}
+            {stage === 'scan' && (
+              <Suspense fallback={null}>
+                <ScanPanel />
+              </Suspense>
+            )}
+            {(stage === 'manual' || stage === 'book') && <BookScreenStage key={stage} stage={stage} />}
+            {stage === 'catalog' && <CatalogPanel />}
+            {stage === 'fitting' && (
+              <Suspense fallback={null}>
+                <FittingPanels />
+              </Suspense>
+            )}
+          </div>
+        </main>
+        <Toasts />
+        <LiveRegion />
+        <SettingsDrawer />
+        {params.debug && <DebugHud />}
+      </div>
+    </CameraProvider>
+  );
+}
+
+export function App() {
+  const t = useT();
+  return (
+    <ErrorBoundary
+      fallback={(error) => (
+        <div className="fatal surface-paper" role="alert">
+          <h1>{t('app.unknownError')}</h1>
+          <p>{error.message}</p>
+          <button type="button" className="btn btn--brass btn--md" onClick={() => location.reload()}>
+            <span>{t('app.reload')}</span>
+          </button>
+        </div>
+      )}
+    >
+      <Shell />
+    </ErrorBoundary>
   );
 }

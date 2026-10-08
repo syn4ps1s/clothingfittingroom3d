@@ -1,0 +1,4275 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`plantillas de CloudFormation (snapshot estable) > prod con dominio 1`] = `
+{
+  "Description": "Probador 3D (prod): hosting estatico privado (S3 + CloudFront OAC + cabeceras de seguridad)",
+  "Mappings": {
+    "AWSCloudFrontPartitionHostedZoneIdMap": {
+      "aws": {
+        "zoneId": "Z2FDTNDATAQYW2",
+      },
+      "aws-cn": {
+        "zoneId": "Z3RFFRIM2A3IF5",
+      },
+    },
+  },
+  "Outputs": {
+    "BucketName": {
+      "Value": {
+        "Ref": "SiteBucket397A1860",
+      },
+    },
+    "DistributionDomainName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Distribution830FAC52",
+          "DomainName",
+        ],
+      },
+    },
+    "DistributionId": {
+      "Value": {
+        "Ref": "Distribution830FAC52",
+      },
+    },
+    "LogsBucketName": {
+      "Value": {
+        "Ref": "LogsBucket9C4D8843",
+      },
+    },
+    "SiteUrl": {
+      "Description": "URL publica de la web",
+      "Value": "https://probador.example.com",
+    },
+    "WebAclArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "WebAcl",
+          "Arn",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "AliasAEAD92310": {
+      "Properties": {
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "Distribution830FAC52",
+              "DomainName",
+            ],
+          },
+          "HostedZoneId": {
+            "Fn::FindInMap": [
+              "AWSCloudFrontPartitionHostedZoneIdMap",
+              {
+                "Ref": "AWS::Partition",
+              },
+              "zoneId",
+            ],
+          },
+        },
+        "HostedZoneId": "Z0123456789ABCDEFGHIJ",
+        "Name": "probador.example.com.",
+        "Type": "A",
+      },
+      "Type": "AWS::Route53::RecordSet",
+    },
+    "AliasAaaa2919B812": {
+      "Properties": {
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "Distribution830FAC52",
+              "DomainName",
+            ],
+          },
+          "HostedZoneId": {
+            "Fn::FindInMap": [
+              "AWSCloudFrontPartitionHostedZoneIdMap",
+              {
+                "Ref": "AWS::Partition",
+              },
+              "zoneId",
+            ],
+          },
+        },
+        "HostedZoneId": "Z0123456789ABCDEFGHIJ",
+        "Name": "probador.example.com.",
+        "Type": "AAAA",
+      },
+      "Type": "AWS::Route53::RecordSet",
+    },
+    "Certificate4E7ABB08": {
+      "Properties": {
+        "DomainName": "probador.example.com",
+        "DomainValidationOptions": [
+          {
+            "DomainName": "probador.example.com",
+            "HostedZoneId": "Z0123456789ABCDEFGHIJ",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Name",
+            "Value": "FitroomWeb-prod/Certificate",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "ValidationMethod": "DNS",
+      },
+      "Type": "AWS::CertificateManager::Certificate",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176": {
+      "DependsOn": [
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
+          },
+        },
+        "EphemeralStorage": {
+          "Size": 2048,
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "DeployImmutableAssetsAwsCliLayer56BC25B4",
+          },
+        ],
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "DeploymentLogsE85F76B8",
+          },
+        },
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.13",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::cdk-hnb659fds-assets-111111111111-us-east-1",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::cdk-hnb659fds-assets-111111111111-us-east-1/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SiteBucket397A1860",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SiteBucket397A1860",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "cloudfront:GetInvalidation",
+                "cloudfront:CreateInvalidation",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108",
+        "Roles": [
+          {
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeployImmutableAssetsAwsCliLayer56BC25B4": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "assets/*",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=31536000, immutable",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployPoseModelsAwsCliLayer31D2C3BC": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "models/*.task",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "application/octet-stream",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployShellAwsCliLayer92382464": {
+      "DependsOn": [
+        "DeployImmutableAssetsAwsCliLayer56BC25B4",
+        "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643",
+        "DeployPoseModelsAwsCliLayer31D2C3BC",
+        "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0",
+        "DeployWasmBinariesAwsCliLayer25182A4A",
+        "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67",
+        "DeployWasmLoadersAwsCliLayer621F4249",
+        "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A",
+      ],
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployShellCustomResource1024MiB2048MiB13117D5F": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "DeployImmutableAssetsAwsCliLayer56BC25B4",
+        "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643",
+        "DeployPoseModelsAwsCliLayer31D2C3BC",
+        "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0",
+        "DeployWasmBinariesAwsCliLayer25182A4A",
+        "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67",
+        "DeployWasmLoadersAwsCliLayer621F4249",
+        "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A",
+      ],
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "DistributionId": {
+          "Ref": "Distribution830FAC52",
+        },
+        "DistributionPaths": [
+          "/*",
+        ],
+        "Exclude": [
+          "assets/*",
+          "wasm/*.wasm",
+          "wasm/*.js",
+          "models/*.task",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, must-revalidate",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployWasmBinariesAwsCliLayer25182A4A": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "wasm/*.wasm",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "application/wasm",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployWasmLoadersAwsCliLayer621F4249": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "wasm/*.js",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "text/javascript; charset=utf-8",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeploymentLogsE85F76B8": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RetentionInDays": 30,
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "Distribution830FAC52": {
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": [
+            "probador.example.com",
+          ],
+          "CacheBehaviors": [
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "ImmutableAssets51F8FFAA",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "assets/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "RevalidatedBinaries558EB05A",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "wasm/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "RevalidatedBinaries558EB05A",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "models/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+          ],
+          "Comment": "Probador 3D (prod)",
+          "CustomErrorResponses": [
+            {
+              "ErrorCachingMinTTL": 10,
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+            },
+            {
+              "ErrorCachingMinTTL": 10,
+              "ErrorCode": 404,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+            },
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+            ],
+            "CachePolicyId": {
+              "Ref": "HtmlNoCacheB345D52D",
+            },
+            "CachedMethods": [
+              "GET",
+              "HEAD",
+            ],
+            "Compress": true,
+            "ResponseHeadersPolicyId": {
+              "Ref": "SecurityHeadersE66B69D3",
+            },
+            "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+            "ViewerProtocolPolicy": "redirect-to-https",
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2and3",
+          "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "LogsBucket9C4D8843",
+                "RegionalDomainName",
+              ],
+            },
+            "IncludeCookies": false,
+            "Prefix": "cloudfront/",
+          },
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "SiteBucket397A1860",
+                  "RegionalDomainName",
+                ],
+              },
+              "Id": "FitroomWebprodDistributionOrigin174829C04",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "DistributionOrigin1S3OriginAccessControlEB606076",
+                  "Id",
+                ],
+              },
+              "S3OriginConfig": {
+                "OriginAccessIdentity": "",
+              },
+            },
+          ],
+          "PriceClass": "PriceClass_All",
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "Certificate4E7ABB08",
+            },
+            "MinimumProtocolVersion": "TLSv1.2_2021",
+            "SslSupportMethod": "sni-only",
+          },
+          "WebACLId": {
+            "Fn::GetAtt": [
+              "WebAcl",
+              "Arn",
+            ],
+          },
+        },
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "DistributionOrigin1S3OriginAccessControlEB606076": {
+      "Properties": {
+        "OriginAccessControlConfig": {
+          "Name": "fitroomwebprodDistributionOrigin1S3OriginAccessControl0CD11921",
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4",
+        },
+      },
+      "Type": "AWS::CloudFront::OriginAccessControl",
+    },
+    "HtmlNoCacheB345D52D": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "index.html y archivos sin hash: sin cache en el borde (el origen manda max-age=0)",
+          "DefaultTTL": 0,
+          "MaxTTL": 60,
+          "MinTTL": 0,
+          "Name": "FitroomWebprodHtmlNoCache301BD983-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "Http5xxRateAlarmB35FBA05": {
+      "Properties": {
+        "AlarmDescription": "Mas del 5% de las respuestas de CloudFront son 5xx (prod)",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "DatapointsToAlarm": 2,
+        "Dimensions": [
+          {
+            "Name": "DistributionId",
+            "Value": {
+              "Ref": "Distribution830FAC52",
+            },
+          },
+          {
+            "Name": "Region",
+            "Value": "Global",
+          },
+        ],
+        "EvaluationPeriods": 3,
+        "MetricName": "5xxErrorRate",
+        "Namespace": "AWS/CloudFront",
+        "Period": 300,
+        "Statistic": "Average",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "Threshold": 5,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "ImmutableAssets51F8FFAA": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "Archivos con hash de contenido (assets/*): 1 ano",
+          "DefaultTTL": 31536000,
+          "MaxTTL": 31536000,
+          "MinTTL": 31536000,
+          "Name": "FitroomWebprodImmutableAssetsAF1A4DB7-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "LogsBucket9C4D8843": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1,
+              },
+              "ExpirationInDays": 30,
+              "Id": "ExpireLogs",
+              "Status": "Enabled",
+            },
+          ],
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "LogsBucketPolicyD70D9252": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "LogsBucket9C4D8843",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LogsBucket9C4D8843",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LogsBucket9C4D8843",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "RevalidatedBinaries558EB05A": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "Modelos .task y WASM sin hash: 1 dia en el borde (s-maxage); el navegador siempre revalida",
+          "DefaultTTL": 86400,
+          "MaxTTL": 31536000,
+          "MinTTL": 0,
+          "Name": "FitroomWebprodRevalidatedBinaries5E68CFE8-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "SecurityHeadersE66B69D3": {
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "Comment": "Probador 3D (prod): cabeceras de seguridad. Fuente unica: infra/lib/security-headers.ts",
+          "CustomHeadersConfig": {
+            "Items": [
+              {
+                "Header": "Permissions-Policy",
+                "Override": true,
+                "Value": "camera=(self), microphone=(), geolocation=(), payment=(), usb=()",
+              },
+              {
+                "Header": "Cross-Origin-Opener-Policy",
+                "Override": true,
+                "Value": "same-origin",
+              },
+              {
+                "Header": "Cross-Origin-Resource-Policy",
+                "Override": true,
+                "Value": "same-origin",
+              },
+            ],
+          },
+          "Name": "fitroomwebprodSecurityHeadersBC18C74F",
+          "SecurityHeadersConfig": {
+            "ContentSecurityPolicy": {
+              "ContentSecurityPolicy": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; style-src 'self' 'unsafe-inline'; font-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests",
+              "Override": true,
+            },
+            "ContentTypeOptions": {
+              "Override": true,
+            },
+            "FrameOptions": {
+              "FrameOption": "DENY",
+              "Override": true,
+            },
+            "ReferrerPolicy": {
+              "Override": true,
+              "ReferrerPolicy": "no-referrer",
+            },
+            "StrictTransportSecurity": {
+              "AccessControlMaxAgeSec": 63072000,
+              "IncludeSubdomains": true,
+              "Override": true,
+              "Preload": false,
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+    },
+    "SiteBucket397A1860": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1,
+              },
+              "Id": "ExpireNoncurrentVersions",
+              "NoncurrentVersionExpiration": {
+                "NoncurrentDays": 90,
+              },
+              "Status": "Enabled",
+            },
+          ],
+        },
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "LogsBucket9C4D8843",
+          },
+          "LogFilePrefix": "s3-access/",
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:cr-owned:16e37670",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:17414f20",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:28e78c08",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:5a558009",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:fe87c843",
+            "Value": "true",
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "VersioningConfiguration": {
+          "Status": "Enabled",
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "SiteBucketPolicy3AC1D0F8": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SiteBucket397A1860",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SiteBucket397A1860",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "s3:GetObject",
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":cloudfront::",
+                        {
+                          "Ref": "AWS::AccountId",
+                        },
+                        ":distribution/",
+                        {
+                          "Ref": "Distribution830FAC52",
+                        },
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudfront.amazonaws.com",
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "SiteBucket397A1860",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "WebAcl": {
+      "Properties": {
+        "DefaultAction": {
+          "Allow": {},
+        },
+        "Description": "Probador 3D: reglas gestionadas de AWS y limite de tasa por IP",
+        "Name": "fitroom-prod-web",
+        "Rules": [
+          {
+            "Name": "AWSManagedRulesCommonRuleSet",
+            "OverrideAction": {
+              "None": {},
+            },
+            "Priority": 10,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "Name": "AWSManagedRulesCommonRuleSet",
+                "VendorName": "AWS",
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-AWSManagedRulesCommonRuleSet",
+              "SampledRequestsEnabled": true,
+            },
+          },
+          {
+            "Name": "AWSManagedRulesKnownBadInputsRuleSet",
+            "OverrideAction": {
+              "None": {},
+            },
+            "Priority": 20,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "Name": "AWSManagedRulesKnownBadInputsRuleSet",
+                "VendorName": "AWS",
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-AWSManagedRulesKnownBadInputsRuleSet",
+              "SampledRequestsEnabled": true,
+            },
+          },
+          {
+            "Name": "AWSManagedRulesAmazonIpReputationList",
+            "OverrideAction": {
+              "None": {},
+            },
+            "Priority": 30,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "Name": "AWSManagedRulesAmazonIpReputationList",
+                "VendorName": "AWS",
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-AWSManagedRulesAmazonIpReputationList",
+              "SampledRequestsEnabled": true,
+            },
+          },
+          {
+            "Action": {
+              "Block": {},
+            },
+            "Name": "RateLimitPerIp",
+            "Priority": 40,
+            "Statement": {
+              "RateBasedStatement": {
+                "AggregateKeyType": "IP",
+                "EvaluationWindowSec": 300,
+                "Limit": 2000,
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-rate-limit-per-ip",
+              "SampledRequestsEnabled": true,
+            },
+          },
+        ],
+        "Scope": "CLOUDFRONT",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "VisibilityConfig": {
+          "CloudWatchMetricsEnabled": true,
+          "MetricName": "fitroom-prod-web-acl",
+          "SampledRequestsEnabled": true,
+        },
+      },
+      "Type": "AWS::WAFv2::WebACL",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`plantillas de CloudFormation (snapshot estable) > prod con todas las opciones (alarmas, presupuesto, preload, geo) 1`] = `
+{
+  "Description": "Probador 3D (prod): hosting estatico privado (S3 + CloudFront OAC + cabeceras de seguridad)",
+  "Mappings": {
+    "AWSCloudFrontPartitionHostedZoneIdMap": {
+      "aws": {
+        "zoneId": "Z2FDTNDATAQYW2",
+      },
+      "aws-cn": {
+        "zoneId": "Z3RFFRIM2A3IF5",
+      },
+    },
+  },
+  "Outputs": {
+    "BucketName": {
+      "Value": {
+        "Ref": "SiteBucket397A1860",
+      },
+    },
+    "DistributionDomainName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Distribution830FAC52",
+          "DomainName",
+        ],
+      },
+    },
+    "DistributionId": {
+      "Value": {
+        "Ref": "Distribution830FAC52",
+      },
+    },
+    "LogsBucketName": {
+      "Value": {
+        "Ref": "LogsBucket9C4D8843",
+      },
+    },
+    "SiteUrl": {
+      "Description": "URL publica de la web",
+      "Value": "https://probador.example.com",
+    },
+    "WebAclArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "WebAcl",
+          "Arn",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "AlertsKey9D05DB5E": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Cifrado del tema SNS de alertas de Probador 3D (prod)",
+        "EnableKeyRotation": true,
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::111111111111:root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey*",
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": "111111111111",
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudwatch.amazonaws.com",
+              },
+              "Resource": "*",
+              "Sid": "AllowCloudWatchAlarmsToPublish",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "AlertsTopic3414BE91": {
+      "Properties": {
+        "DisplayName": "Probador 3D prod: alertas",
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "AlertsKey9D05DB5E",
+            "Arn",
+          ],
+        },
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+    "AlertsTopicPolicyA6E49DF4": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": {
+                "Ref": "AlertsTopic3414BE91",
+              },
+              "Sid": "AllowPublishThroughSSLOnly",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Topics": [
+          {
+            "Ref": "AlertsTopic3414BE91",
+          },
+        ],
+      },
+      "Type": "AWS::SNS::TopicPolicy",
+    },
+    "AlertsTopicopsexamplecom2E4CC3C4": {
+      "Properties": {
+        "Endpoint": "ops@example.com",
+        "Protocol": "email",
+        "TopicArn": {
+          "Ref": "AlertsTopic3414BE91",
+        },
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "AliasAEAD92310": {
+      "Properties": {
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "Distribution830FAC52",
+              "DomainName",
+            ],
+          },
+          "HostedZoneId": {
+            "Fn::FindInMap": [
+              "AWSCloudFrontPartitionHostedZoneIdMap",
+              {
+                "Ref": "AWS::Partition",
+              },
+              "zoneId",
+            ],
+          },
+        },
+        "HostedZoneId": "Z0123456789ABCDEFGHIJ",
+        "Name": "probador.example.com.",
+        "Type": "A",
+      },
+      "Type": "AWS::Route53::RecordSet",
+    },
+    "AliasAaaa2919B812": {
+      "Properties": {
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "Distribution830FAC52",
+              "DomainName",
+            ],
+          },
+          "HostedZoneId": {
+            "Fn::FindInMap": [
+              "AWSCloudFrontPartitionHostedZoneIdMap",
+              {
+                "Ref": "AWS::Partition",
+              },
+              "zoneId",
+            ],
+          },
+        },
+        "HostedZoneId": "Z0123456789ABCDEFGHIJ",
+        "Name": "probador.example.com.",
+        "Type": "AAAA",
+      },
+      "Type": "AWS::Route53::RecordSet",
+    },
+    "Certificate4E7ABB08": {
+      "Properties": {
+        "DomainName": "probador.example.com",
+        "DomainValidationOptions": [
+          {
+            "DomainName": "probador.example.com",
+            "HostedZoneId": "Z0123456789ABCDEFGHIJ",
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Name",
+            "Value": "FitroomWeb-prod/Certificate",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "ValidationMethod": "DNS",
+      },
+      "Type": "AWS::CertificateManager::Certificate",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176": {
+      "DependsOn": [
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
+          },
+        },
+        "EphemeralStorage": {
+          "Size": 2048,
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "DeployImmutableAssetsAwsCliLayer56BC25B4",
+          },
+        ],
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "DeploymentLogsE85F76B8",
+          },
+        },
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.13",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::cdk-hnb659fds-assets-111111111111-us-east-1",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::cdk-hnb659fds-assets-111111111111-us-east-1/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SiteBucket397A1860",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SiteBucket397A1860",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "cloudfront:GetInvalidation",
+                "cloudfront:CreateInvalidation",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108",
+        "Roles": [
+          {
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeployImmutableAssetsAwsCliLayer56BC25B4": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "assets/*",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=31536000, immutable",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployPoseModelsAwsCliLayer31D2C3BC": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "models/*.task",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "application/octet-stream",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployShellAwsCliLayer92382464": {
+      "DependsOn": [
+        "DeployImmutableAssetsAwsCliLayer56BC25B4",
+        "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643",
+        "DeployPoseModelsAwsCliLayer31D2C3BC",
+        "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0",
+        "DeployWasmBinariesAwsCliLayer25182A4A",
+        "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67",
+        "DeployWasmLoadersAwsCliLayer621F4249",
+        "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A",
+      ],
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployShellCustomResource1024MiB2048MiB13117D5F": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "DeployImmutableAssetsAwsCliLayer56BC25B4",
+        "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643",
+        "DeployPoseModelsAwsCliLayer31D2C3BC",
+        "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0",
+        "DeployWasmBinariesAwsCliLayer25182A4A",
+        "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67",
+        "DeployWasmLoadersAwsCliLayer621F4249",
+        "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A",
+      ],
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "DistributionId": {
+          "Ref": "Distribution830FAC52",
+        },
+        "DistributionPaths": [
+          "/*",
+        ],
+        "Exclude": [
+          "assets/*",
+          "wasm/*.wasm",
+          "wasm/*.js",
+          "models/*.task",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, must-revalidate",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployWasmBinariesAwsCliLayer25182A4A": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "wasm/*.wasm",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "application/wasm",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployWasmLoadersAwsCliLayer621F4249": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "wasm/*.js",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "text/javascript; charset=utf-8",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeploymentLogsE85F76B8": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RetentionInDays": 30,
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "Distribution830FAC52": {
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": [
+            "probador.example.com",
+          ],
+          "CacheBehaviors": [
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "ImmutableAssets51F8FFAA",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "assets/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "RevalidatedBinaries558EB05A",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "wasm/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "RevalidatedBinaries558EB05A",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "models/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+          ],
+          "Comment": "Probador 3D (prod)",
+          "CustomErrorResponses": [
+            {
+              "ErrorCachingMinTTL": 10,
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+            },
+            {
+              "ErrorCachingMinTTL": 10,
+              "ErrorCode": 404,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+            },
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+            ],
+            "CachePolicyId": {
+              "Ref": "HtmlNoCacheB345D52D",
+            },
+            "CachedMethods": [
+              "GET",
+              "HEAD",
+            ],
+            "Compress": true,
+            "ResponseHeadersPolicyId": {
+              "Ref": "SecurityHeadersE66B69D3",
+            },
+            "TargetOriginId": "FitroomWebprodDistributionOrigin174829C04",
+            "ViewerProtocolPolicy": "redirect-to-https",
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2and3",
+          "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "LogsBucket9C4D8843",
+                "RegionalDomainName",
+              ],
+            },
+            "IncludeCookies": false,
+            "Prefix": "cloudfront/",
+          },
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "SiteBucket397A1860",
+                  "RegionalDomainName",
+                ],
+              },
+              "Id": "FitroomWebprodDistributionOrigin174829C04",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "DistributionOrigin1S3OriginAccessControlEB606076",
+                  "Id",
+                ],
+              },
+              "S3OriginConfig": {
+                "OriginAccessIdentity": "",
+              },
+            },
+          ],
+          "PriceClass": "PriceClass_All",
+          "Restrictions": {
+            "GeoRestriction": {
+              "Locations": [
+                "ES",
+                "MX",
+              ],
+              "RestrictionType": "whitelist",
+            },
+          },
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "Certificate4E7ABB08",
+            },
+            "MinimumProtocolVersion": "TLSv1.2_2021",
+            "SslSupportMethod": "sni-only",
+          },
+          "WebACLId": {
+            "Fn::GetAtt": [
+              "WebAcl",
+              "Arn",
+            ],
+          },
+        },
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "DistributionOrigin1S3OriginAccessControlEB606076": {
+      "Properties": {
+        "OriginAccessControlConfig": {
+          "Name": "fitroomwebprodDistributionOrigin1S3OriginAccessControl0CD11921",
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4",
+        },
+      },
+      "Type": "AWS::CloudFront::OriginAccessControl",
+    },
+    "HtmlNoCacheB345D52D": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "index.html y archivos sin hash: sin cache en el borde (el origen manda max-age=0)",
+          "DefaultTTL": 0,
+          "MaxTTL": 60,
+          "MinTTL": 0,
+          "Name": "FitroomWebprodHtmlNoCache301BD983-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "Http5xxRateAlarmB35FBA05": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "AlertsTopic3414BE91",
+          },
+        ],
+        "AlarmDescription": "Mas del 5% de las respuestas de CloudFront son 5xx (prod)",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "DatapointsToAlarm": 2,
+        "Dimensions": [
+          {
+            "Name": "DistributionId",
+            "Value": {
+              "Ref": "Distribution830FAC52",
+            },
+          },
+          {
+            "Name": "Region",
+            "Value": "Global",
+          },
+        ],
+        "EvaluationPeriods": 3,
+        "MetricName": "5xxErrorRate",
+        "Namespace": "AWS/CloudFront",
+        "OKActions": [
+          {
+            "Ref": "AlertsTopic3414BE91",
+          },
+        ],
+        "Period": 300,
+        "Statistic": "Average",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "Threshold": 5,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "ImmutableAssets51F8FFAA": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "Archivos con hash de contenido (assets/*): 1 ano",
+          "DefaultTTL": 31536000,
+          "MaxTTL": 31536000,
+          "MinTTL": 31536000,
+          "Name": "FitroomWebprodImmutableAssetsAF1A4DB7-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "LogsBucket9C4D8843": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1,
+              },
+              "ExpirationInDays": 30,
+              "Id": "ExpireLogs",
+              "Status": "Enabled",
+            },
+          ],
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "LogsBucketPolicyD70D9252": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "LogsBucket9C4D8843",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LogsBucket9C4D8843",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LogsBucket9C4D8843",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "MonthlyBudget": {
+      "Properties": {
+        "Budget": {
+          "BudgetLimit": {
+            "Amount": 25,
+            "Unit": "USD",
+          },
+          "BudgetName": "fitroom-prod-monthly",
+          "BudgetType": "COST",
+          "CostFilters": {
+            "TagKeyValue": [
+              "user:Project$fitroom",
+            ],
+          },
+          "TimeUnit": "MONTHLY",
+        },
+        "NotificationsWithSubscribers": [
+          {
+            "Notification": {
+              "ComparisonOperator": "GREATER_THAN",
+              "NotificationType": "ACTUAL",
+              "Threshold": 80,
+              "ThresholdType": "PERCENTAGE",
+            },
+            "Subscribers": [
+              {
+                "Address": "ops@example.com",
+                "SubscriptionType": "EMAIL",
+              },
+            ],
+          },
+          {
+            "Notification": {
+              "ComparisonOperator": "GREATER_THAN",
+              "NotificationType": "FORECASTED",
+              "Threshold": 100,
+              "ThresholdType": "PERCENTAGE",
+            },
+            "Subscribers": [
+              {
+                "Address": "ops@example.com",
+                "SubscriptionType": "EMAIL",
+              },
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::Budgets::Budget",
+    },
+    "RevalidatedBinaries558EB05A": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "Modelos .task y WASM sin hash: 1 dia en el borde (s-maxage); el navegador siempre revalida",
+          "DefaultTTL": 86400,
+          "MaxTTL": 31536000,
+          "MinTTL": 0,
+          "Name": "FitroomWebprodRevalidatedBinaries5E68CFE8-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "SecurityHeadersE66B69D3": {
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "Comment": "Probador 3D (prod): cabeceras de seguridad. Fuente unica: infra/lib/security-headers.ts",
+          "CustomHeadersConfig": {
+            "Items": [
+              {
+                "Header": "Permissions-Policy",
+                "Override": true,
+                "Value": "camera=(self), microphone=(), geolocation=(), payment=(), usb=()",
+              },
+              {
+                "Header": "Cross-Origin-Opener-Policy",
+                "Override": true,
+                "Value": "same-origin",
+              },
+              {
+                "Header": "Cross-Origin-Resource-Policy",
+                "Override": true,
+                "Value": "same-origin",
+              },
+            ],
+          },
+          "Name": "fitroomwebprodSecurityHeadersBC18C74F",
+          "SecurityHeadersConfig": {
+            "ContentSecurityPolicy": {
+              "ContentSecurityPolicy": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; style-src 'self' 'unsafe-inline'; font-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests",
+              "Override": true,
+            },
+            "ContentTypeOptions": {
+              "Override": true,
+            },
+            "FrameOptions": {
+              "FrameOption": "DENY",
+              "Override": true,
+            },
+            "ReferrerPolicy": {
+              "Override": true,
+              "ReferrerPolicy": "no-referrer",
+            },
+            "StrictTransportSecurity": {
+              "AccessControlMaxAgeSec": 63072000,
+              "IncludeSubdomains": true,
+              "Override": true,
+              "Preload": true,
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+    },
+    "SiteBucket397A1860": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1,
+              },
+              "Id": "ExpireNoncurrentVersions",
+              "NoncurrentVersionExpiration": {
+                "NoncurrentDays": 90,
+              },
+              "Status": "Enabled",
+            },
+          ],
+        },
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "LogsBucket9C4D8843",
+          },
+          "LogFilePrefix": "s3-access/",
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:cr-owned:16e37670",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:17414f20",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:28e78c08",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:5a558009",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:fe87c843",
+            "Value": "true",
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "VersioningConfiguration": {
+          "Status": "Enabled",
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "SiteBucketPolicy3AC1D0F8": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SiteBucket397A1860",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SiteBucket397A1860",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "s3:GetObject",
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":cloudfront::",
+                        {
+                          "Ref": "AWS::AccountId",
+                        },
+                        ":distribution/",
+                        {
+                          "Ref": "Distribution830FAC52",
+                        },
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudfront.amazonaws.com",
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "SiteBucket397A1860",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "WebAcl": {
+      "Properties": {
+        "DefaultAction": {
+          "Allow": {},
+        },
+        "Description": "Probador 3D: reglas gestionadas de AWS y limite de tasa por IP",
+        "Name": "fitroom-prod-web",
+        "Rules": [
+          {
+            "Name": "AWSManagedRulesCommonRuleSet",
+            "OverrideAction": {
+              "None": {},
+            },
+            "Priority": 10,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "Name": "AWSManagedRulesCommonRuleSet",
+                "VendorName": "AWS",
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-AWSManagedRulesCommonRuleSet",
+              "SampledRequestsEnabled": true,
+            },
+          },
+          {
+            "Name": "AWSManagedRulesKnownBadInputsRuleSet",
+            "OverrideAction": {
+              "None": {},
+            },
+            "Priority": 20,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "Name": "AWSManagedRulesKnownBadInputsRuleSet",
+                "VendorName": "AWS",
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-AWSManagedRulesKnownBadInputsRuleSet",
+              "SampledRequestsEnabled": true,
+            },
+          },
+          {
+            "Name": "AWSManagedRulesAmazonIpReputationList",
+            "OverrideAction": {
+              "None": {},
+            },
+            "Priority": 30,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "Name": "AWSManagedRulesAmazonIpReputationList",
+                "VendorName": "AWS",
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-AWSManagedRulesAmazonIpReputationList",
+              "SampledRequestsEnabled": true,
+            },
+          },
+          {
+            "Action": {
+              "Block": {},
+            },
+            "Name": "RateLimitPerIp",
+            "Priority": 40,
+            "Statement": {
+              "RateBasedStatement": {
+                "AggregateKeyType": "IP",
+                "EvaluationWindowSec": 300,
+                "Limit": 2000,
+              },
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "fitroom-prod-rate-limit-per-ip",
+              "SampledRequestsEnabled": true,
+            },
+          },
+        ],
+        "Scope": "CLOUDFRONT",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "prod",
+          },
+        ],
+        "VisibilityConfig": {
+          "CloudWatchMetricsEnabled": true,
+          "MetricName": "fitroom-prod-web-acl",
+          "SampledRequestsEnabled": true,
+        },
+      },
+      "Type": "AWS::WAFv2::WebACL",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`plantillas de CloudFormation (snapshot estable) > staging 1`] = `
+{
+  "Description": "Probador 3D (staging): hosting estatico privado (S3 + CloudFront OAC + cabeceras de seguridad)",
+  "Outputs": {
+    "BucketName": {
+      "Value": {
+        "Ref": "SiteBucket397A1860",
+      },
+    },
+    "DistributionDomainName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Distribution830FAC52",
+          "DomainName",
+        ],
+      },
+    },
+    "DistributionId": {
+      "Value": {
+        "Ref": "Distribution830FAC52",
+      },
+    },
+    "LogsBucketName": {
+      "Value": {
+        "Ref": "LogsBucket9C4D8843",
+      },
+    },
+    "SiteUrl": {
+      "Description": "URL publica de la web",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "Distribution830FAC52",
+                "DomainName",
+              ],
+            },
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176": {
+      "DependsOn": [
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
+          },
+        },
+        "EphemeralStorage": {
+          "Size": 2048,
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "DeployImmutableAssetsAwsCliLayer56BC25B4",
+          },
+        ],
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "DeploymentLogsE85F76B8",
+          },
+        },
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.13",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "staging",
+          },
+        ],
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "staging",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::cdk-hnb659fds-assets-111111111111-us-east-1",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::cdk-hnb659fds-assets-111111111111-us-east-1/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SiteBucket397A1860",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SiteBucket397A1860",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "cloudfront:GetInvalidation",
+                "cloudfront:CreateInvalidation",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRoleDefaultPolicy0E2BB108",
+        "Roles": [
+          {
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiBServiceRole3D247CAC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "LogsBucket9C4D8843",
+              },
+              " S3 bucket.",
+            ],
+          ],
+        },
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs24.x",
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:\${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeployImmutableAssetsAwsCliLayer56BC25B4": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "assets/*",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=31536000, immutable",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployPoseModelsAwsCliLayer31D2C3BC": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "models/*.task",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "application/octet-stream",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployShellAwsCliLayer92382464": {
+      "DependsOn": [
+        "DeployImmutableAssetsAwsCliLayer56BC25B4",
+        "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643",
+        "DeployPoseModelsAwsCliLayer31D2C3BC",
+        "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0",
+        "DeployWasmBinariesAwsCliLayer25182A4A",
+        "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67",
+        "DeployWasmLoadersAwsCliLayer621F4249",
+        "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A",
+      ],
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployShellCustomResource1024MiB2048MiB13117D5F": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "DeployImmutableAssetsAwsCliLayer56BC25B4",
+        "DeployImmutableAssetsCustomResource1024MiB2048MiBFF957643",
+        "DeployPoseModelsAwsCliLayer31D2C3BC",
+        "DeployPoseModelsCustomResource1024MiB2048MiB7E41D0F0",
+        "DeployWasmBinariesAwsCliLayer25182A4A",
+        "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67",
+        "DeployWasmLoadersAwsCliLayer621F4249",
+        "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A",
+      ],
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "DistributionId": {
+          "Ref": "Distribution830FAC52",
+        },
+        "DistributionPaths": [
+          "/*",
+        ],
+        "Exclude": [
+          "assets/*",
+          "wasm/*.wasm",
+          "wasm/*.js",
+          "models/*.task",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, must-revalidate",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployWasmBinariesAwsCliLayer25182A4A": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployWasmBinariesCustomResource1024MiB2048MiBC6F3BE67": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "wasm/*.wasm",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "application/wasm",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeployWasmLoadersAwsCliLayer621F4249": {
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "S3Key": "<sha256>.zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeployWasmLoadersCustomResource1024MiB2048MiB4FB3108A": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DestinationBucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "Exclude": [
+          "*",
+        ],
+        "Include": [
+          "wasm/*.js",
+        ],
+        "OutputObjectKeys": true,
+        "Prune": true,
+        "RetainOnDelete": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiB2048MiB98A3C176",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-111111111111-us-east-1",
+        ],
+        "SourceObjectKeys": [
+          "<sha256>.zip",
+        ],
+        "SystemMetadata": {
+          "cache-control": "public, max-age=0, s-maxage=86400, must-revalidate",
+          "content-type": "text/javascript; charset=utf-8",
+        },
+        "WaitForDistributionInvalidation": true,
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeploymentLogsE85F76B8": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30,
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "staging",
+          },
+        ],
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "Distribution830FAC52": {
+      "Properties": {
+        "DistributionConfig": {
+          "CacheBehaviors": [
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "ImmutableAssets51F8FFAA",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "assets/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebstagingDistributionOrigin1C87728CE",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "RevalidatedBinaries558EB05A",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "wasm/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebstagingDistributionOrigin1C87728CE",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "CachePolicyId": {
+                "Ref": "RevalidatedBinaries558EB05A",
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+              ],
+              "Compress": true,
+              "PathPattern": "models/*",
+              "ResponseHeadersPolicyId": {
+                "Ref": "SecurityHeadersE66B69D3",
+              },
+              "TargetOriginId": "FitroomWebstagingDistributionOrigin1C87728CE",
+              "ViewerProtocolPolicy": "redirect-to-https",
+            },
+          ],
+          "Comment": "Probador 3D (staging)",
+          "CustomErrorResponses": [
+            {
+              "ErrorCachingMinTTL": 10,
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+            },
+            {
+              "ErrorCachingMinTTL": 10,
+              "ErrorCode": 404,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+            },
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+            ],
+            "CachePolicyId": {
+              "Ref": "HtmlNoCacheB345D52D",
+            },
+            "CachedMethods": [
+              "GET",
+              "HEAD",
+            ],
+            "Compress": true,
+            "ResponseHeadersPolicyId": {
+              "Ref": "SecurityHeadersE66B69D3",
+            },
+            "TargetOriginId": "FitroomWebstagingDistributionOrigin1C87728CE",
+            "ViewerProtocolPolicy": "redirect-to-https",
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2and3",
+          "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "LogsBucket9C4D8843",
+                "RegionalDomainName",
+              ],
+            },
+            "IncludeCookies": false,
+            "Prefix": "cloudfront/",
+          },
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "SiteBucket397A1860",
+                  "RegionalDomainName",
+                ],
+              },
+              "Id": "FitroomWebstagingDistributionOrigin1C87728CE",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "DistributionOrigin1S3OriginAccessControlEB606076",
+                  "Id",
+                ],
+              },
+              "S3OriginConfig": {
+                "OriginAccessIdentity": "",
+              },
+            },
+          ],
+          "PriceClass": "PriceClass_100",
+        },
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "staging",
+          },
+        ],
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "DistributionOrigin1S3OriginAccessControlEB606076": {
+      "Properties": {
+        "OriginAccessControlConfig": {
+          "Name": "fitroomwebstagingDistributioOrigin1S3OriginAccessControl4D58EE33",
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4",
+        },
+      },
+      "Type": "AWS::CloudFront::OriginAccessControl",
+    },
+    "HtmlNoCacheB345D52D": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "index.html y archivos sin hash: sin cache en el borde (el origen manda max-age=0)",
+          "DefaultTTL": 0,
+          "MaxTTL": 60,
+          "MinTTL": 0,
+          "Name": "FitroomWebstagingHtmlNoCacheEFDB24C4-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "Http5xxRateAlarmB35FBA05": {
+      "Properties": {
+        "AlarmDescription": "Mas del 5% de las respuestas de CloudFront son 5xx (staging)",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "DatapointsToAlarm": 2,
+        "Dimensions": [
+          {
+            "Name": "DistributionId",
+            "Value": {
+              "Ref": "Distribution830FAC52",
+            },
+          },
+          {
+            "Name": "Region",
+            "Value": "Global",
+          },
+        ],
+        "EvaluationPeriods": 3,
+        "MetricName": "5xxErrorRate",
+        "Namespace": "AWS/CloudFront",
+        "Period": 300,
+        "Statistic": "Average",
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "staging",
+          },
+        ],
+        "Threshold": 5,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "ImmutableAssets51F8FFAA": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "Archivos con hash de contenido (assets/*): 1 ano",
+          "DefaultTTL": 31536000,
+          "MaxTTL": 31536000,
+          "MinTTL": 31536000,
+          "Name": "FitroomWebstagingImmutableAssets3CB2D6CE-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "LogsBucket9C4D8843": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1,
+              },
+              "ExpirationInDays": 14,
+              "Id": "ExpireLogs",
+              "Status": "Enabled",
+            },
+          ],
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true",
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "staging",
+          },
+        ],
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "LogsBucketAutoDeleteObjectsCustomResource7D54FB85": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "LogsBucketPolicyD70D9252",
+      ],
+      "Properties": {
+        "BucketName": {
+          "Ref": "LogsBucket9C4D8843",
+        },
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "LogsBucketPolicyD70D9252": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "LogsBucket9C4D8843",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LogsBucket9C4D8843",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LogsBucket9C4D8843",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LogsBucket9C4D8843",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "LogsBucket9C4D8843",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "RevalidatedBinaries558EB05A": {
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "Modelos .task y WASM sin hash: 1 dia en el borde (s-maxage); el navegador siempre revalida",
+          "DefaultTTL": 86400,
+          "MaxTTL": 31536000,
+          "MinTTL": 0,
+          "Name": "FitroomWebstagingRevalidatedBinariesE571CB6F-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none",
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "none",
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none",
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::CachePolicy",
+    },
+    "SecurityHeadersE66B69D3": {
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "Comment": "Probador 3D (staging): cabeceras de seguridad. Fuente unica: infra/lib/security-headers.ts",
+          "CustomHeadersConfig": {
+            "Items": [
+              {
+                "Header": "Permissions-Policy",
+                "Override": true,
+                "Value": "camera=(self), microphone=(), geolocation=(), payment=(), usb=()",
+              },
+              {
+                "Header": "Cross-Origin-Opener-Policy",
+                "Override": true,
+                "Value": "same-origin",
+              },
+              {
+                "Header": "Cross-Origin-Resource-Policy",
+                "Override": true,
+                "Value": "same-origin",
+              },
+            ],
+          },
+          "Name": "fitroomwebstagingSecurityHeaders448A7348",
+          "SecurityHeadersConfig": {
+            "ContentSecurityPolicy": {
+              "ContentSecurityPolicy": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; style-src 'self' 'unsafe-inline'; font-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests",
+              "Override": true,
+            },
+            "ContentTypeOptions": {
+              "Override": true,
+            },
+            "FrameOptions": {
+              "FrameOption": "DENY",
+              "Override": true,
+            },
+            "ReferrerPolicy": {
+              "Override": true,
+              "ReferrerPolicy": "no-referrer",
+            },
+            "StrictTransportSecurity": {
+              "AccessControlMaxAgeSec": 63072000,
+              "IncludeSubdomains": true,
+              "Override": true,
+              "Preload": false,
+            },
+          },
+        },
+      },
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+    },
+    "SiteBucket397A1860": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1,
+              },
+              "Id": "ExpireNoncurrentVersions",
+              "NoncurrentVersionExpiration": {
+                "NoncurrentDays": 30,
+              },
+              "Status": "Enabled",
+            },
+          ],
+        },
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "LogsBucket9C4D8843",
+          },
+          "LogFilePrefix": "s3-access/",
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:374845d4",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:6e3a5c38",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:78690299",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:83257795",
+            "Value": "true",
+          },
+          {
+            "Key": "aws-cdk:cr-owned:cc409ae6",
+            "Value": "true",
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "cdk",
+          },
+          {
+            "Key": "Project",
+            "Value": "fitroom",
+          },
+          {
+            "Key": "Stage",
+            "Value": "staging",
+          },
+        ],
+        "VersioningConfiguration": {
+          "Status": "Enabled",
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SiteBucketAutoDeleteObjectsCustomResource9585E968": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "SiteBucketPolicy3AC1D0F8",
+      ],
+      "Properties": {
+        "BucketName": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SiteBucketPolicy3AC1D0F8": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "SiteBucket397A1860",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SiteBucket397A1860",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SiteBucket397A1860",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SiteBucket397A1860",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SiteBucket397A1860",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "s3:GetObject",
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":cloudfront::",
+                        {
+                          "Ref": "AWS::AccountId",
+                        },
+                        ":distribution/",
+                        {
+                          "Ref": "Distribution830FAC52",
+                        },
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudfront.amazonaws.com",
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "SiteBucket397A1860",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

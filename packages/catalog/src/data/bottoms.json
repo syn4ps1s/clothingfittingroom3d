@@ -1,0 +1,1242 @@
+[
+  {
+    "id": "jeans-straight-raw",
+    "name": { "es": "Vaqueros rectos de denim crudo", "en": "Straight Raw-Denim Jeans" },
+    "description": {
+      "es": "Denim de 12 oz en ligamento de sarga con cinco bolsillos y botonadura metálica. Tiro medio y pierna recta de caída limpia; se adapta al cuerpo con el uso.",
+      "en": "12 oz twill-weave denim with five pockets and metal buttons. Mid rise and a straight leg with a clean drop that moulds to you over time."
+    },
+    "brand": "Rumbo Denim Co.",
+    "category": "bottoms",
+    "template": "jeans",
+    "slot": "lower",
+    "fit": "regular",
+    "fabricId": "denim-12oz",
+    "variants": [
+      {
+        "id": "raw-indigo",
+        "name": { "es": "Índigo crudo", "en": "Raw indigo" },
+        "color": "#2B3A55",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "mid-wash",
+        "name": { "es": "Lavado medio", "en": "Mid wash" },
+        "color": "#4F6E93",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "light-wash",
+        "name": { "es": "Lavado claro", "en": "Light wash" },
+        "color": "#8FA9C4",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "washed-black",
+        "name": { "es": "Negro lavado", "en": "Washed black" },
+        "color": "#26282D",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "ecru",
+        "name": { "es": "Crudo", "en": "Ecru" },
+        "color": "#EDE6D6",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "24",
+        "body": {
+          "heightCm": [148, 162],
+          "waistCm": [56.5, 63.5],
+          "hipCm": [82.5, 88],
+          "inseamCm": [68, 71]
+        },
+        "garment": {
+          "waistCm": 63,
+          "hipCm": 96,
+          "thighCm": 60,
+          "legOpeningCm": 38.5,
+          "inseamCm": 70,
+          "riseCm": 24
+        }
+      },
+      {
+        "label": "26",
+        "body": {
+          "heightCm": [152, 166],
+          "waistCm": [63.5, 68.5],
+          "hipCm": [88, 92],
+          "inseamCm": [71, 73.5]
+        },
+        "garment": {
+          "waistCm": 68,
+          "hipCm": 100,
+          "thighCm": 62,
+          "legOpeningCm": 39,
+          "inseamCm": 72,
+          "riseCm": 24.5
+        }
+      },
+      {
+        "label": "28",
+        "body": {
+          "heightCm": [158, 172],
+          "waistCm": [68.5, 73.5],
+          "hipCm": [92, 96],
+          "inseamCm": [73.5, 76]
+        },
+        "garment": {
+          "waistCm": 73,
+          "hipCm": 104,
+          "thighCm": 65,
+          "legOpeningCm": 39.5,
+          "inseamCm": 75,
+          "riseCm": 25
+        }
+      },
+      {
+        "label": "30",
+        "body": {
+          "heightCm": [164, 176],
+          "waistCm": [73.5, 79],
+          "hipCm": [96, 100],
+          "inseamCm": [76, 78.5]
+        },
+        "garment": {
+          "waistCm": 78,
+          "hipCm": 108,
+          "thighCm": 67.5,
+          "legOpeningCm": 39.5,
+          "inseamCm": 77,
+          "riseCm": 25.5
+        }
+      },
+      {
+        "label": "32",
+        "body": {
+          "heightCm": [168, 180],
+          "waistCm": [79, 84],
+          "hipCm": [100, 103.5],
+          "inseamCm": [78.5, 80.5]
+        },
+        "garment": {
+          "waistCm": 83.5,
+          "hipCm": 111.5,
+          "thighCm": 70,
+          "legOpeningCm": 40,
+          "inseamCm": 79.5,
+          "riseCm": 26
+        }
+      },
+      {
+        "label": "34",
+        "body": {
+          "heightCm": [172, 184],
+          "waistCm": [84, 89],
+          "hipCm": [103.5, 107],
+          "inseamCm": [80.5, 82]
+        },
+        "garment": {
+          "waistCm": 88.5,
+          "hipCm": 115,
+          "thighCm": 72.5,
+          "legOpeningCm": 40.5,
+          "inseamCm": 81,
+          "riseCm": 26.5
+        }
+      },
+      {
+        "label": "36",
+        "body": {
+          "heightCm": [176, 188],
+          "waistCm": [89, 94],
+          "hipCm": [107, 110.5],
+          "inseamCm": [82, 83.5]
+        },
+        "garment": {
+          "waistCm": 93.5,
+          "hipCm": 118.5,
+          "thighCm": 75,
+          "legOpeningCm": 40.5,
+          "inseamCm": 82.5,
+          "riseCm": 27
+        }
+      },
+      {
+        "label": "38",
+        "body": {
+          "heightCm": [180, 192],
+          "waistCm": [94, 99],
+          "hipCm": [110.5, 113.5],
+          "inseamCm": [83.5, 84.5]
+        },
+        "garment": {
+          "waistCm": 98.5,
+          "hipCm": 122,
+          "thighCm": 77.5,
+          "legOpeningCm": 41,
+          "inseamCm": 84,
+          "riseCm": 27.5
+        }
+      },
+      {
+        "label": "40",
+        "body": {
+          "heightCm": [184, 196],
+          "waistCm": [99, 104],
+          "hipCm": [113.5, 116.5],
+          "inseamCm": [84.5, 85.5]
+        },
+        "garment": {
+          "waistCm": 103.5,
+          "hipCm": 125,
+          "thighCm": 80,
+          "legOpeningCm": 41.5,
+          "inseamCm": 85,
+          "riseCm": 28
+        }
+      },
+      {
+        "label": "42",
+        "body": {
+          "heightCm": [186, 198],
+          "waistCm": [104, 109.5],
+          "hipCm": [116.5, 119.5],
+          "inseamCm": [85.5, 86.5]
+        },
+        "garment": {
+          "waistCm": 108.5,
+          "hipCm": 128,
+          "thighCm": 82,
+          "legOpeningCm": 42,
+          "inseamCm": 86,
+          "riseCm": 28.5
+        }
+      },
+      {
+        "label": "44",
+        "body": {
+          "heightCm": [188, 200],
+          "waistCm": [109.5, 114.5],
+          "hipCm": [119.5, 122.5],
+          "inseamCm": [86.5, 87.5]
+        },
+        "garment": {
+          "waistCm": 114,
+          "hipCm": 131,
+          "thighCm": 84,
+          "legOpeningCm": 42,
+          "inseamCm": 87,
+          "riseCm": 29
+        }
+      },
+      {
+        "label": "46",
+        "body": {
+          "heightCm": [190, 206],
+          "waistCm": [114.5, 121.5],
+          "hipCm": [122.5, 127],
+          "inseamCm": [87.5, 89.5]
+        },
+        "garment": {
+          "waistCm": 119,
+          "hipCm": 134,
+          "thighCm": 86,
+          "legOpeningCm": 42.5,
+          "inseamCm": 88,
+          "riseCm": 29.5
+        }
+      }
+    ],
+    "params": {
+      "kneeRatio": 0.86,
+      "waistbandHeightCm": 4,
+      "cuffFoldCm": 0,
+      "flyLengthCm": 14,
+      "backRiseExtraCm": 4.5
+    },
+    "price": { "amount": 89, "currency": "EUR" },
+    "tags": ["casual", "all-season", "essential", "weekend", "classic"]
+  },
+  {
+    "id": "jeans-slim-stretch",
+    "name": { "es": "Vaqueros slim de denim elástico", "en": "Slim Stretch Jeans" },
+    "description": {
+      "es": "Denim de 9 oz con un 2 % de elastano para moverte con comodidad. Tiro medio-bajo, pierna entallada y bajo estrecho. Mantiene la forma sin abolsarse.",
+      "en": "9 oz denim with 2% elastane for easy movement. Mid-low rise, slim leg and a narrow hem. Keeps its shape without bagging out."
+    },
+    "brand": "Rumbo Denim Co.",
+    "category": "bottoms",
+    "template": "jeans",
+    "slot": "lower",
+    "fit": "slim",
+    "fabricId": "denim-stretch-9oz",
+    "variants": [
+      {
+        "id": "washed-black",
+        "name": { "es": "Negro lavado", "en": "Washed black" },
+        "color": "#26282D",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "smoke",
+        "name": { "es": "Gris humo", "en": "Smoke grey" },
+        "color": "#5B6068",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "mid-wash",
+        "name": { "es": "Lavado medio", "en": "Mid wash" },
+        "color": "#4F6E93",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "ink-blue",
+        "name": { "es": "Azul tinta", "en": "Ink blue" },
+        "color": "#34455F",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "24",
+        "body": {
+          "heightCm": [148, 162],
+          "waistCm": [56.5, 63.5],
+          "hipCm": [82.5, 88],
+          "inseamCm": [68, 71]
+        },
+        "garment": {
+          "waistCm": 62,
+          "hipCm": 92,
+          "thighCm": 54,
+          "legOpeningCm": 29.5,
+          "inseamCm": 69,
+          "riseCm": 21.5
+        }
+      },
+      {
+        "label": "26",
+        "body": {
+          "heightCm": [152, 166],
+          "waistCm": [63.5, 68.5],
+          "hipCm": [88, 92],
+          "inseamCm": [71, 73.5]
+        },
+        "garment": {
+          "waistCm": 67,
+          "hipCm": 96,
+          "thighCm": 56,
+          "legOpeningCm": 30,
+          "inseamCm": 71,
+          "riseCm": 22
+        }
+      },
+      {
+        "label": "28",
+        "body": {
+          "heightCm": [158, 172],
+          "waistCm": [68.5, 73.5],
+          "hipCm": [92, 96],
+          "inseamCm": [73.5, 76]
+        },
+        "garment": {
+          "waistCm": 72,
+          "hipCm": 100,
+          "thighCm": 59,
+          "legOpeningCm": 30.5,
+          "inseamCm": 74,
+          "riseCm": 22.5
+        }
+      },
+      {
+        "label": "30",
+        "body": {
+          "heightCm": [164, 176],
+          "waistCm": [73.5, 79],
+          "hipCm": [96, 100],
+          "inseamCm": [76, 78.5]
+        },
+        "garment": {
+          "waistCm": 77,
+          "hipCm": 104,
+          "thighCm": 61.5,
+          "legOpeningCm": 30.5,
+          "inseamCm": 76,
+          "riseCm": 23
+        }
+      },
+      {
+        "label": "32",
+        "body": {
+          "heightCm": [168, 180],
+          "waistCm": [79, 84],
+          "hipCm": [100, 103.5],
+          "inseamCm": [78.5, 80.5]
+        },
+        "garment": {
+          "waistCm": 82.5,
+          "hipCm": 107.5,
+          "thighCm": 64,
+          "legOpeningCm": 31,
+          "inseamCm": 78.5,
+          "riseCm": 23.5
+        }
+      },
+      {
+        "label": "34",
+        "body": {
+          "heightCm": [172, 184],
+          "waistCm": [84, 89],
+          "hipCm": [103.5, 107],
+          "inseamCm": [80.5, 82]
+        },
+        "garment": {
+          "waistCm": 87.5,
+          "hipCm": 111,
+          "thighCm": 66.5,
+          "legOpeningCm": 31.5,
+          "inseamCm": 80,
+          "riseCm": 24
+        }
+      },
+      {
+        "label": "36",
+        "body": {
+          "heightCm": [176, 188],
+          "waistCm": [89, 94],
+          "hipCm": [107, 110.5],
+          "inseamCm": [82, 83.5]
+        },
+        "garment": {
+          "waistCm": 92.5,
+          "hipCm": 114.5,
+          "thighCm": 69,
+          "legOpeningCm": 31.5,
+          "inseamCm": 81.5,
+          "riseCm": 24.5
+        }
+      },
+      {
+        "label": "38",
+        "body": {
+          "heightCm": [180, 192],
+          "waistCm": [94, 99],
+          "hipCm": [110.5, 113.5],
+          "inseamCm": [83.5, 84.5]
+        },
+        "garment": {
+          "waistCm": 97.5,
+          "hipCm": 118,
+          "thighCm": 71.5,
+          "legOpeningCm": 32,
+          "inseamCm": 83,
+          "riseCm": 25
+        }
+      },
+      {
+        "label": "40",
+        "body": {
+          "heightCm": [184, 196],
+          "waistCm": [99, 104],
+          "hipCm": [113.5, 116.5],
+          "inseamCm": [84.5, 85.5]
+        },
+        "garment": {
+          "waistCm": 102.5,
+          "hipCm": 121,
+          "thighCm": 74,
+          "legOpeningCm": 32.5,
+          "inseamCm": 84,
+          "riseCm": 25.5
+        }
+      },
+      {
+        "label": "42",
+        "body": {
+          "heightCm": [186, 198],
+          "waistCm": [104, 109.5],
+          "hipCm": [116.5, 119.5],
+          "inseamCm": [85.5, 86.5]
+        },
+        "garment": {
+          "waistCm": 107.5,
+          "hipCm": 124,
+          "thighCm": 76,
+          "legOpeningCm": 33,
+          "inseamCm": 85,
+          "riseCm": 26
+        }
+      },
+      {
+        "label": "44",
+        "body": {
+          "heightCm": [188, 200],
+          "waistCm": [109.5, 114.5],
+          "hipCm": [119.5, 122.5],
+          "inseamCm": [86.5, 87.5]
+        },
+        "garment": {
+          "waistCm": 113,
+          "hipCm": 127,
+          "thighCm": 78,
+          "legOpeningCm": 33,
+          "inseamCm": 86,
+          "riseCm": 26.5
+        }
+      },
+      {
+        "label": "46",
+        "body": {
+          "heightCm": [190, 206],
+          "waistCm": [114.5, 121.5],
+          "hipCm": [122.5, 127],
+          "inseamCm": [87.5, 89.5]
+        },
+        "garment": {
+          "waistCm": 118,
+          "hipCm": 130,
+          "thighCm": 80,
+          "legOpeningCm": 33.5,
+          "inseamCm": 87,
+          "riseCm": 27
+        }
+      }
+    ],
+    "params": {
+      "kneeRatio": 0.74,
+      "waistbandHeightCm": 3.5,
+      "cuffFoldCm": 0,
+      "flyLengthCm": 13,
+      "backRiseExtraCm": 4
+    },
+    "price": { "amount": 99, "currency": "EUR" },
+    "tags": ["casual", "smart-casual", "all-season", "essential", "evening"]
+  },
+  {
+    "id": "chino-slim-twill",
+    "name": { "es": "Chinos slim de sarga de algodón", "en": "Slim Cotton-Twill Chinos" },
+    "description": {
+      "es": "Sarga de algodón de 240 g/m² teñida en prenda para un color profundo. Tiro medio, pierna entallada y bajo al tobillo. Bolsillos de ojal en la espalda y cintura con pasadores.",
+      "en": "240 gsm garment-dyed cotton twill for a deep colour. Mid rise, slim leg and an ankle-length hem. Jetted back pockets and a belt-loop waistband."
+    },
+    "brand": "Atelier Norte",
+    "category": "bottoms",
+    "template": "chinos",
+    "slot": "lower",
+    "fit": "slim",
+    "fabricId": "twill-chino-240",
+    "variants": [
+      {
+        "id": "sand",
+        "name": { "es": "Arena", "en": "Sand" },
+        "color": "#D6C4A3",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "navy",
+        "name": { "es": "Azul marino", "en": "Navy" },
+        "color": "#22304A",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "olive",
+        "name": { "es": "Verde oliva", "en": "Olive" },
+        "color": "#6A6A3F",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "stone",
+        "name": { "es": "Piedra", "en": "Stone" },
+        "color": "#BDB5A6",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "taupe-herringbone",
+        "name": { "es": "Espiga topo", "en": "Taupe herringbone" },
+        "color": "#6B5B4B",
+        "pattern": { "type": "herringbone", "color2": "#CFC4B1", "sizeMm": 6 }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "24",
+        "body": {
+          "heightCm": [148, 162],
+          "waistCm": [56.5, 63.5],
+          "hipCm": [82.5, 88],
+          "inseamCm": [68, 71]
+        },
+        "garment": {
+          "waistCm": 62,
+          "hipCm": 92,
+          "thighCm": 54,
+          "legOpeningCm": 31.5,
+          "inseamCm": 69,
+          "riseCm": 23.5
+        }
+      },
+      {
+        "label": "26",
+        "body": {
+          "heightCm": [152, 166],
+          "waistCm": [63.5, 68.5],
+          "hipCm": [88, 92],
+          "inseamCm": [71, 73.5]
+        },
+        "garment": {
+          "waistCm": 67,
+          "hipCm": 96,
+          "thighCm": 56,
+          "legOpeningCm": 32,
+          "inseamCm": 71,
+          "riseCm": 24
+        }
+      },
+      {
+        "label": "28",
+        "body": {
+          "heightCm": [158, 172],
+          "waistCm": [68.5, 73.5],
+          "hipCm": [92, 96],
+          "inseamCm": [73.5, 76]
+        },
+        "garment": {
+          "waistCm": 72,
+          "hipCm": 100,
+          "thighCm": 59,
+          "legOpeningCm": 32,
+          "inseamCm": 74,
+          "riseCm": 24.5
+        }
+      },
+      {
+        "label": "30",
+        "body": {
+          "heightCm": [164, 176],
+          "waistCm": [73.5, 79],
+          "hipCm": [96, 100],
+          "inseamCm": [76, 78.5]
+        },
+        "garment": {
+          "waistCm": 77,
+          "hipCm": 104,
+          "thighCm": 61.5,
+          "legOpeningCm": 32.5,
+          "inseamCm": 76,
+          "riseCm": 25
+        }
+      },
+      {
+        "label": "32",
+        "body": {
+          "heightCm": [168, 180],
+          "waistCm": [79, 84],
+          "hipCm": [100, 103.5],
+          "inseamCm": [78.5, 80.5]
+        },
+        "garment": {
+          "waistCm": 82.5,
+          "hipCm": 107.5,
+          "thighCm": 64,
+          "legOpeningCm": 33,
+          "inseamCm": 78.5,
+          "riseCm": 25.5
+        }
+      },
+      {
+        "label": "34",
+        "body": {
+          "heightCm": [172, 184],
+          "waistCm": [84, 89],
+          "hipCm": [103.5, 107],
+          "inseamCm": [80.5, 82]
+        },
+        "garment": {
+          "waistCm": 87.5,
+          "hipCm": 111,
+          "thighCm": 66.5,
+          "legOpeningCm": 33.5,
+          "inseamCm": 80,
+          "riseCm": 26
+        }
+      },
+      {
+        "label": "36",
+        "body": {
+          "heightCm": [176, 188],
+          "waistCm": [89, 94],
+          "hipCm": [107, 110.5],
+          "inseamCm": [82, 83.5]
+        },
+        "garment": {
+          "waistCm": 92.5,
+          "hipCm": 114.5,
+          "thighCm": 69,
+          "legOpeningCm": 34,
+          "inseamCm": 81.5,
+          "riseCm": 26.5
+        }
+      },
+      {
+        "label": "38",
+        "body": {
+          "heightCm": [180, 192],
+          "waistCm": [94, 99],
+          "hipCm": [110.5, 113.5],
+          "inseamCm": [83.5, 84.5]
+        },
+        "garment": {
+          "waistCm": 97.5,
+          "hipCm": 118,
+          "thighCm": 71.5,
+          "legOpeningCm": 34,
+          "inseamCm": 83,
+          "riseCm": 27
+        }
+      },
+      {
+        "label": "40",
+        "body": {
+          "heightCm": [184, 196],
+          "waistCm": [99, 104],
+          "hipCm": [113.5, 116.5],
+          "inseamCm": [84.5, 85.5]
+        },
+        "garment": {
+          "waistCm": 102.5,
+          "hipCm": 121,
+          "thighCm": 74,
+          "legOpeningCm": 34.5,
+          "inseamCm": 84,
+          "riseCm": 27.5
+        }
+      },
+      {
+        "label": "42",
+        "body": {
+          "heightCm": [186, 198],
+          "waistCm": [104, 109.5],
+          "hipCm": [116.5, 119.5],
+          "inseamCm": [85.5, 86.5]
+        },
+        "garment": {
+          "waistCm": 107.5,
+          "hipCm": 124,
+          "thighCm": 76,
+          "legOpeningCm": 35,
+          "inseamCm": 85,
+          "riseCm": 28
+        }
+      },
+      {
+        "label": "44",
+        "body": {
+          "heightCm": [188, 200],
+          "waistCm": [109.5, 114.5],
+          "hipCm": [119.5, 122.5],
+          "inseamCm": [86.5, 87.5]
+        },
+        "garment": {
+          "waistCm": 113,
+          "hipCm": 127,
+          "thighCm": 78,
+          "legOpeningCm": 35.5,
+          "inseamCm": 86,
+          "riseCm": 28.5
+        }
+      },
+      {
+        "label": "46",
+        "body": {
+          "heightCm": [190, 206],
+          "waistCm": [114.5, 121.5],
+          "hipCm": [122.5, 127],
+          "inseamCm": [87.5, 89.5]
+        },
+        "garment": {
+          "waistCm": 118,
+          "hipCm": 130,
+          "thighCm": 80,
+          "legOpeningCm": 36,
+          "inseamCm": 87,
+          "riseCm": 29
+        }
+      }
+    ],
+    "params": {
+      "kneeRatio": 0.8,
+      "waistbandHeightCm": 4,
+      "cuffFoldCm": 0,
+      "flyLengthCm": 13.5,
+      "backRiseExtraCm": 4
+    },
+    "price": { "amount": 79, "currency": "EUR" },
+    "tags": ["smart-casual", "office", "all-season", "classic"]
+  },
+  {
+    "id": "trouser-corduroy",
+    "name": { "es": "Pantalón de pana de 14 canalés", "en": "14-Wale Corduroy Trousers" },
+    "description": {
+      "es": "Pana de algodón de canalé fino con pelo denso y tacto suave. Tiro alto, pierna holgada con vuelta en el bajo y pinzas delanteras. Pensado para otoño e invierno.",
+      "en": "Fine-wale cotton corduroy with a dense, soft pile. High rise, relaxed leg with a turn-up hem and front pleats. Made for autumn and winter."
+    },
+    "brand": "Taller Arce",
+    "category": "bottoms",
+    "template": "chinos",
+    "slot": "lower",
+    "fit": "relaxed",
+    "fabricId": "corduroy-14w",
+    "variants": [
+      {
+        "id": "camel",
+        "name": { "es": "Camel", "en": "Camel" },
+        "color": "#B38A5B",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "rust",
+        "name": { "es": "Óxido", "en": "Rust" },
+        "color": "#9C4A2B",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "forest",
+        "name": { "es": "Verde bosque", "en": "Forest green" },
+        "color": "#2F4A3B",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "chocolate",
+        "name": { "es": "Chocolate", "en": "Chocolate" },
+        "color": "#4A3428",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "navy",
+        "name": { "es": "Azul marino", "en": "Navy" },
+        "color": "#22304A",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "XS",
+        "body": {
+          "heightCm": [148, 164],
+          "waistCm": [61, 69],
+          "hipCm": [84, 90.5],
+          "inseamCm": [67.5, 71.5]
+        },
+        "garment": {
+          "waistCm": 71,
+          "hipCm": 103,
+          "thighCm": 67,
+          "legOpeningCm": 44.5,
+          "inseamCm": 71,
+          "riseCm": 26.5
+        }
+      },
+      {
+        "label": "S",
+        "body": {
+          "heightCm": [160, 172],
+          "waistCm": [69, 75.5],
+          "hipCm": [90.5, 95],
+          "inseamCm": [71.5, 74.5]
+        },
+        "garment": {
+          "waistCm": 77,
+          "hipCm": 107.5,
+          "thighCm": 71,
+          "legOpeningCm": 45,
+          "inseamCm": 74,
+          "riseCm": 27
+        }
+      },
+      {
+        "label": "M",
+        "body": {
+          "heightCm": [168, 180],
+          "waistCm": [75.5, 82.5],
+          "hipCm": [95, 99.5],
+          "inseamCm": [74.5, 77.5]
+        },
+        "garment": {
+          "waistCm": 84,
+          "hipCm": 112,
+          "thighCm": 75,
+          "legOpeningCm": 46,
+          "inseamCm": 77,
+          "riseCm": 28
+        }
+      },
+      {
+        "label": "L",
+        "body": {
+          "heightCm": [175, 186],
+          "waistCm": [82.5, 89.5],
+          "hipCm": [99.5, 104],
+          "inseamCm": [77.5, 80.5]
+        },
+        "garment": {
+          "waistCm": 91,
+          "hipCm": 116.5,
+          "thighCm": 78.5,
+          "legOpeningCm": 47,
+          "inseamCm": 80,
+          "riseCm": 28.5
+        }
+      },
+      {
+        "label": "XL",
+        "body": {
+          "heightCm": [181, 192],
+          "waistCm": [89.5, 96.5],
+          "hipCm": [104, 108.5],
+          "inseamCm": [80.5, 83]
+        },
+        "garment": {
+          "waistCm": 98,
+          "hipCm": 121,
+          "thighCm": 82,
+          "legOpeningCm": 47.5,
+          "inseamCm": 83,
+          "riseCm": 29
+        }
+      },
+      {
+        "label": "XXL",
+        "body": {
+          "heightCm": [186, 196],
+          "waistCm": [96.5, 104],
+          "hipCm": [108.5, 113],
+          "inseamCm": [83, 85]
+        },
+        "garment": {
+          "waistCm": 105,
+          "hipCm": 125.5,
+          "thighCm": 85.5,
+          "legOpeningCm": 48.5,
+          "inseamCm": 85,
+          "riseCm": 30
+        }
+      },
+      {
+        "label": "3XL",
+        "body": {
+          "heightCm": [190, 200],
+          "waistCm": [104, 112],
+          "hipCm": [113, 117.5],
+          "inseamCm": [85, 87]
+        },
+        "garment": {
+          "waistCm": 113,
+          "hipCm": 130,
+          "thighCm": 89,
+          "legOpeningCm": 49,
+          "inseamCm": 87,
+          "riseCm": 30.5
+        }
+      },
+      {
+        "label": "4XL",
+        "body": {
+          "heightCm": [192, 208],
+          "waistCm": [112, 122],
+          "hipCm": [117.5, 124],
+          "inseamCm": [87, 90]
+        },
+        "garment": {
+          "waistCm": 121,
+          "hipCm": 135,
+          "thighCm": 92.5,
+          "legOpeningCm": 50,
+          "inseamCm": 89,
+          "riseCm": 31.5
+        }
+      }
+    ],
+    "params": {
+      "kneeRatio": 0.93,
+      "waistbandHeightCm": 4,
+      "cuffFoldCm": 3.5,
+      "flyLengthCm": 15,
+      "backRiseExtraCm": 5
+    },
+    "price": { "amount": 85, "currency": "EUR" },
+    "tags": ["smart-casual", "winter", "weekend", "classic"]
+  },
+  {
+    "id": "shorts-linen",
+    "name": { "es": "Bermudas de lino", "en": "Linen Shorts" },
+    "description": {
+      "es": "Lino de gramaje medio con cintura elástica interior y cordón. Dos bolsillos laterales y uno trasero, largo sobre la rodilla. Corte regular, fresco y ligero.",
+      "en": "Mid-weight linen with an inner elastic waist and drawcord. Two side pockets and one back pocket, cut just above the knee. A regular, light and breathable fit."
+    },
+    "brand": "Costa Lino",
+    "category": "bottoms",
+    "template": "shorts",
+    "slot": "lower",
+    "fit": "regular",
+    "fabricId": "linen-heavy-230",
+    "variants": [
+      {
+        "id": "sand",
+        "name": { "es": "Arena", "en": "Sand" },
+        "color": "#D6C4A3",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "optic",
+        "name": { "es": "Blanco roto", "en": "Off white" },
+        "color": "#F4F1EA",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "sky",
+        "name": { "es": "Azul cielo", "en": "Sky blue" },
+        "color": "#A9C4DB",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "olive",
+        "name": { "es": "Verde oliva", "en": "Olive" },
+        "color": "#6A6A3F",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "navy-stripe",
+        "name": { "es": "Rayas marineras", "en": "Navy stripe" },
+        "color": "#EDE6D6",
+        "pattern": {
+          "type": "stripes",
+          "color2": "#22304A",
+          "widthMm": 6,
+          "gapMm": 10,
+          "angleDeg": 90
+        }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "XS",
+        "body": { "heightCm": [148, 164], "waistCm": [61, 69], "hipCm": [84, 90.5] },
+        "garment": {
+          "waistCm": 68,
+          "hipCm": 98,
+          "thighCm": 61,
+          "legOpeningCm": 55,
+          "inseamCm": 23,
+          "riseCm": 24.5
+        }
+      },
+      {
+        "label": "S",
+        "body": { "heightCm": [160, 172], "waistCm": [69, 75.5], "hipCm": [90.5, 95] },
+        "garment": {
+          "waistCm": 74,
+          "hipCm": 102.5,
+          "thighCm": 65,
+          "legOpeningCm": 56.5,
+          "inseamCm": 23.5,
+          "riseCm": 25
+        }
+      },
+      {
+        "label": "M",
+        "body": { "heightCm": [168, 180], "waistCm": [75.5, 82.5], "hipCm": [95, 99.5] },
+        "garment": {
+          "waistCm": 81,
+          "hipCm": 107,
+          "thighCm": 69,
+          "legOpeningCm": 58,
+          "inseamCm": 24,
+          "riseCm": 26
+        }
+      },
+      {
+        "label": "L",
+        "body": { "heightCm": [175, 186], "waistCm": [82.5, 89.5], "hipCm": [99.5, 104] },
+        "garment": {
+          "waistCm": 88,
+          "hipCm": 111.5,
+          "thighCm": 72.5,
+          "legOpeningCm": 59.5,
+          "inseamCm": 24.5,
+          "riseCm": 26.5
+        }
+      },
+      {
+        "label": "XL",
+        "body": { "heightCm": [181, 192], "waistCm": [89.5, 96.5], "hipCm": [104, 108.5] },
+        "garment": {
+          "waistCm": 95,
+          "hipCm": 116,
+          "thighCm": 76,
+          "legOpeningCm": 61,
+          "inseamCm": 25,
+          "riseCm": 27
+        }
+      },
+      {
+        "label": "XXL",
+        "body": { "heightCm": [186, 196], "waistCm": [96.5, 104], "hipCm": [108.5, 113] },
+        "garment": {
+          "waistCm": 102,
+          "hipCm": 120.5,
+          "thighCm": 79.5,
+          "legOpeningCm": 62.5,
+          "inseamCm": 25.5,
+          "riseCm": 28
+        }
+      },
+      {
+        "label": "3XL",
+        "body": { "heightCm": [190, 200], "waistCm": [104, 112], "hipCm": [113, 117.5] },
+        "garment": {
+          "waistCm": 110,
+          "hipCm": 125,
+          "thighCm": 83,
+          "legOpeningCm": 64,
+          "inseamCm": 26,
+          "riseCm": 28.5
+        }
+      },
+      {
+        "label": "4XL",
+        "body": { "heightCm": [192, 208], "waistCm": [112, 122], "hipCm": [117.5, 124] },
+        "garment": {
+          "waistCm": 118,
+          "hipCm": 130,
+          "thighCm": 86.5,
+          "legOpeningCm": 65.5,
+          "inseamCm": 26.5,
+          "riseCm": 29.5
+        }
+      }
+    ],
+    "params": {
+      "kneeRatio": 1,
+      "waistbandHeightCm": 4,
+      "cuffFoldCm": 2.5,
+      "flyLengthCm": 14,
+      "backRiseExtraCm": 4
+    },
+    "price": { "amount": 59, "currency": "EUR" },
+    "tags": ["casual", "summer", "beach", "weekend"]
+  },
+  {
+    "id": "skirt-midi-pleated",
+    "name": { "es": "Falda midi plisada de crepé de seda", "en": "Pleated Silk-Crepe Midi Skirt" },
+    "description": {
+      "es": "Crepé de seda de 90 g/m² con plisado de cuchillo y cintura elástica cubierta. Vuelo fluido y movimiento ligero, largo midi. Combina con un jersey fino o una camisa.",
+      "en": "90 gsm silk crepe with knife pleats and a covered elastic waist. A fluid sweep with light movement, midi length. Pairs with a fine knit or a shirt."
+    },
+    "brand": "Maison Verbena",
+    "category": "bottoms",
+    "template": "skirt",
+    "slot": "lower",
+    "fit": "regular",
+    "fabricId": "silk-crepe-90",
+    "variants": [
+      {
+        "id": "ink",
+        "name": { "es": "Negro tinta", "en": "Ink black" },
+        "color": "#1C1D21",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "champagne",
+        "name": { "es": "Champán", "en": "Champagne" },
+        "color": "#E3CDB0",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "sage",
+        "name": { "es": "Verde salvia", "en": "Sage" },
+        "color": "#8E9F86",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "navy-dots",
+        "name": { "es": "Lunares sobre marino", "en": "Dots on navy" },
+        "color": "#22304A",
+        "pattern": { "type": "dots", "color2": "#F4F1EA", "radiusMm": 2, "spacingMm": 10 }
+      },
+      {
+        "id": "ecru-floral",
+        "name": { "es": "Flores sobre crudo", "en": "Floral on ecru" },
+        "color": "#EDE6D6",
+        "pattern": { "type": "floral", "color2": "#B4624A", "color3": "#6A7F5A", "scaleMm": 55 }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "34",
+        "body": { "heightCm": [150, 164], "waistCm": [58, 64], "hipCm": [84.5, 90] },
+        "garment": { "waistCm": 66, "hipCm": 96, "hemCm": 168.5, "lengthCm": 69 }
+      },
+      {
+        "label": "36",
+        "body": { "heightCm": [153, 167], "waistCm": [64, 68], "hipCm": [90, 94] },
+        "garment": { "waistCm": 70, "hipCm": 100, "hemCm": 174, "lengthCm": 69.5 }
+      },
+      {
+        "label": "38",
+        "body": { "heightCm": [156, 170], "waistCm": [68, 72], "hipCm": [94, 98] },
+        "garment": { "waistCm": 74, "hipCm": 104, "hemCm": 179.5, "lengthCm": 70.5 }
+      },
+      {
+        "label": "40",
+        "body": { "heightCm": [159, 173], "waistCm": [72, 76], "hipCm": [98, 102] },
+        "garment": { "waistCm": 78, "hipCm": 108, "hemCm": 184.5, "lengthCm": 71 }
+      },
+      {
+        "label": "42",
+        "body": { "heightCm": [162, 176], "waistCm": [76, 80], "hipCm": [102, 106] },
+        "garment": { "waistCm": 82, "hipCm": 112, "hemCm": 190, "lengthCm": 72 }
+      },
+      {
+        "label": "44",
+        "body": { "heightCm": [165, 179], "waistCm": [80, 84.5], "hipCm": [106, 110] },
+        "garment": { "waistCm": 86, "hipCm": 116, "hemCm": 195.5, "lengthCm": 73 }
+      },
+      {
+        "label": "46",
+        "body": { "heightCm": [168, 182], "waistCm": [84.5, 90], "hipCm": [110, 114] },
+        "garment": { "waistCm": 91, "hipCm": 120, "hemCm": 200.5, "lengthCm": 73.5 }
+      },
+      {
+        "label": "48",
+        "body": { "heightCm": [171, 185], "waistCm": [90, 96], "hipCm": [114, 118] },
+        "garment": { "waistCm": 97, "hipCm": 124, "hemCm": 206.5, "lengthCm": 74.5 }
+      },
+      {
+        "label": "50",
+        "body": { "heightCm": [174, 189], "waistCm": [96, 102], "hipCm": [118, 122] },
+        "garment": { "waistCm": 103, "hipCm": 128, "hemCm": 212, "lengthCm": 75.5 }
+      },
+      {
+        "label": "52",
+        "body": { "heightCm": [177, 193], "waistCm": [102, 108], "hipCm": [122, 126] },
+        "garment": { "waistCm": 109, "hipCm": 132, "hemCm": 217.5, "lengthCm": 76.5 }
+      },
+      {
+        "label": "54",
+        "body": { "heightCm": [180, 197], "waistCm": [108, 114], "hipCm": [126, 130] },
+        "garment": { "waistCm": 115, "hipCm": 136, "hemCm": 223.5, "lengthCm": 77.5 }
+      },
+      {
+        "label": "56",
+        "body": { "heightCm": [183, 201], "waistCm": [114, 122], "hipCm": [130, 135.5] },
+        "garment": { "waistCm": 121, "hipCm": 140, "hemCm": 229, "lengthCm": 78.5 }
+      }
+    ],
+    "params": { "waistbandHeightCm": 3.5, "pleatCount": 48, "pleatDepthCm": 2, "slitLengthCm": 0 },
+    "price": { "amount": 99, "currency": "EUR" },
+    "tags": ["smart-casual", "evening", "office", "all-season", "minimal"]
+  }
+]

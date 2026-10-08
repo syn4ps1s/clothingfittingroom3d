@@ -1,0 +1,852 @@
+[
+  {
+    "id": "blazer-tweed",
+    "name": { "es": "Americana de tweed en espiga", "en": "Herringbone Tweed Blazer" },
+    "description": {
+      "es": "Tweed de lana de 360 g/m² con forro completo y hombrera ligera. Solapa con ojal, dos botones, tres bolsillos y abertura trasera. Corte regular estructurado.",
+      "en": "360 gsm wool tweed with a full lining and a light shoulder pad. Notch lapel, two buttons, three pockets and a back vent. Regular, structured cut."
+    },
+    "brand": "Atelier Norte",
+    "category": "outerwear",
+    "template": "blazer",
+    "slot": "outer",
+    "fit": "regular",
+    "fabricId": "tweed-herringbone-360",
+    "variants": [
+      {
+        "id": "brown-herringbone",
+        "name": { "es": "Espiga marrón y crudo", "en": "Brown and ecru herringbone" },
+        "color": "#6B5B4B",
+        "pattern": { "type": "herringbone", "color2": "#D9CFC0", "sizeMm": 9 }
+      },
+      {
+        "id": "grey-herringbone",
+        "name": { "es": "Espiga gris", "en": "Grey herringbone" },
+        "color": "#5B6068",
+        "pattern": { "type": "herringbone", "color2": "#C9CACB", "sizeMm": 9 }
+      },
+      {
+        "id": "navy-olive-check",
+        "name": { "es": "Cuadro marino y oliva", "en": "Navy and olive check" },
+        "color": "#22304A",
+        "pattern": { "type": "plaid", "color2": "#6A6A3F", "color3": "#8C2F39", "sizeMm": 60 }
+      },
+      {
+        "id": "navy",
+        "name": { "es": "Azul marino", "en": "Navy" },
+        "color": "#22304A",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "forest",
+        "name": { "es": "Verde bosque", "en": "Forest green" },
+        "color": "#2F4A3B",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "XS",
+        "body": {
+          "heightCm": [148, 164],
+          "chestCm": [79, 87],
+          "waistCm": [61, 69],
+          "hipCm": [84, 90.5],
+          "shoulderWidthCm": [33.5, 37.5]
+        },
+        "garment": {
+          "chestCm": 98,
+          "waistCm": 90,
+          "hipCm": 102,
+          "hemCm": 104,
+          "shoulderWidthCm": 38.5,
+          "lengthCm": 70.5,
+          "sleeveLengthCm": 53
+        }
+      },
+      {
+        "label": "S",
+        "body": {
+          "heightCm": [160, 172],
+          "chestCm": [87, 93],
+          "waistCm": [69, 75.5],
+          "hipCm": [90.5, 95],
+          "shoulderWidthCm": [37.5, 40]
+        },
+        "garment": {
+          "chestCm": 104,
+          "waistCm": 96,
+          "hipCm": 106.5,
+          "hemCm": 108.5,
+          "shoulderWidthCm": 41,
+          "lengthCm": 72,
+          "sleeveLengthCm": 56.5
+        }
+      },
+      {
+        "label": "M",
+        "body": {
+          "heightCm": [168, 180],
+          "chestCm": [93, 99],
+          "waistCm": [75.5, 82.5],
+          "hipCm": [95, 99.5],
+          "shoulderWidthCm": [40, 42.5]
+        },
+        "garment": {
+          "chestCm": 110,
+          "waistCm": 102,
+          "hipCm": 111,
+          "hemCm": 113,
+          "shoulderWidthCm": 43.5,
+          "lengthCm": 74,
+          "sleeveLengthCm": 59.5
+        }
+      },
+      {
+        "label": "L",
+        "body": {
+          "heightCm": [175, 186],
+          "chestCm": [99, 105],
+          "waistCm": [82.5, 89.5],
+          "hipCm": [99.5, 104],
+          "shoulderWidthCm": [42.5, 45]
+        },
+        "garment": {
+          "chestCm": 116,
+          "waistCm": 108,
+          "hipCm": 115.5,
+          "hemCm": 117.5,
+          "shoulderWidthCm": 46,
+          "lengthCm": 76,
+          "sleeveLengthCm": 62
+        }
+      },
+      {
+        "label": "XL",
+        "body": {
+          "heightCm": [181, 192],
+          "chestCm": [105, 111],
+          "waistCm": [89.5, 96.5],
+          "hipCm": [104, 108.5],
+          "shoulderWidthCm": [45, 47.5]
+        },
+        "garment": {
+          "chestCm": 122,
+          "waistCm": 114,
+          "hipCm": 120,
+          "hemCm": 122,
+          "shoulderWidthCm": 48.5,
+          "lengthCm": 77.5,
+          "sleeveLengthCm": 64
+        }
+      },
+      {
+        "label": "XXL",
+        "body": {
+          "heightCm": [186, 196],
+          "chestCm": [111, 117],
+          "waistCm": [96.5, 104],
+          "hipCm": [108.5, 113],
+          "shoulderWidthCm": [47.5, 50]
+        },
+        "garment": {
+          "chestCm": 128,
+          "waistCm": 120,
+          "hipCm": 124.5,
+          "hemCm": 126.5,
+          "shoulderWidthCm": 51,
+          "lengthCm": 79.5,
+          "sleeveLengthCm": 65.5
+        }
+      },
+      {
+        "label": "3XL",
+        "body": {
+          "heightCm": [190, 200],
+          "chestCm": [117, 123],
+          "waistCm": [104, 112],
+          "hipCm": [113, 117.5],
+          "shoulderWidthCm": [50, 52.5]
+        },
+        "garment": {
+          "chestCm": 134,
+          "waistCm": 126,
+          "hipCm": 129,
+          "hemCm": 131,
+          "shoulderWidthCm": 53.5,
+          "lengthCm": 81,
+          "sleeveLengthCm": 67
+        }
+      },
+      {
+        "label": "4XL",
+        "body": {
+          "heightCm": [192, 208],
+          "chestCm": [123, 131],
+          "waistCm": [112, 122],
+          "hipCm": [117.5, 124],
+          "shoulderWidthCm": [52.5, 55.5]
+        },
+        "garment": {
+          "chestCm": 140,
+          "waistCm": 132,
+          "hipCm": 134,
+          "hemCm": 136,
+          "shoulderWidthCm": 56,
+          "lengthCm": 83,
+          "sleeveLengthCm": 68.5
+        }
+      }
+    ],
+    "params": {
+      "neckWidthRatio": 0.36,
+      "armholeDepthRatio": 0.22,
+      "sleeveTaper": 0.72,
+      "lapelWidthCm": 8,
+      "lapelRollRatio": 0.52,
+      "collarHeightCm": 4.5,
+      "buttonCount": 2,
+      "buttonStanceRatio": 0.55,
+      "ventLengthCm": 22,
+      "shoulderPadCm": 1
+    },
+    "price": { "amount": 249, "currency": "EUR" },
+    "tags": ["formal", "smart-casual", "office", "winter", "classic"]
+  },
+  {
+    "id": "jacket-leather-biker",
+    "name": { "es": "Cazadora de piel de cordero", "en": "Lambskin Biker Jacket" },
+    "description": {
+      "es": "Piel de cordero napa curtida al vegetal, con cremallera diagonal, solapas cortas y forro de viscosa. Cuello con presilla y puños con cremallera. Corte entallado y largo corto.",
+      "en": "Vegetable-tanned napa lambskin with a diagonal zip, short lapels and a viscose lining. Snap collar and zip cuffs. Slim, cropped cut."
+    },
+    "brand": "Taller Arce",
+    "category": "outerwear",
+    "template": "jacket",
+    "slot": "outer",
+    "fit": "slim",
+    "fabricId": "leather-lamb-09",
+    "variants": [
+      {
+        "id": "ink",
+        "name": { "es": "Negro tinta", "en": "Ink black" },
+        "color": "#1C1D21",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "cognac",
+        "name": { "es": "Coñac", "en": "Cognac" },
+        "color": "#8B4F2A",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "burgundy",
+        "name": { "es": "Burdeos", "en": "Burgundy" },
+        "color": "#6B2737",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "chocolate",
+        "name": { "es": "Chocolate", "en": "Chocolate" },
+        "color": "#4A3428",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "olive",
+        "name": { "es": "Verde oliva", "en": "Olive" },
+        "color": "#6A6A3F",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "XS",
+        "body": {
+          "heightCm": [148, 164],
+          "chestCm": [79, 87],
+          "waistCm": [61, 69],
+          "hipCm": [84, 90.5],
+          "shoulderWidthCm": [33.5, 37.5]
+        },
+        "garment": {
+          "chestCm": 92,
+          "waistCm": 86,
+          "hipCm": 96,
+          "hemCm": 88,
+          "shoulderWidthCm": 37.5,
+          "lengthCm": 55.5,
+          "sleeveLengthCm": 51.5
+        }
+      },
+      {
+        "label": "S",
+        "body": {
+          "heightCm": [160, 172],
+          "chestCm": [87, 93],
+          "waistCm": [69, 75.5],
+          "hipCm": [90.5, 95],
+          "shoulderWidthCm": [37.5, 40]
+        },
+        "garment": {
+          "chestCm": 98,
+          "waistCm": 92,
+          "hipCm": 100.5,
+          "hemCm": 94,
+          "shoulderWidthCm": 40,
+          "lengthCm": 57,
+          "sleeveLengthCm": 55
+        }
+      },
+      {
+        "label": "M",
+        "body": {
+          "heightCm": [168, 180],
+          "chestCm": [93, 99],
+          "waistCm": [75.5, 82.5],
+          "hipCm": [95, 99.5],
+          "shoulderWidthCm": [40, 42.5]
+        },
+        "garment": {
+          "chestCm": 104,
+          "waistCm": 98,
+          "hipCm": 105,
+          "hemCm": 100,
+          "shoulderWidthCm": 42.5,
+          "lengthCm": 58,
+          "sleeveLengthCm": 58
+        }
+      },
+      {
+        "label": "L",
+        "body": {
+          "heightCm": [175, 186],
+          "chestCm": [99, 105],
+          "waistCm": [82.5, 89.5],
+          "hipCm": [99.5, 104],
+          "shoulderWidthCm": [42.5, 45]
+        },
+        "garment": {
+          "chestCm": 110,
+          "waistCm": 104,
+          "hipCm": 109.5,
+          "hemCm": 106,
+          "shoulderWidthCm": 45,
+          "lengthCm": 59,
+          "sleeveLengthCm": 60.5
+        }
+      },
+      {
+        "label": "XL",
+        "body": {
+          "heightCm": [181, 192],
+          "chestCm": [105, 111],
+          "waistCm": [89.5, 96.5],
+          "hipCm": [104, 108.5],
+          "shoulderWidthCm": [45, 47.5]
+        },
+        "garment": {
+          "chestCm": 116,
+          "waistCm": 110,
+          "hipCm": 114,
+          "hemCm": 112,
+          "shoulderWidthCm": 47.5,
+          "lengthCm": 60.5,
+          "sleeveLengthCm": 62.5
+        }
+      },
+      {
+        "label": "XXL",
+        "body": {
+          "heightCm": [186, 196],
+          "chestCm": [111, 117],
+          "waistCm": [96.5, 104],
+          "hipCm": [108.5, 113],
+          "shoulderWidthCm": [47.5, 50]
+        },
+        "garment": {
+          "chestCm": 122,
+          "waistCm": 116,
+          "hipCm": 118.5,
+          "hemCm": 118,
+          "shoulderWidthCm": 50,
+          "lengthCm": 61.5,
+          "sleeveLengthCm": 64
+        }
+      },
+      {
+        "label": "3XL",
+        "body": {
+          "heightCm": [190, 200],
+          "chestCm": [117, 123],
+          "waistCm": [104, 112],
+          "hipCm": [113, 117.5],
+          "shoulderWidthCm": [50, 52.5]
+        },
+        "garment": {
+          "chestCm": 128,
+          "waistCm": 122,
+          "hipCm": 123,
+          "hemCm": 124,
+          "shoulderWidthCm": 52.5,
+          "lengthCm": 63,
+          "sleeveLengthCm": 65.5
+        }
+      },
+      {
+        "label": "4XL",
+        "body": {
+          "heightCm": [192, 208],
+          "chestCm": [123, 131],
+          "waistCm": [112, 122],
+          "hipCm": [117.5, 124],
+          "shoulderWidthCm": [52.5, 55.5]
+        },
+        "garment": {
+          "chestCm": 134,
+          "waistCm": 128,
+          "hipCm": 128,
+          "hemCm": 130,
+          "shoulderWidthCm": 55,
+          "lengthCm": 64,
+          "sleeveLengthCm": 67
+        }
+      }
+    ],
+    "params": {
+      "neckWidthRatio": 0.34,
+      "armholeDepthRatio": 0.21,
+      "sleeveTaper": 0.66,
+      "lapelWidthCm": 6,
+      "lapelRollRatio": 0.4,
+      "collarHeightCm": 5,
+      "buttonCount": 1,
+      "buttonStanceRatio": 0.5,
+      "ventLengthCm": 0,
+      "shoulderPadCm": 0
+    },
+    "price": { "amount": 349, "currency": "EUR" },
+    "tags": ["casual", "all-season", "evening", "outdoor", "classic"]
+  },
+  {
+    "id": "jacket-corduroy-overshirt",
+    "name": { "es": "Sobrecamisa de pana", "en": "Corduroy Overshirt" },
+    "description": {
+      "es": "Pana de algodón de tacto mate con cinco botones, dos bolsillos de parche con solapa y costuras vistas. Ni camisa ni chaqueta: perfecta como capa intermedia. Corte holgado.",
+      "en": "Matte-finish cotton corduroy with five buttons, two flap patch pockets and topstitched seams. Neither shirt nor jacket: perfect as a mid layer. Relaxed cut."
+    },
+    "brand": "Taller Arce",
+    "category": "outerwear",
+    "template": "jacket",
+    "slot": "outer",
+    "fit": "relaxed",
+    "fabricId": "corduroy-14w",
+    "variants": [
+      {
+        "id": "camel",
+        "name": { "es": "Camel", "en": "Camel" },
+        "color": "#B38A5B",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "olive",
+        "name": { "es": "Verde oliva", "en": "Olive" },
+        "color": "#6A6A3F",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "navy",
+        "name": { "es": "Azul marino", "en": "Navy" },
+        "color": "#22304A",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "rust",
+        "name": { "es": "Óxido", "en": "Rust" },
+        "color": "#9C4A2B",
+        "pattern": { "type": "solid" }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "XS",
+        "body": {
+          "heightCm": [148, 164],
+          "chestCm": [79, 87],
+          "waistCm": [61, 69],
+          "hipCm": [84, 90.5],
+          "shoulderWidthCm": [33.5, 37.5]
+        },
+        "garment": {
+          "chestCm": 104,
+          "waistCm": 102,
+          "hipCm": 110,
+          "hemCm": 102,
+          "shoulderWidthCm": 40,
+          "lengthCm": 71,
+          "sleeveLengthCm": 54.5
+        }
+      },
+      {
+        "label": "S",
+        "body": {
+          "heightCm": [160, 172],
+          "chestCm": [87, 93],
+          "waistCm": [69, 75.5],
+          "hipCm": [90.5, 95],
+          "shoulderWidthCm": [37.5, 40]
+        },
+        "garment": {
+          "chestCm": 110,
+          "waistCm": 108,
+          "hipCm": 114.5,
+          "hemCm": 108,
+          "shoulderWidthCm": 42.5,
+          "lengthCm": 72.5,
+          "sleeveLengthCm": 58
+        }
+      },
+      {
+        "label": "M",
+        "body": {
+          "heightCm": [168, 180],
+          "chestCm": [93, 99],
+          "waistCm": [75.5, 82.5],
+          "hipCm": [95, 99.5],
+          "shoulderWidthCm": [40, 42.5]
+        },
+        "garment": {
+          "chestCm": 116,
+          "waistCm": 114,
+          "hipCm": 119,
+          "hemCm": 114,
+          "shoulderWidthCm": 45,
+          "lengthCm": 74,
+          "sleeveLengthCm": 61
+        }
+      },
+      {
+        "label": "L",
+        "body": {
+          "heightCm": [175, 186],
+          "chestCm": [99, 105],
+          "waistCm": [82.5, 89.5],
+          "hipCm": [99.5, 104],
+          "shoulderWidthCm": [42.5, 45]
+        },
+        "garment": {
+          "chestCm": 122,
+          "waistCm": 120,
+          "hipCm": 123.5,
+          "hemCm": 120,
+          "shoulderWidthCm": 47.5,
+          "lengthCm": 75.5,
+          "sleeveLengthCm": 63.5
+        }
+      },
+      {
+        "label": "XL",
+        "body": {
+          "heightCm": [181, 192],
+          "chestCm": [105, 111],
+          "waistCm": [89.5, 96.5],
+          "hipCm": [104, 108.5],
+          "shoulderWidthCm": [45, 47.5]
+        },
+        "garment": {
+          "chestCm": 128,
+          "waistCm": 126,
+          "hipCm": 128,
+          "hemCm": 126,
+          "shoulderWidthCm": 50,
+          "lengthCm": 77,
+          "sleeveLengthCm": 65.5
+        }
+      },
+      {
+        "label": "XXL",
+        "body": {
+          "heightCm": [186, 196],
+          "chestCm": [111, 117],
+          "waistCm": [96.5, 104],
+          "hipCm": [108.5, 113],
+          "shoulderWidthCm": [47.5, 50]
+        },
+        "garment": {
+          "chestCm": 134,
+          "waistCm": 132,
+          "hipCm": 132.5,
+          "hemCm": 132,
+          "shoulderWidthCm": 52.5,
+          "lengthCm": 79,
+          "sleeveLengthCm": 67
+        }
+      },
+      {
+        "label": "3XL",
+        "body": {
+          "heightCm": [190, 200],
+          "chestCm": [117, 123],
+          "waistCm": [104, 112],
+          "hipCm": [113, 117.5],
+          "shoulderWidthCm": [50, 52.5]
+        },
+        "garment": {
+          "chestCm": 140,
+          "waistCm": 138,
+          "hipCm": 137,
+          "hemCm": 138,
+          "shoulderWidthCm": 55,
+          "lengthCm": 80.5,
+          "sleeveLengthCm": 68.5
+        }
+      },
+      {
+        "label": "4XL",
+        "body": {
+          "heightCm": [192, 208],
+          "chestCm": [123, 131],
+          "waistCm": [112, 122],
+          "hipCm": [117.5, 124],
+          "shoulderWidthCm": [52.5, 55.5]
+        },
+        "garment": {
+          "chestCm": 146,
+          "waistCm": 144,
+          "hipCm": 142,
+          "hemCm": 144,
+          "shoulderWidthCm": 57.5,
+          "lengthCm": 82,
+          "sleeveLengthCm": 70
+        }
+      }
+    ],
+    "params": {
+      "neckWidthRatio": 0.38,
+      "armholeDepthRatio": 0.23,
+      "sleeveTaper": 0.75,
+      "lapelWidthCm": 0,
+      "lapelRollRatio": 0.5,
+      "collarHeightCm": 5,
+      "buttonCount": 5,
+      "buttonStanceRatio": 0.6,
+      "ventLengthCm": 0,
+      "shoulderPadCm": 0
+    },
+    "price": { "amount": 119, "currency": "EUR" },
+    "tags": ["casual", "all-season", "layering", "outdoor", "weekend"]
+  },
+  {
+    "id": "coat-wool-long",
+    "name": { "es": "Abrigo largo de paño de lana", "en": "Long Wool Coat" },
+    "description": {
+      "es": "Paño de lana de 480 g/m² con forro de viscosa, solapa ancha y doble hilera de botones. Dos bolsillos de ojal y abertura trasera. Largo por debajo de la rodilla, corte regular.",
+      "en": "480 gsm wool coating with a viscose lining, wide lapels and a double-breasted button row. Two jetted pockets and a back vent. Below-the-knee length, regular cut."
+    },
+    "brand": "Atelier Norte",
+    "category": "outerwear",
+    "template": "coat",
+    "slot": "outer",
+    "fit": "regular",
+    "fabricId": "tweed-coating-480",
+    "variants": [
+      {
+        "id": "camel",
+        "name": { "es": "Camel", "en": "Camel" },
+        "color": "#B38A5B",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "charcoal",
+        "name": { "es": "Gris marengo", "en": "Charcoal" },
+        "color": "#3C4048",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "navy",
+        "name": { "es": "Azul marino", "en": "Navy" },
+        "color": "#22304A",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "ink",
+        "name": { "es": "Negro tinta", "en": "Ink black" },
+        "color": "#1C1D21",
+        "pattern": { "type": "solid" }
+      },
+      {
+        "id": "grey-herringbone",
+        "name": { "es": "Espiga gris", "en": "Grey herringbone" },
+        "color": "#5B6068",
+        "pattern": { "type": "herringbone", "color2": "#B3B5B8", "sizeMm": 10 }
+      }
+    ],
+    "sizes": [
+      {
+        "label": "XS",
+        "body": {
+          "heightCm": [148, 164],
+          "chestCm": [79, 87],
+          "waistCm": [61, 69],
+          "hipCm": [84, 90.5],
+          "shoulderWidthCm": [33.5, 37.5]
+        },
+        "garment": {
+          "chestCm": 98,
+          "waistCm": 92,
+          "hipCm": 104,
+          "hemCm": 118,
+          "shoulderWidthCm": 38.5,
+          "lengthCm": 99.5,
+          "sleeveLengthCm": 53
+        }
+      },
+      {
+        "label": "S",
+        "body": {
+          "heightCm": [160, 172],
+          "chestCm": [87, 93],
+          "waistCm": [69, 75.5],
+          "hipCm": [90.5, 95],
+          "shoulderWidthCm": [37.5, 40]
+        },
+        "garment": {
+          "chestCm": 104,
+          "waistCm": 98,
+          "hipCm": 108.5,
+          "hemCm": 122.5,
+          "shoulderWidthCm": 41,
+          "lengthCm": 102,
+          "sleeveLengthCm": 56.5
+        }
+      },
+      {
+        "label": "M",
+        "body": {
+          "heightCm": [168, 180],
+          "chestCm": [93, 99],
+          "waistCm": [75.5, 82.5],
+          "hipCm": [95, 99.5],
+          "shoulderWidthCm": [40, 42.5]
+        },
+        "garment": {
+          "chestCm": 110,
+          "waistCm": 104,
+          "hipCm": 113,
+          "hemCm": 127,
+          "shoulderWidthCm": 43.5,
+          "lengthCm": 104,
+          "sleeveLengthCm": 59.5
+        }
+      },
+      {
+        "label": "L",
+        "body": {
+          "heightCm": [175, 186],
+          "chestCm": [99, 105],
+          "waistCm": [82.5, 89.5],
+          "hipCm": [99.5, 104],
+          "shoulderWidthCm": [42.5, 45]
+        },
+        "garment": {
+          "chestCm": 116,
+          "waistCm": 110,
+          "hipCm": 117.5,
+          "hemCm": 131.5,
+          "shoulderWidthCm": 46,
+          "lengthCm": 106,
+          "sleeveLengthCm": 62
+        }
+      },
+      {
+        "label": "XL",
+        "body": {
+          "heightCm": [181, 192],
+          "chestCm": [105, 111],
+          "waistCm": [89.5, 96.5],
+          "hipCm": [104, 108.5],
+          "shoulderWidthCm": [45, 47.5]
+        },
+        "garment": {
+          "chestCm": 122,
+          "waistCm": 116,
+          "hipCm": 122,
+          "hemCm": 136,
+          "shoulderWidthCm": 48.5,
+          "lengthCm": 108.5,
+          "sleeveLengthCm": 64
+        }
+      },
+      {
+        "label": "XXL",
+        "body": {
+          "heightCm": [186, 196],
+          "chestCm": [111, 117],
+          "waistCm": [96.5, 104],
+          "hipCm": [108.5, 113],
+          "shoulderWidthCm": [47.5, 50]
+        },
+        "garment": {
+          "chestCm": 128,
+          "waistCm": 122,
+          "hipCm": 126.5,
+          "hemCm": 140.5,
+          "shoulderWidthCm": 51,
+          "lengthCm": 110.5,
+          "sleeveLengthCm": 65.5
+        }
+      },
+      {
+        "label": "3XL",
+        "body": {
+          "heightCm": [190, 200],
+          "chestCm": [117, 123],
+          "waistCm": [104, 112],
+          "hipCm": [113, 117.5],
+          "shoulderWidthCm": [50, 52.5]
+        },
+        "garment": {
+          "chestCm": 134,
+          "waistCm": 128,
+          "hipCm": 131,
+          "hemCm": 145,
+          "shoulderWidthCm": 53.5,
+          "lengthCm": 113,
+          "sleeveLengthCm": 67
+        }
+      },
+      {
+        "label": "4XL",
+        "body": {
+          "heightCm": [192, 208],
+          "chestCm": [123, 131],
+          "waistCm": [112, 122],
+          "hipCm": [117.5, 124],
+          "shoulderWidthCm": [52.5, 55.5]
+        },
+        "garment": {
+          "chestCm": 140,
+          "waistCm": 134,
+          "hipCm": 136,
+          "hemCm": 150,
+          "shoulderWidthCm": 56,
+          "lengthCm": 115,
+          "sleeveLengthCm": 68.5
+        }
+      }
+    ],
+    "params": {
+      "neckWidthRatio": 0.36,
+      "armholeDepthRatio": 0.22,
+      "sleeveTaper": 0.8,
+      "lapelWidthCm": 9,
+      "lapelRollRatio": 0.5,
+      "collarHeightCm": 6,
+      "buttonCount": 6,
+      "buttonStanceRatio": 0.5,
+      "ventLengthCm": 40,
+      "shoulderPadCm": 1.5
+    },
+    "price": { "amount": 329, "currency": "EUR" },
+    "tags": ["formal", "smart-casual", "office", "winter", "outdoor", "classic"]
+  }
+]

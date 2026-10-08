@@ -1,0 +1,59 @@
+/*
+ * Sistema de diseño: atelier cálido. Marfil de papel, latón, roble, verde oliva oscuro.
+ * Todos los pares texto/fondo usados cumplen AA (comprobado con axe en e2e).
+ */
+:root {
+  color-scheme: dark;
+
+  --ivory-50: #fcf8ef;
+  --ivory-100: #f6eedd;
+  --ivory-200: #ebdfc6;
+  --ivory-300: #d9c9a6;
+
+  --ink: #2a1f15;
+  --ink-soft: #55463a;
+  --ink-faint: #6f5f50;
+
+  --oak-950: #150d07;
+  --oak-900: #1d140d;
+  --oak-800: #2b1d12;
+  --oak-700: #43301f;
+  --oak-500: #7a5532;
+  --oak-300: #b08a5e;
+
+  --brass-800: #6b4a14;
+  --brass-700: #7d5a1f;
+  --brass-600: #98712b;
+  --brass-500: #b88a38;
+  --brass-400: #d0a64f;
+  --brass-300: #e6c47f;
+  --brass-200: #f3dfae;
+
+  --olive-900: #1d2615;
+  --olive-800: #2a371d;
+  --olive-700: #3b4c29;
+  --olive-600: #4f6336;
+  --olive-300: #a9bd8a;
+
+  --terracotta-700: #8b3a22;
+  --terracotta-600: #a8482b;
+  --ochre-700: #7a5710;
+
+  --focus-paper: #2f4a1c;
+  --focus-dark: #f3d58f;
+  --focus: var(--focus-paper);
+
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-ui: 'Instrument Sans Variable', 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+
+  --shadow-panel:
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    0 0 0 1px rgba(125, 90, 31, 0.28),
+    0 28px 60px -24px rgba(12, 6, 0, 0.7),
+    0 8px 18px -6px rgba(12, 6, 0, 0.35);
+  --ease-out: cubic-bezier(0.22, 0.8, 0.25, 1);
+}

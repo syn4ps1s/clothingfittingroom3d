@@ -3,40 +3,72 @@ import {
   type CameraIntrinsics,
   type MeasurementEstimate,
   type PoseFrame,
-  type PoseProvider,
-  type PoseToSkeleton,
   type ScanSession,
 } from '@fitroom/shared';
 
-export interface MediaPipeOptions {
-  /** URL del .task (p. ej. /models/pose_landmarker_lite.task) — mismo origen */
-  readonly modelUrl: string;
-  /** URL base de los WASM (p. ej. /wasm) — mismo origen */
-  readonly wasmBaseUrl: string;
-  readonly runningMode?: 'VIDEO' | 'IMAGE';
-  readonly outputSegmentationMask?: boolean;
-}
+// ---- Detector real (MediaPipe, on-device) ---------------------------------------------------------
+export {
+  createMediaPipePoseProvider,
+  PoseProviderError,
+  convertPoseResult,
+  convertMask,
+  primaryPersonScore,
+  sourceSize,
+} from './mediapipe.js';
+export type {
+  MediaPipeOptions,
+  MediaPipePoseProvider,
+  PoseProviderErrorCode,
+  RawLandmark,
+  RawMask,
+  RawPoseResult,
+} from './mediapipe.js';
 
-/** Detector real on-device. STUB — implementar en el agente POSE. */
-export function createMediaPipePoseProvider(_opts: MediaPipeOptions): PoseProvider {
-  throw new NotImplementedError('pose.createMediaPipePoseProvider');
-}
+// ---- Proveedor sintético ------------------------------------------------------------------------
+export {
+  createSyntheticPoseProvider,
+  synthesizeFrame,
+  skeletonFromState,
+  landmarkPositions,
+} from './synthetic.js';
+export type {
+  SyntheticPoseName,
+  ExtendedPoseName,
+  AnyPoseName,
+  SyntheticPoseOptions,
+  SyntheticPoseProvider,
+  SyntheticFaults,
+  SynthesisOptions,
+  PlacementOptions,
+  OcclusionGroup,
+  TimeWindow,
+} from './synthetic.js';
+export { ALL_POSE_NAMES, evalPose, blendPoseStates, samplePlausiblePose } from './poses.js';
+export type { PoseState } from './poses.js';
+export { renderCapsuleMask, rasterizeMeshMask, ellipseAxes } from './silhouette.js';
+export type { CapsuleMaskInput, MeshMaskInput } from './silhouette.js';
 
-/** Guion determinista de poses para tests / e2e sin cámara. STUB. */
-export type SyntheticPoseName =
-  'a-pose' | 't-pose' | 'arms-up' | 'walk' | 'turn' | 'sit' | 'jitter';
-export function createSyntheticPoseProvider(_opts: {
-  readonly heightCm: number;
-  readonly script: readonly { readonly pose: SyntheticPoseName; readonly durationMs: number }[];
-  readonly seed?: number;
-}): PoseProvider {
-  throw new NotImplementedError('pose.createSyntheticPoseProvider');
-}
+// ---- Retargeting y suavizado ---------------------------------------------------------------------
+export { poseToSkeleton, createPoseRetargeter } from './retarget.js';
+export type { PoseRetargeter, RetargetOptions } from './retarget.js';
+export { JOINT_LIMITS, applyJointLimit } from './limits.js';
+export {
+  OneEuroFilter,
+  PoseSmoother,
+  DEFAULT_IMAGE_FILTER,
+  DEFAULT_WORLD_FILTER,
+} from './filters.js';
+export type { OneEuroOptions, PoseSmootherOptions } from './filters.js';
 
-/** Landmarks → pose del esqueleto canónico (rotaciones swing + raíz en espacio cámara). STUB. */
-export const poseToSkeleton: PoseToSkeleton = () => {
-  throw new NotImplementedError('pose.poseToSkeleton');
-};
+// ---- Utilidades de cámara y rig ------------------------------------------------------------------
+export {
+  cameraScales,
+  rayFromNormalized,
+  projectToNormalized,
+  sanitizeCamera,
+  DEFAULT_CAMERA,
+} from './camera.js';
+export { defaultMeasurementsForHeight, defaultRestForHeight, restLandmarks } from './rig.js';
 
 /** Sesión guiada de escaneo de talla. STUB. */
 export function createScanSession(_opts: {
