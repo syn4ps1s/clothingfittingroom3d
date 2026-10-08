@@ -3,11 +3,15 @@
  * Congelado: cambios sólo coordinados con el orquestador. Se permiten ampliaciones ADITIVAS.
  */
 import type {
+  BodyModel,
   FabricDef,
+  FabricTextureSet,
   GarmentDefinition,
+  GarmentGeometry,
   MeasurementEstimate,
   Measurements,
   ScanProgress,
+  SkeletonPose,
   SwatchVariant,
 } from '@fitroom/shared';
 
@@ -86,10 +90,47 @@ export interface BodyScanApi {
   cancel(): void;
 }
 
+// ---------- Modelos 3D listos para render (orquestación de body + garments + texturas) ----------
+export interface LoadedGarment {
+  readonly item: EquippedItem;
+  readonly geometry: GarmentGeometry;
+  readonly textures: { readonly main: FabricTextureSet; readonly trim?: FabricTextureSet };
+}
+
+export interface FittingModels {
+  readonly status: 'idle' | 'loading' | 'ready' | 'error';
+  readonly body: BodyModel | null;
+  readonly garments: readonly LoadedGarment[];
+  readonly errorMessage?: string;
+}
+
+/** Vista estática/animada de una prenda ya cargada (para maniquíes del perchero, muestras y vista previa). */
+export interface GarmentViewProps {
+  readonly garment: LoadedGarment;
+  readonly body: BodyModel;
+  /** Pose del esqueleto (por defecto, reposo). */
+  readonly pose?: SkeletonPose;
+  /** Activar simulación de tela secundaria (por defecto false en vitrinas). */
+  readonly simulate?: boolean;
+  readonly quality?: 'low' | 'medium' | 'high';
+}
+
+export interface BodyMannequinProps {
+  readonly body: BodyModel;
+  readonly pose?: SkeletonPose;
+  /** 'mannequin' = maniquí mate de atelier; 'ghost' = translúcido; 'occluder' = sólo profundidad (invisible). */
+  readonly look?: 'mannequin' | 'ghost' | 'occluder';
+}
+
 /**
  * Exports obligatorios (los implementa MIRROR; los consume WORLD):
- *   camera/index.ts : useCamera(): CameraController
- *   mirror/index.ts : MirrorStage (forwardRef<MirrorHandle, MirrorStageProps>)
- *                     useBodyScan(camera: CameraController, source: PoseSourceKind): BodyScanApi
+ *   camera/index.ts  : useCamera(): CameraController
+ *   mirror/index.ts  : MirrorStage (forwardRef<MirrorHandle, MirrorStageProps>)
+ *                      useBodyScan(camera: CameraController, source: PoseSourceKind): BodyScanApi
+ *                      useFittingModels(measurements: Measurements | null, equipped: readonly EquippedItem[]): FittingModels
+ *                      GarmentView (R3F, props GarmentViewProps), BodyMannequin (R3F, props BodyMannequinProps)
+ *
+ * Mientras MIRROR no entregue, WORLD desarrolla contra mocks propios (apps/web/src/world/dev/) y
+ * integra lo real en cuanto exista `apps/web/src/mirror/STATUS.md` con "READY".
  */
 export type { ScanProgress };
