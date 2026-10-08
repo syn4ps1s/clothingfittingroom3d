@@ -1,0 +1,58 @@
+import type { Measurements } from './measurements.js';
+
+/** Medidas de referencia para tests y demos (valores plausibles de adultos). */
+export const REFERENCE_MEASUREMENTS: Record<'adultA' | 'adultB' | 'small' | 'large', Measurements> =
+  {
+    adultA: {
+      heightCm: 178,
+      weightKg: 76,
+      chestCm: 98,
+      waistCm: 84,
+      hipCm: 99,
+      shoulderWidthCm: 45,
+      armLengthCm: 61,
+      inseamCm: 81,
+      neckCm: 38,
+      thighCm: 57,
+      bodyBase: 'masculine',
+    },
+    adultB: {
+      heightCm: 166,
+      weightKg: 60,
+      chestCm: 90,
+      waistCm: 71,
+      hipCm: 98,
+      shoulderWidthCm: 38,
+      armLengthCm: 56,
+      inseamCm: 76,
+      neckCm: 33,
+      thighCm: 56,
+      bodyBase: 'feminine',
+    },
+    small: {
+      heightCm: 152,
+      weightKg: 45,
+      chestCm: 80,
+      waistCm: 63,
+      hipCm: 86,
+      shoulderWidthCm: 34,
+      armLengthCm: 50,
+      inseamCm: 68,
+      neckCm: 31,
+      thighCm: 49,
+      bodyBase: 'neutral',
+    },
+    large: {
+      heightCm: 194,
+      weightKg: 128,
+      chestCm: 126,
+      waistCm: 116,
+      hipCm: 120,
+      shoulderWidthCm: 53,
+      armLengthCm: 67,
+      inseamCm: 88,
+      neckCm: 46,
+      thighCm: 72,
+      bodyBase: 'masculine',
+    },
+  };

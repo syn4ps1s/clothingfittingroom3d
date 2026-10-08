@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+infra/cdk.out
+apps/web/public/models
+apps/web/public/wasm

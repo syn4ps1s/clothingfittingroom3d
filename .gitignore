@@ -1,0 +1,23 @@
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+# Modelos de IA y WASM: se descargan/copian con checksum (scripts/fetch-models.mjs)
+apps/web/public/models/
+apps/web/public/wasm/
+# Playwright
+test-results/
+playwright-report/
+e2e-artifacts/
+# CDK
+infra/cdk.out/
+infra/.cdk.staging/
+cdk.context.json
+# Salidas temporales de agentes/QA
+.scratch/
