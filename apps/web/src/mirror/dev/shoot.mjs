@@ -49,10 +49,11 @@ const waitMs = Number(args.wait ?? 3500);
 const [vw, vh] = String(args.viewport ?? '1280x720').split('x').map(Number);
 
 const q = new URLSearchParams();
-for (const k of ['garments', 'size', 'variant', 'quality', 'm', 'mirrored', 'mode', 'source']) {
+for (const k of ['garments', 'size', 'variant', 'quality', 'm', 'mirrored', 'mode', 'source', 'occluder']) {
   if (args[k] !== undefined) q.set(k, String(args[k]));
 }
 if (args.doubles) q.set('doubles', '1');
+if (args.slow !== '0') q.set('slow', '1');
 const url = `http://127.0.0.1:${port}/src/mirror/dev/mirror-harness.html?${q}`;
 
 /** Construye el arnés con Vite (producción: sin HMR) y lo sirve con un servidor estático mínimo. */

@@ -302,12 +302,13 @@ function isExternalUrl(raw: string): boolean {
 /** Instala (con cuenta de referencias) un `fetch` que rechaza peticiones a otros orígenes. */
 function installFetchGuard(): { release: () => void; blocked: readonly string[] } {
   if (typeof globalThis.fetch !== 'function') return { release: () => undefined, blocked: [] };
-  if (!fetchGuard) {
+  // si alguien sustituyó `fetch` después de instalar la guardia, se vuelve a envolver el actual
+  if (!fetchGuard || globalThis.fetch !== fetchGuard.wrapper) {
     const original = globalThis.fetch;
     const blocked: string[] = [];
     const wrapper = function (this: unknown, input: Parameters<typeof fetch>[0], init?: RequestInit) {
       const url = requestUrl(input);
-      if (fetchGuard && fetchGuard.refs > 0 && url !== null && isExternalUrl(url)) {
+      if (guard.refs > 0 && url !== null && isExternalUrl(url)) {
         blocked.push(url);
         return Promise.reject(
           new TypeError(`petición externa bloqueada por @fitroom/pose (privacidad): ${url}`),
@@ -315,7 +316,8 @@ function installFetchGuard(): { release: () => void; blocked: readonly string[] 
       }
       return original.call(globalThis, input, init);
     } as typeof fetch;
-    fetchGuard = { refs: 0, original, blocked, wrapper };
+    const guard: FetchGuard = { refs: 0, original, blocked, wrapper };
+    fetchGuard = guard;
     globalThis.fetch = wrapper;
   }
   const g = fetchGuard;
@@ -327,9 +329,9 @@ function installFetchGuard(): { release: () => void; blocked: readonly string[] 
       if (released) return;
       released = true;
       g.refs--;
-      if (g.refs <= 0 && globalThis.fetch === g.wrapper) {
-        globalThis.fetch = g.original;
-        fetchGuard = null;
+      if (g.refs <= 0) {
+        if (globalThis.fetch === g.wrapper) globalThis.fetch = g.original;
+        if (fetchGuard === g) fetchGuard = null;
       }
     },
   };
@@ -558,6 +560,8 @@ export function createMediaPipePoseProvider(opts: MediaPipeOptions): MediaPipePo
       }
       initPromise ??= doInit().catch((e: unknown) => {
         initPromise = null; // permite reintentar
+        releaseGuard?.();
+        releaseGuard = null;
         throw e instanceof PoseProviderError
           ? e
           : new PoseProviderError('init-failed', errMsg(e), e);

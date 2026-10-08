@@ -25,8 +25,8 @@ export {
   crotchHeight,
 } from './measure.js';
 export type { MeasuredBody, Loop } from './measure.js';
-export { analyzeTopology } from './meshops.js';
-export type { TopologyReport } from './meshops.js';
+export { analyzeTopology, estimateSelfIntersections } from './meshops.js';
+export type { TopologyReport, SelfIntersectionReport } from './meshops.js';
 export { INSEAM_RATIO_RANGE } from './build.js';
 export { buildBodyUncached };
 

@@ -15,7 +15,7 @@ import { ClothSolverError } from './types.js';
  * adyacentes) con pesos de soporte compacto: `out = skinned + Σ w_k · (x_k − tgt_k)`.
  */
 
-export const K_NEIGHBORS = 4;
+export const K_NEIGHBORS = 3;
 /** distancia máxima de seguridad al estado skinneado (m) aunque el generador pida más */
 export const MAX_LEASH = 1.0;
 const COORD_LIMIT = 1e5;

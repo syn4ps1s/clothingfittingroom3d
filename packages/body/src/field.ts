@@ -45,7 +45,7 @@ interface Index {
 const K = {
   bust: 0.045,
   glute: 0.05,
-  neck: 0.03,
+  neck: 0.022,
   jaw: 0.03,
   jawNeck: 0.025,
   shoulder: 0.03,
@@ -191,16 +191,15 @@ export class BodyField {
     const a = this.active;
     const off = this.activeOff;
     const n = this.activeN;
-    if (n === 1) {
-      const i = a[off]!;
-      const v = ps[i]!.dist(x, y, z);
-      d[i] = v;
-      // identidad bajo smin con BIG, salvo la intersección con el suelo
-      return smax(v, -y, K.floor);
-    }
+    // misma semántica que `value`: una primitiva sólo cuenta si el punto cae dentro de su caja inflada
     for (let q = 0; q < n; q++) {
       const i = a[off + q]!;
-      d[i] = ps[i]!.dist(x, y, z);
+      const p = ps[i]!;
+      const b = p.box;
+      d[i] =
+        x >= b[0]! && x <= b[3]! && y >= b[1]! && y <= b[4]! && z >= b[2]! && z <= b[5]!
+          ? p.dist(x, y, z)
+          : BIG;
     }
     return this.combine(d, y, this.activeMask);
   }
@@ -331,7 +330,7 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
     },
     { y: P[J.neck]![1] + 0.004 * H, a: 0.8 * neckR + 0.01, bF: 0.8 * neckR, bB: 0.85 * neckR },
   ];
-  const loft = new Loft({ rings, tau: 0.05, pad: PAD });
+  const loft = new Loft({ rings, tau: 0.022, pad: PAD });
   prims.push(loft);
 
   // ---------------------------------------------------------------- busto / pectorales / glúteos
@@ -356,7 +355,7 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
       rC.bF - 0.55 * rz,
     ] as const,
     r: [rx, ry, rz] as const,
-    tau: 0.03,
+    tau: 0.025,
     pad: PAD,
   });
   ix.bustL = push(new Ellipsoid(bustSpec('bust_l', 1)));
@@ -367,7 +366,7 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
     bone: J.pelvis,
     c: [sx * (0.22 * rH.a + 0.015 * H), lm.hip - 0.012 * H, -(rH.bB - 0.5 * gR)] as const,
     r: [1.1 * gR, 0.95 * gR, 0.8 * gR] as const,
-    tau: 0.03,
+    tau: 0.025,
     pad: PAD,
   });
   ix.gluteL = push(new Ellipsoid(gluteSpec('glute_l', 1)));
@@ -384,22 +383,22 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
     b: [0, nTop, 0.012 * H],
     ref: [0, 0, 1],
     profile: [
-      pt(0, 1.45 * neckR, 1.45 * neckR),
-      pt(0.3, 1.16 * neckR, 1.18 * neckR),
-      pt(0.5, 1.03 * neckR, 1.05 * neckR),
+      pt(0, 1.35 * neckR, 1.35 * neckR),
+      pt(0.3, 1.1 * neckR, 1.12 * neckR),
+      pt(0.5, 1.0 * neckR, 1.02 * neckR),
       pt(0.75, 0.97 * neckR, 1.0 * neckR),
       pt(1, 0.97 * neckR, 1.0 * neckR),
     ],
-    tau: 0.03,
+    tau: 0.016,
   });
-  const cRy = 0.062 * H;
+  const cRy = 0.0585 * H;
   ix.head = push(
     new Ellipsoid({
       name: 'head',
       bone: J.head,
       c: [0, H - cRy, 0.002 * H],
       r: [0.0435 * H, cRy, 0.0565 * H],
-      tau: 0.03,
+      tau: 0.013,
       pad: PAD,
     }),
   );
@@ -407,9 +406,9 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
     new Ellipsoid({
       name: 'jaw',
       bone: J.head,
-      c: [0, 0.903 * H, 0.016 * H],
-      r: [0.034 * H, 0.038 * H, 0.043 * H],
-      tau: 0.03,
+      c: [0, 0.9015 * H, 0.018 * H],
+      r: [0.032 * H, 0.0255 * H, 0.042 * H],
+      tau: 0.013,
       pad: PAD,
     }),
   );
@@ -433,15 +432,15 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
     const iCl = tube(prims, tubes, {
       name: `clavicle_${nm}`,
       bone: jCl,
-      a: [side * 0.02 * H, 0.836 * H, 0.0],
-      b: [sh[0], sh[1] - 0.01 * H, sh[2]],
+      a: [side * 0.02 * H, 0.826 * H, 0.0],
+      b: [sh[0], sh[1] - 0.012 * H, sh[2]],
       ref: [0, 0, 1],
       profile: [
-        pt(0, 0.032 * H, 0.021 * H),
-        pt(0.5, 0.035 * H, 0.0225 * H),
+        pt(0, 0.024 * H, 0.0185 * H),
+        pt(0.5, 0.032 * H, 0.021 * H),
         pt(1, 0.036 * H, 0.024 * H),
       ],
-      tau: 0.03,
+      tau: 0.022,
     });
     // brazo
     const rB = dims.armR;
@@ -458,7 +457,7 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
         pt(0.65, 0.98 * rB, 0.94 * rB, 0.04 * rB),
         pt(1, 0.84 * rB, 0.84 * rB),
       ],
-      tau: 0.025,
+      tau: 0.02,
     });
     const rW = dims.wristR;
     const iF = tube(prims, tubes, {
@@ -474,14 +473,14 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
         pt(0.88, 1.2 * rW, 0.95 * rW),
         pt(1, 1.04 * rW, 0.84 * rW),
       ],
-      tau: 0.025,
+      tau: 0.02,
     });
     // mano (mitón) y pulgar
     const hb = 0.0245 * H; // semi-anchura de nudillos
     const iH = tube(prims, tubes, {
       name: `hand_${nm}`,
       bone: jHa,
-      a: wr as [number, number, number],
+      a: add3(wr, dirH, 0.012),
       b: add3(wr, dirH, handLen),
       ref: [0, 0, 1],
       profile: [
@@ -491,7 +490,7 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
         pt(0.7, 0.88 * hb, 0.0075 * H, 0),
         pt(1, 0.5 * hb, 0.0062 * H, 0),
       ],
-      tau: 0.02,
+      tau: 0.016,
     });
     const tb = add3(add3(wr, dirH, 0.025 * H), [0, 0, 1], 0.03 * H);
     const te = add3(add3(wr, dirH, 0.085 * H), [0, 0, 1], 0.045 * H);
@@ -502,7 +501,7 @@ export function buildField(dims: BodyDims, cal: Calibration): BodyField {
       b: te,
       ref: [1, 0, 0],
       profile: [pt(0, 0.0088 * H, 0.0085 * H), pt(0.6, 0.0075 * H, 0.0072 * H), pt(1, 0.0062 * H, 0.0062 * H)],
-      tau: 0.015,
+      tau: 0.012,
     });
     if (L) {
       ix.claviL = iCl;

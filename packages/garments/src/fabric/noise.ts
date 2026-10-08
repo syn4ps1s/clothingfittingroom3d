@@ -56,37 +56,41 @@ export class PeriodicNoise2D {
   }
 }
 
-/** Ruido de valor 2D periódico (más barato que el de gradiente). Salida en [-1, 1]. */
+/** Ruido de valor 2D periódico (más barato que el de gradiente), con periodos independientes en x e y. Salida en [-1, 1]. */
 export class PeriodicValueNoise2D {
-  readonly period: number;
+  readonly periodX: number;
+  readonly periodY: number;
   private readonly v: Float32Array;
 
-  constructor(period: number, seed: number) {
-    const p = Math.max(1, Math.floor(period));
-    this.period = p;
-    this.v = new Float32Array(p * p);
-    for (let y = 0; y < p; y++) {
-      for (let x = 0; x < p; x++) this.v[y * p + x] = hash01(seed, x, y, 5) * 2 - 1;
+  constructor(periodX: number, periodY: number, seed: number) {
+    const px = Math.max(1, Math.floor(periodX));
+    const py = Math.max(1, Math.floor(periodY));
+    this.periodX = px;
+    this.periodY = py;
+    this.v = new Float32Array(px * py);
+    for (let y = 0; y < py; y++) {
+      for (let x = 0; x < px; x++) this.v[y * px + x] = hash01(seed, x, y, 5) * 2 - 1;
     }
   }
 
   sample(x: number, y: number): number {
-    const P = this.period;
+    const PX = this.periodX;
+    const PY = this.periodY;
     const xf = Math.floor(x);
     const yf = Math.floor(y);
     const fx = x - xf;
     const fy = y - yf;
-    let x0 = xf % P;
-    if (x0 < 0) x0 += P;
-    let y0 = yf % P;
-    if (y0 < 0) y0 += P;
-    const x1 = x0 + 1 === P ? 0 : x0 + 1;
-    const y1 = y0 + 1 === P ? 0 : y0 + 1;
+    let x0 = xf % PX;
+    if (x0 < 0) x0 += PX;
+    let y0 = yf % PY;
+    if (y0 < 0) y0 += PY;
+    const x1 = x0 + 1 === PX ? 0 : x0 + 1;
+    const y1 = y0 + 1 === PY ? 0 : y0 + 1;
     const d = this.v;
     const u = fx * fx * (3 - 2 * fx);
     const w = fy * fy * (3 - 2 * fy);
-    const a = d[y0 * P + x0]! + (d[y0 * P + x1]! - d[y0 * P + x0]!) * u;
-    const b = d[y1 * P + x0]! + (d[y1 * P + x1]! - d[y1 * P + x0]!) * u;
+    const a = d[y0 * PX + x0]! + (d[y0 * PX + x1]! - d[y0 * PX + x0]!) * u;
+    const b = d[y1 * PX + x0]! + (d[y1 * PX + x1]! - d[y1 * PX + x0]!) * u;
     return a + (b - a) * w;
   }
 }

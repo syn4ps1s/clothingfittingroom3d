@@ -12,7 +12,7 @@ import {
   type Vec3,
 } from '@fitroom/shared';
 import { cameraScales, sanitizeCamera } from './camera.js';
-import { TORSO_DEPTH_RATIO } from './calibration.js';
+import { GIRTH_FROM_WIDTH } from './calibration.js';
 
 /**
  * Siluetas sintéticas para probar el estimador de medidas sin cámara.
@@ -143,9 +143,16 @@ export function renderCapsuleMask(inp: CapsuleMaskInput): SegmentationMask {
   const dirOf = (n: number, local: Vec3): Vec3 => q.rotate(R[n]!, local);
 
   // ---- tronco: tira entre estaciones a lo largo de pelvis→spine→chest→neck --------------------
-  const hip = ellipseAxes(m.hipCm, TORSO_DEPTH_RATIO.hip);
-  const waist = ellipseAxes(m.waistCm, TORSO_DEPTH_RATIO.waist);
-  const chest = ellipseAxes(m.chestCm, TORSO_DEPTH_RATIO.chest);
+  // semi-ejes de cada sección: ancho = circunferencia / factor ajustado a las mallas de body
+  const bmi = m.weightKg / (m.heightCm / 100) ** 2;
+  const axes = (level: 'chest' | 'waist' | 'hip', girthCm: number, depthRatio: number) => {
+    const g = GIRTH_FROM_WIDTH[level];
+    const a = girthCm / 100 / (g.c0 + g.c1 * (bmi - 22)) / 2;
+    return { a, b: depthRatio * a };
+  };
+  const hip = axes('hip', m.hipCm, 0.74);
+  const waist = axes('waist', m.waistCm, 0.78);
+  const chest = axes('chest', m.chestCm, 0.8);
   const neckR = m.neckCm / 100 / (2 * Math.PI);
   const shoulderHalf = m.shoulderWidthCm / 200;
   const restY = (n: number): number => rest.joints[n]!.position[1];

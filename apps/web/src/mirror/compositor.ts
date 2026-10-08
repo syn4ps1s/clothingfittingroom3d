@@ -96,6 +96,7 @@ export class MirrorCompositor {
   private readonly capsules: WorldCapsule[] = [];
   private lastTeleports = 0;
   private lastTime = 0;
+  private occluderMode: 'on' | 'off' | 'visible' = 'on';
   private lastModels: Pick<FittingModels, 'body' | 'garments'> | null = null;
   private envReady = false;
   private disposed = false;
@@ -157,6 +158,19 @@ export class MirrorCompositor {
     }
     this.rigs.clear();
     if (this.lastModels) this.syncModels(this.lastModels);
+  }
+
+  /** Depuración: 'off' no usa el oclusor; 'visible' lo dibuja como maniquí translúcido. */
+  setOccluderMode(mode: 'on' | 'off' | 'visible'): void {
+    this.occluderMode = mode;
+    this.applyOccluderMode();
+  }
+
+  private applyOccluderMode(): void {
+    const o = this.occluder;
+    if (!o) return;
+    o.setLook(this.occluderMode === 'visible' ? 'ghost' : 'occluder');
+    o.mesh.userData.disabled = this.occluderMode === 'off';
   }
 
   setFov(deg: number): void {
@@ -229,6 +243,7 @@ export class MirrorCompositor {
       if (this.body) {
         this.occluder = new BodyRig(this.body, 'occluder');
         this.scene.add(this.occluder.mesh);
+        this.applyOccluderMode();
       }
     }
     const wanted = new Set(models.garments);
@@ -292,7 +307,7 @@ export class MirrorCompositor {
     report.clothMs = 0;
     report.triangles = 0;
     report.garmentCount = 0;
-    if (this.occluder) this.occluder.mesh.visible = show;
+    if (this.occluder) this.occluder.mesh.visible = show && this.occluderMode !== 'off';
     if (!show || !pose || !body) {
       for (const rig of this.rigs.values()) rig.mesh.visible = false;
       return false;

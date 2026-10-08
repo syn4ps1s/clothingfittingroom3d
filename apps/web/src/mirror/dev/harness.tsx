@@ -36,6 +36,9 @@ if (useDoubles) {
   setDefaultSolverFactory((g) => new SpringSolver(g));
 }
 
+/** SwiftShader renderiza a 1–3 fps: se relajan los plazos del seguimiento para poder inspeccionar. */
+const SLOW_TRACKING = { lostAfterMs: 6000, giveUpAfterMs: 60000, fadeInMs: 400 } as const;
+
 const MEASURE_PRESETS: Record<string, Measurements> = {
   a: REFERENCE_MEASUREMENTS.adultA,
   b: REFERENCE_MEASUREMENTS.adultB,
@@ -190,6 +193,8 @@ function Harness() {
           onTrackingChange={setTracking}
           onStats={setStats}
           onVideoAspect={setAspect}
+          debugOccluder={(params.get('occluder') as 'on' | 'off' | 'visible' | null) ?? 'on'}
+          trackingConfig={params.get('slow') === '1' ? SLOW_TRACKING : undefined}
         />
       </Canvas>
       <div id="hud">

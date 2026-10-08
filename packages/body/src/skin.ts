@@ -37,6 +37,7 @@ function torsoWeights(y: number, P: readonly Vec3[], out: Float64Array): void {
 
 /** Influencias dispersas por vértice durante el cálculo (se conservan las 8 mayores). */
 const K_SPARSE = 8;
+const E_M4 = Math.exp(-4);
 
 /**
  * Pesos LBS (4 influencias) a partir del propio campo de distancia: cada vértice reparte su peso entre las
@@ -110,8 +111,12 @@ export function computeSkin(
     for (let i = 0; i < prims.length; i++) {
       const di = d[i]!;
       if (di >= BIG) continue;
-      const s = Math.exp(-(di - dmin) / prims[i]!.tau);
-      if (s < 1e-4) continue;
+      // núcleo exponencial con soporte compacto (corte a 4τ): sin colas largas que «filtren» peso entre partes
+      const tau = prims[i]!.tau;
+      const dd = di - dmin;
+      if (dd >= 4 * tau) continue;
+      const s = Math.exp(-dd / tau) - E_M4;
+      if (s <= 0) continue;
       const bone = prims[i]!.bone;
       if (bone >= 0) acc[bone]! += s;
       else torsoS += s;

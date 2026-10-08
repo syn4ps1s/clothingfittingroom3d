@@ -3,6 +3,7 @@ import fc from 'fast-check';
 import { JOINT_COUNT, q, type Quat, type SkeletonPose } from '@fitroom/shared';
 import { PosePredictor } from './posePredictor';
 import { angleBetweenAt, slerpInto } from './quatMath';
+import { minHeapGrowth } from '../test-utils/heap';
 
 const IDENT: Quat = [0, 0, 0, 1];
 
@@ -185,18 +186,15 @@ describe('PosePredictor', () => {
     );
   });
 
-  it('bucle caliente: 20 000 muestras no hacen crecer el heap de forma apreciable', () => {
+  it('bucle caliente: 20 000 muestras no asignan memoria (heap estable)', () => {
     const p = new PosePredictor();
     p.push(poseAt(0), 0);
     p.push(poseAt(0.05), 33);
-    for (let i = 0; i < 2000; i++) p.sample(33 + i * 0.5); // calentar JIT
-    const g = globalThis as { gc?: () => void };
-    g.gc?.();
-    const before = process.memoryUsage().heapUsed;
-    for (let i = 0; i < 20000; i++) p.sample(33 + i * 0.5);
-    const grown = process.memoryUsage().heapUsed - before;
-    // sin asignaciones, el crecimiento es ruido del motor (muy por debajo de lo que costarían 20 000×21 quats)
-    expect(grown).toBeLessThan(2_000_000);
+    let t = 33;
+    const grown = minHeapGrowth(() => p.sample((t += 0.5)), 20000);
+    // Presupuesto: < 600 B por muestra (sólo números boxeados del motor). Asignar los 21 cuaterniones
+    // + objetos de salida por muestra costaría ≥ 3 KB (≥ 60 MB en esta prueba).
+    expect(grown / 20000).toBeLessThan(600);
   });
 
   it('angleBetweenAt coincide con q.angleBetween', () => {

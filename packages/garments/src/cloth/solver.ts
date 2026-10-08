@@ -31,7 +31,6 @@ import {
 const MAX_DT = 1 / 30;
 /** un `dt` mayor se trata como discontinuidad (pestaña dormida): reinicio duro */
 const RESET_DT = 0.5;
-const COORD_LIMIT = 1e5;
 /** hasta 6 cápsulas candidatas por cluster; 255 = "probar todas" */
 const CM = 6;
 const ALL = 255;
@@ -91,6 +90,7 @@ class ClothSolverImpl implements ClothSolverEx {
   private readonly vel: Float32Array;
   private readonly partOut: Float32Array;
   private readonly wrP: Float32Array;
+  private readonly disp2: Float32Array;
   private readonly rmin: Float32Array;
   private readonly bmin: Float32Array;
   private readonly eLen: Float32Array;
@@ -148,6 +148,7 @@ class ClothSolverImpl implements ClothSolverEx {
     this.vel = new Float32Array(P * 3);
     this.partOut = new Float32Array(P * 4);
     this.wrP = new Float32Array(P);
+    this.disp2 = new Float32Array(P);
     this.rmin = new Float32Array(P);
     this.bmin = new Float32Array(P);
     this.eLen = new Float32Array(px.edgeA.length);
@@ -212,12 +213,20 @@ class ClothSolverImpl implements ClothSolverEx {
       dt = MAX_DT;
     }
 
-    const src = this.sanitize(skinned);
     this.bank.prepare(capsules, this.collisionMargin);
     st.skippedCapsules += this.bank.skipped;
     this.capsActive = this.bank.count > 0;
 
-    const rms = this.gather(src, hardReset);
+    // objetivos de partícula; si algún vértice no es finito se repara y se repite (ruta lenta, rara)
+    const swap = this.tgPrev;
+    this.tgPrev = this.tg;
+    this.tg = swap;
+    let src = skinned;
+    if (this.gatherSums(src)) {
+      src = this.repair(skinned);
+      this.gatherSums(src);
+    }
+    const rms = this.gatherFinish(hardReset);
     this.buildCandidates();
     this.computeLengthsAndWrinkle(dt);
     if (dt > 0) this.simulate(dt, rms);
@@ -230,66 +239,59 @@ class ClothSolverImpl implements ClothSolverEx {
   // Entrada
   // ---------------------------------------------------------------------------------------------
 
-  /** Devuelve `skinned` si es válido, o una copia reparada (no finitos / fuera de rango → estimación segura). */
-  private sanitize(skinned: Float32Array): Float32Array {
+  /**
+   * Copia reparada de `skinned`: los vértices con alguna componente no finita (NaN/±Inf) se sustituyen por
+   * el último objetivo válido de su cluster más el desfase de reposo del vértice. Los valores finitos
+   * enormes NO se tocan: son teleports y los acotan la correa y la detección de saltos.
+   */
+  private repair(skinned: Float32Array): Float32Array {
     const len = skinned.length;
-    let bad = false;
-    for (let i = 0; i < len; i++) {
-      if (!(Math.abs(skinned[i]!) < COORD_LIMIT)) {
-        bad = true;
-        break;
-      }
-    }
-    if (!bad) return skinned;
     const sc = (this.scratch ??= new Float32Array(len));
     const px = this.proxy;
     const n = this.vertexCount;
+    const last = this.tgPrev; // tras el intercambio, los objetivos del paso anterior (válidos)
     let nbad = 0;
     for (let v = 0; v < n; v++) {
       const o = v * 3;
       const x = skinned[o]!,
         y = skinned[o + 1]!,
         z = skinned[o + 2]!;
-      if (
-        Math.abs(x) < COORD_LIMIT &&
-        Math.abs(y) < COORD_LIMIT &&
-        Math.abs(z) < COORD_LIMIT
-      ) {
+      if (x - x === 0 && y - y === 0 && z - z === 0) {
         sc[o] = x;
         sc[o + 1] = y;
         sc[o + 2] = z;
       } else {
         nbad++;
-        // último objetivo válido del cluster + desfase de reposo del vértice
         const p = px.clusterOf[v]! * 3;
-        sc[o] = this.tg[p]! + (px.restPositions[o]! - px.restPos[p]!);
-        sc[o + 1] = this.tg[p + 1]! + (px.restPositions[o + 1]! - px.restPos[p + 1]!);
-        sc[o + 2] = this.tg[p + 2]! + (px.restPositions[o + 2]! - px.restPos[p + 2]!);
+        sc[o] = last[p]! + (px.restPositions[o]! - px.restPos[p]!);
+        sc[o + 1] = last[p + 1]! + (px.restPositions[o + 1]! - px.restPos[p + 1]!);
+        sc[o + 2] = last[p + 2]! + (px.restPositions[o + 2]! - px.restPos[p + 2]!);
       }
     }
     this.stats.nonFiniteInputVertices += nbad;
-    this.warnOnce(`ClothSolver: ${nbad} vértices skinneados no finitos o fuera de rango; sustituidos`);
+    this.warnOnce(`ClothSolver: ${nbad} vértices skinneados no finitos; sustituidos por una estimación segura`);
     return sc;
   }
 
-  /** Objetivos de partícula (media de sus vértices), cajas por cluster y detección de teleport. */
-  private gather(src: Float32Array, hardReset: boolean): number {
+  private sumD2 = 0;
+
+  /**
+   * Fase 1 del gather: objetivos de partícula (media de sus vértices), cajas por cluster y desplazamiento²
+   * respecto al paso anterior. Devuelve `true` si algún cluster contiene valores no finitos
+   * (la suma NaN/Inf se detecta sin recorrer el array aparte: `s − s !== 0`).
+   */
+  private gatherSums(src: Float32Array): boolean {
     const px = this.proxy;
     const P = this.P;
-    // intercambia buffers: tgPrev = objetivos del paso anterior
-    const swap = this.tgPrev;
-    this.tgPrev = this.tg;
-    this.tg = swap;
     const tg = this.tg;
     const tgp = this.tgPrev;
     const ms = px.memberStart;
     const midx = px.memberIdx;
-    const useBox = this.bank.count > 0;
+    const useBox = this.capsActive;
     const cbox = this.cbox;
-    const init = this.needInit || hardReset;
+    const disp2 = this.disp2;
+    let bad = false;
     let sumD2 = 0;
-    let snapped = 0;
-    const x = this.x;
     for (let p = 0; p < P; p++) {
       const s = ms[p]!;
       const e = ms[p + 1]!;
@@ -333,6 +335,11 @@ class ClothSolverImpl implements ClothSolverEx {
           sz += src[o + 2]!;
         }
       }
+      const chk = sx + sy + sz;
+      if (chk - chk !== 0) {
+        bad = true; // NaN o ±Inf en algún miembro
+        continue;
+      }
       const inv = e > s ? 1 / (e - s) : 0;
       const i = p * 3;
       const tx = sx * inv,
@@ -341,62 +348,80 @@ class ClothSolverImpl implements ClothSolverEx {
       tg[i] = tx;
       tg[i + 1] = ty;
       tg[i + 2] = tz;
-      if (!init) {
-        const dx = tx - tgp[i]!,
-          dy = ty - tgp[i + 1]!,
-          dz = tz - tgp[i + 2]!;
-        const d2 = dx * dx + dy * dy + dz * dz;
-        sumD2 += d2;
-        if (d2 > TELEPORT_PARTICLE * TELEPORT_PARTICLE) {
+      const dx = tx - tgp[i]!,
+        dy = ty - tgp[i + 1]!,
+        dz = tz - tgp[i + 2]!;
+      const d2 = dx * dx + dy * dy + dz * dz;
+      disp2[p] = d2;
+      sumD2 += d2;
+    }
+    this.sumD2 = sumD2;
+    return bad;
+  }
+
+  /** Fase 2 del gather: inicialización, teleports individuales y global. Devuelve el RMS de desplazamiento. */
+  private gatherFinish(hardReset: boolean): number {
+    const P = this.P;
+    const tg = this.tg;
+    const tgp = this.tgPrev;
+    const x = this.x;
+    const xp = this.xp;
+    const vel = this.vel;
+    const disp2 = this.disp2;
+    const init = this.needInit || hardReset;
+    let snapped = 0;
+    let rms = P > 0 ? Math.sqrt(this.sumD2 / P) : 0;
+    if (!init && rms <= TELEPORT_RMS) {
+      const lim = TELEPORT_PARTICLE * TELEPORT_PARTICLE;
+      for (let p = 0; p < P; p++) {
+        if (disp2[p]! > lim) {
           // salto individual: la partícula reaparece sobre su objetivo
-          x[i] = tx;
-          x[i + 1] = ty;
-          x[i + 2] = tz;
-          this.xp[i] = tx;
-          this.xp[i + 1] = ty;
-          this.xp[i + 2] = tz;
-          this.vel[i] = 0;
-          this.vel[i + 1] = 0;
-          this.vel[i + 2] = 0;
+          const i = p * 3;
+          x[i] = xp[i] = tgp[i] = tg[i]!;
+          x[i + 1] = xp[i + 1] = tgp[i + 1] = tg[i + 1]!;
+          x[i + 2] = xp[i + 2] = tgp[i + 2] = tg[i + 2]!;
+          vel[i] = 0;
+          vel[i + 1] = 0;
+          vel[i + 2] = 0;
           this.wrP[p] = 0;
           snapped++;
         }
       }
-    }
-    let rms = P > 0 ? Math.sqrt(sumD2 / P) : 0;
-    if (init || rms > TELEPORT_RMS) {
-      // inicialización o teleport global: todo el estado dinámico se reinicia sobre los objetivos
-      if (!init) {
-        this.stats.teleports++;
-        this.warnOnce(`ClothSolver: teleport detectado (RMS ${rms.toFixed(2)} m); estado reiniciado`);
-      }
-      if (hardReset && !this.needInit) this.stats.teleports++;
-      x.set(tg);
-      this.xp.set(tg);
-      this.vel.fill(0);
-      this.wrP.fill(0);
-      this.needInit = false;
-      this.initWrinkleNext = true;
-      rms = 0;
-    } else if (snapped > 0) {
       this.stats.teleports += snapped;
+      return rms;
     }
+    // inicialización, reinicio duro o teleport global: todo el estado dinámico vuelve a los objetivos
+    if (!init) {
+      this.stats.teleports++;
+      this.warnOnce(`ClothSolver: teleport detectado (RMS ${rms.toFixed(2)} m); estado reiniciado`);
+    } else if (hardReset && !this.needInit) {
+      this.stats.teleports++;
+    }
+    // el objetivo "no se movió" (velocidad de objetivo 0): un salto no es una velocidad
+    x.set(tg);
+    xp.set(tg);
+    tgp.set(tg);
+    vel.fill(0);
+    this.wrP.fill(0);
+    this.needInit = false;
+    this.initWrinkleNext = true;
+    rms = 0;
     return rms;
   }
 
   private initWrinkleNext = false;
 
-  /** Cajas de colisión por cluster: cápsulas cuyo AABB inflado corta la caja del cluster ± su correa. */
+  /**
+   * Cápsulas candidatas por cluster: las que pueden tocar a CUALQUIER vértice del cluster, cuya posición
+   * de salida está en la caja de sus objetivos skinneados inflada por su correa máxima. Filtro en dos
+   * etapas (AABB y esfera envolvente de la caja contra el eje de la cápsula). Más de `CM` → `ALL`.
+   */
   private buildCandidates(): void {
     if (!this.capsActive) return;
     const P = this.P;
     const bank = this.bank;
     const nc = bank.count;
     const cnt = this.cnt;
-    if (nc <= 3) {
-      cnt.fill(ALL, 0, P);
-      return;
-    }
     const cd = bank.data;
     const cand = this.cand;
     const cbox = this.cbox;
@@ -410,6 +435,10 @@ class ClothSolverImpl implements ClothSolverEx {
         x1 = cbox[q + 3]! + L,
         y1 = cbox[q + 4]! + L,
         z1 = cbox[q + 5]! + L;
+      const cx = (x0 + x1) * 0.5,
+        cy = (y0 + y1) * 0.5,
+        cz = (z0 + z1) * 0.5;
+      const hr = 0.5 * Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0) + (z1 - z0) * (z1 - z0));
       let k = 0;
       for (let c = 0; c < nc; c++) {
         const o = c * CAP_STRIDE;
@@ -422,6 +451,20 @@ class ClothSolverImpl implements ClothSolverEx {
           cd[o + 15]! < z0
         )
           continue;
+        // esfera envolvente de la caja contra el segmento (cápsula inflada por el margen)
+        const ax = cd[o]!,
+          ay = cd[o + 1]!,
+          az = cd[o + 2]!;
+        const abx = cd[o + 3]!,
+          aby = cd[o + 4]!,
+          abz = cd[o + 5]!;
+        let t = ((cx - ax) * abx + (cy - ay) * aby + (cz - az) * abz) * cd[o + 6]!;
+        t = t < 0 ? 0 : t > 1 ? 1 : t;
+        const ex = cx - (ax + abx * t),
+          ey = cy - (ay + aby * t),
+          ez = cz - (az + abz * t);
+        const reach = cd[o + 7]! + hr;
+        if (ex * ex + ey * ey + ez * ez > reach * reach) continue;
         if (k === CM) {
           k = ALL;
           break;
@@ -510,7 +553,7 @@ class ClothSolverImpl implements ClothSolverEx {
     const h = dt / nSub;
     const iters = Math.min(
       this.maxIter,
-      2 + (rms > 0.015 ? 1 : 0) + (rms > 0.05 ? 1 : 0) + (this.stiffness > 0.75 ? 1 : 0),
+      1 + (rms > 0.01 ? 1 : 0) + (rms > 0.04 ? 1 : 0) + (this.stiffness > 0.75 ? 1 : 0),
     );
     this.stats.lastIterations = iters;
     this.stats.lastSubsteps = nSub;
@@ -833,7 +876,7 @@ class ClothSolverImpl implements ClothSolverEx {
   private renderPass(src: Float32Array, out: Float32Array): void {
     const px = this.proxy;
     const P = this.P;
-    const K = K_NEIGHBORS;
+    const K = K_NEIGHBORS; // 3: el código de abajo asume 3 vecinos
     const ms = px.memberStart,
       midx = px.memberIdx,
       nIdx = px.nbrIdx,
@@ -859,16 +902,14 @@ class ClothSolverImpl implements ClothSolverEx {
         const kk = k * K;
         const i0 = nIdx[kk]! * 4,
           i1 = nIdx[kk + 1]! * 4,
-          i2 = nIdx[kk + 2]! * 4,
-          i3 = nIdx[kk + 3]! * 4;
+          i2 = nIdx[kk + 2]! * 4;
         const w0 = nW[kk]!,
           w1 = nW[kk + 1]!,
-          w2 = nW[kk + 2]!,
-          w3 = nW[kk + 3]!;
-        let dx = w0 * po[i0]! + w1 * po[i1]! + w2 * po[i2]! + w3 * po[i3]!;
-        let dy = w0 * po[i0 + 1]! + w1 * po[i1 + 1]! + w2 * po[i2 + 1]! + w3 * po[i3 + 1]!;
-        let dz = w0 * po[i0 + 2]! + w1 * po[i1 + 2]! + w2 * po[i2 + 2]! + w3 * po[i3 + 2]!;
-        wrinkle[v] = w0 * po[i0 + 3]! + w1 * po[i1 + 3]! + w2 * po[i2 + 3]! + w3 * po[i3 + 3]!;
+          w2 = nW[kk + 2]!;
+        let dx = w0 * po[i0]! + w1 * po[i1]! + w2 * po[i2]!;
+        let dy = w0 * po[i0 + 1]! + w1 * po[i1 + 1]! + w2 * po[i2 + 1]!;
+        let dz = w0 * po[i0 + 2]! + w1 * po[i1 + 2]! + w2 * po[i2 + 2]!;
+        wrinkle[v] = w0 * po[i0 + 3]! + w1 * po[i1 + 3]! + w2 * po[i2 + 3]!;
         const L = leash[k]!;
         const d2 = dx * dx + dy * dy + dz * dz;
         if (d2 > L * L) {

@@ -100,15 +100,19 @@ export function planBottom(def: GarmentDefinition, spec: GarmentSpec, body: Body
 
 type V3 = [number, number, number];
 
-/** Anillos de la pierna (planos horizontales) en los ángulos (no uniformes) del anillo 0. */
+/** Anillos de la pierna (planos horizontales): polígonos a ángulos uniformes, consultables en ángulos arbitrarios. */
 class LegRings {
   private readonly cache = new Map<number, Float64Array>();
   readonly step = 0.02;
+  private readonly kAngles: Float64Array;
   constructor(
     private readonly field: BodyField,
     readonly side: 1 | -1,
-    private readonly angles: Float64Array,
-  ) {}
+    private readonly nKey = 72,
+  ) {
+    this.kAngles = new Float64Array(nKey);
+    for (let i = 0; i < nKey; i++) this.kAngles[i] = (2 * Math.PI * i) / nKey;
+  }
   axis(y: number): { x: number; z: number } {
     const sk = this.field.body.skeleton;
     const th = this.side === 1 ? J.l_thigh : J.r_thigh;
@@ -124,9 +128,7 @@ class LegRings {
     return { x: pk[0] + (pf[0] - pk[0]) * t, z: pk[2] + (pf[2] - pk[2]) * t };
   }
   center(y: number): { cx: number; cz: number } {
-    const k = Math.round(y / this.step);
     const a = this.axis(y);
-    // centra en z con rayos ±z
     let cz = a.z,
       cx = a.x;
     const g = this.field.sdf;
@@ -138,42 +140,37 @@ class LegRings {
       const tm = rayExit(g, cx, y, cz, -1, 0, 0, 0.2);
       if (!Number.isNaN(tl) && !Number.isNaN(tm)) {
         const shift = (tl - tm) / 2;
-        // el lado interior puede estar fusionado con la otra pierna: sólo se corrige si es plausible
         if (Math.abs(shift) < 0.02) cx += shift;
       }
     }
-    void k;
     return { cx, cz };
   }
-  /** radios de la envolvente convexa de la pierna a la altura y (interpolados en cortes cada `step`) */
-  hullAt(y: number): { r: Float64Array; cx: number; cz: number } {
-    const f = y / this.step;
-    const k0 = Math.floor(f);
-    const t = f - k0;
-    const a = this.key(k0);
-    const ca = this.center(k0 * this.step);
-    if (t < 1e-6) return { r: a, cx: ca.cx, cz: ca.cz };
-    const b = this.key(k0 + 1);
-    const cb = this.center((k0 + 1) * this.step);
-    const out = new Float64Array(a.length);
-    for (let i = 0; i < a.length; i++) out[i] = a[i]! + (b[i]! - a[i]!) * t;
-    return { r: out, cx: ca.cx + (cb.cx - ca.cx) * t, cz: ca.cz + (cb.cz - ca.cz) * t };
-  }
   private key(k: number): Float64Array {
-    let r = this.cache.get(k);
-    if (r) return r;
+    let pts = this.cache.get(k);
+    if (pts) return pts;
     const y = k * this.step;
     const c = this.center(y);
     const fr = { cx: c.cx, cy: y, cz: c.cz, ux: 0, uy: 0, uz: -1, vx: 1, vy: 0, vz: 0 };
-    const raw = bodyRadiiAt(this.field, fr, this.angles, 0.16, 0.025);
+    const raw = bodyRadiiAt(this.field, fr, this.kAngles, 0.16, 0.025);
     const sorted = Array.from(raw).sort((x, y2) => x - y2);
     const med = sorted[sorted.length >> 1]!;
     for (let i = 0; i < raw.length; i++) if (raw[i]! > 1.5 * med) raw[i] = 1.5 * med;
-    const pts = polarToPoints(raw, this.angles);
-    r = hullRadiiAt(pts, this.angles);
-    for (let i = 0; i < r.length; i++) if (r[i]! < raw[i]!) r[i] = raw[i]!;
-    this.cache.set(k, r);
-    return r;
+    pts = polarToPoints(raw, this.kAngles);
+    this.cache.set(k, pts);
+    return pts;
+  }
+  /** radios de la envolvente convexa de la pierna a la altura y en los ángulos dados, + centro interpolado */
+  hullAt(y: number, angles: ArrayLike<number>): { r: Float64Array; cx: number; cz: number } {
+    const f = y / this.step;
+    const k0 = Math.floor(f);
+    const t = f - k0;
+    const ca = this.center(k0 * this.step);
+    const r = hullRadiiAt(this.key(k0), angles);
+    if (t < 1e-6) return { r, cx: ca.cx, cz: ca.cz };
+    const cb = this.center((k0 + 1) * this.step);
+    const rb = hullRadiiAt(this.key(k0 + 1), angles);
+    for (let i = 0; i < r.length; i++) r[i] = r[i]! + (rb[i]! - r[i]!) * t;
+    return { r, cx: ca.cx + (cb.cx - ca.cx) * t, cz: ca.cz + (cb.cz - ca.cz) * t };
   }
 }
 
@@ -283,16 +280,26 @@ export function buildBottom(
     const Lp = ring0.length;
     const arcCount = K / 2 + 1;
     // ángulos de cada vértice del anillo 0 alrededor del eje de la pierna (u=-z, v=+x)
-    const c0 = new LegRings(field, side, new Float64Array(0)).center(plan.ySplit);
-    const angles = new Float64Array(Lp);
+    const legR = new LegRings(field, side);
+    const c0 = legR.center(plan.ySplit);
+    const anglesTrue = new Float64Array(Lp);
     for (let j = 0; j < Lp; j++) {
       const rel = [ring0Pos[j]![0] - c0.cx, ring0Pos[j]![2] - c0.cz];
-      angles[j] = Math.atan2(rel[0]!, -rel[1]!);
+      anglesTrue[j] = Math.atan2(rel[0]!, -rel[1]!);
     }
-    for (let j = 1; j < Lp; j++) while (angles[j]! < angles[j - 1]!) angles[j] = angles[j]! + 2 * Math.PI;
-    const legR = new LegRings(field, side, angles);
+    for (let j = 1; j < Lp; j++) {
+      let d = anglesTrue[j]! - anglesTrue[j - 1]!;
+      while (d < 0) d += 2 * Math.PI;
+      while (d > 2 * Math.PI) d -= 2 * Math.PI;
+      anglesTrue[j] = anglesTrue[j - 1]! + d;
+    }
+    // ángulos uniformes para los anillos lejos de la entrepierna (espaciado regular de la malla)
+    const anglesUni = new Float64Array(Lp);
+    for (let j = 0; j < Lp; j++) anglesUni[j] = anglesTrue[0]! + (2 * Math.PI * j) / Lp;
+    const angles = new Float64Array(Lp);
     const cols = Lp + 1;
     const surf = newSurface(side === 1 ? 'legL' : 'legR', nL + 1, cols, { wrap: true });
+    surf.vFromEnd = true;
     const pts0 = new Float64Array(Lp * 2);
     const tmpL = new Float64Array(Lp * 2);
     const yC = plan.yCrotch;
@@ -308,7 +315,9 @@ export function buildBottom(
       jFlat = 14;
     for (let r = 0; r <= nL; r++) {
       const y = mix(plan.ySplit, plan.yHem, r / nL);
-      const { r: hull, cx, cz } = legR.hullAt(y);
+      const wA = smooth01(r / 14);
+      for (let j = 0; j < Lp; j++) angles[j] = mix(anglesTrue[j]!, anglesUni[j]!, wA);
+      const { r: hull, cx, cz } = legR.hullAt(y, angles);
       polarToPoints(hull, angles, pts0);
       const P0 = perimeter2D(pts0);
       const tgt = Math.max(targetC(y), P0 + 2 * Math.PI * clear);

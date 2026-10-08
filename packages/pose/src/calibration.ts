@@ -16,10 +16,12 @@
 export const SHOULDER_INSET_M = 0.025;
 
 /**
- * Brazo del proyecto = hombro (acromion) → muñeca. Con landmarks glenohumerales, la distancia
- * hombro-landmark → codo → muñeca queda ≈ 1 cm corta (el acromion está por encima y fuera).
+ * Corrección aditiva (cm) de la longitud del brazo hombro→codo→muñeca. Es 0 a propósito: desplazar el
+ * landmark del hombro `SHOULDER_INSET_M` hacia dentro ya alarga ≈ 1.5 cm la distancia al codo con el
+ * brazo caído (efecto geométrico), que compensa el acortamiento por estar el centro glenohumeral
+ * algo por debajo del acromion. Se deja como constante para recalibrar con datos reales.
  */
-export const ARM_LENGTH_BIAS_CM = 1.0;
+export const ARM_LENGTH_BIAS_CM = 0;
 
 /**
  * Altura de la articulación de cadera sobre el entrepierna: 0.075·H (misma constante que
@@ -45,30 +47,38 @@ export const STATURE_FRACTIONS = {
 } as const;
 
 /**
- * Razón profundidad/ancho (b/a) a priori de la sección elíptica del tronco por nivel, para un IMC
- * medio (≈ 23). Crece/decrece con el IMC (ver `depthRatio`).
+ * Circunferencia = (c0 + c1·(IMC − 22)) · ancho frontal de la silueta, ajustado por mínimos cuadrados a las
+ * mallas de @fitroom/body v1 (`tools/calibrate-girth.ts`, 36 cuerpos: estatura 150–195 cm, IMC 17.5–36.5,
+ * 3 constituciones, residuos individuales aleatorios). La razón profundidad/ancho está implícita en los
+ * factores (medias: pecho 0.81, cintura 0.78, cadera 0.74, cuello 0.96). `rel` = error relativo (1σ) de
+ * este modelo al aplicarlo a PERSONAS reales: el ajuste a las mallas da 0.1–3 %, pero una persona real se
+ * desvía más de un modelo paramétrico; se toma ≥ 3.5 %.
  */
-export const TORSO_DEPTH_RATIO = {
-  chest: 0.7,
-  waist: 0.78,
-  hip: 0.74,
-  thigh: 1.0,
-  neck: 1.0,
+export const GIRTH_FROM_WIDTH = {
+  chest: { c0: 3.051, c1: 0.0086, rel: 0.035 },
+  waist: { c0: 2.723, c1: 0.0192, rel: 0.035 },
+  hip: { c0: 2.808, c1: 0.0064, rel: 0.035 },
+  neck: { c0: 3.076, c1: 0, rel: 0.05 },
+  thigh: { c0: 3.179, c1: -0.0123, rel: 0.04 },
+} as const;
+export type GirthLevel = keyof typeof GIRTH_FROM_WIDTH;
+
+/** Alturas (fracción de la estatura) de los niveles de medida; las mismas que usa `measureBody` de body. */
+export const LEVELS = {
+  chest: 0.725,
+  waist: 0.625,
+  hip: 0.51,
+  thigh: 0.425,
+  neck: 0.862,
 } as const;
 
-/** Cuánto sube la razón profundidad/ancho por unidad de IMC sobre 23 (barriga/pecho más profundos). */
-export const DEPTH_RATIO_PER_BMI = 0.012;
-
-/** Muslo: circunferencia en la parte alta (5 cm bajo el pliegue glúteo); altura sobre el suelo / estatura. */
-export const LEVELS = {
-  /** altura (fracción de H) del nivel de pecho (línea axilar/pezón) */
-  chest: 0.72,
-  /** altura del nivel de cintura natural */
-  waist: 0.62,
-  /** nivel de cadera (máxima circunferencia glútea) */
-  hip: 0.52,
-  /** nivel de muslo alto (justo bajo el pliegue glúteo) */
-  thigh: 0.455 - 0.03,
-  /** nivel de cuello (mitad del cuello) */
-  neck: 0.855,
+/**
+ * Longitudes: distancia hombro→cadera→… como fracción de la estatura H en la persona media (misma
+ * antropometría que `buildRestSkeleton`/`predictInseam`): tramo de pierna articulación de cadera→tobillo,
+ * torso hombros→caderas y hombros→cabeza. Fijan la escala métrica con la estatura declarada.
+ */
+export const CHAIN_FRACTIONS = {
+  legSpan: 0.4545 + HIP_ABOVE_CROTCH - ANKLE_HEIGHT,
+  torso: 0.818 - (0.4545 + HIP_ABOVE_CROTCH),
+  head: 0.108,
 } as const;

@@ -388,7 +388,10 @@ export class Loft implements Prim {
     const gz = (2 * av) / b;
     const gy = -(2 * au * au * da) / a - (2 * av * av * db) / b + (2 * ae) / rc;
     const gl = Math.sqrt(gx * gx + gy * gy + gz * gz);
-    let d = (P - 1) / Math.max(gl, 1 / dmin);
+    if (P < 1e-18) return -dmin;
+    // d ≈ (ρ − 1)/|∇ρ| con ρ = √P y |∇ρ| = |∇P|/(2ρ): exacta en el límite para un círculo y sin subestimar a lo lejos
+    const rho = Math.sqrt(P);
+    let d = ((rho - 1) * 2 * rho) / Math.max(gl, 1e-9);
     if (d < -dmin) d = -dmin;
     return d;
   }

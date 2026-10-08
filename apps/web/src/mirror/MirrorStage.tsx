@@ -9,6 +9,7 @@ import type {
   TrackingState,
 } from '../contracts';
 import { PoseRuntime } from '../runtime/poseRuntime';
+import type { TrackingConfig } from '../runtime/trackingMachine';
 import {
   acquireCameraFeed,
   acquireSyntheticFeed,
@@ -33,8 +34,10 @@ export interface MirrorStageExtras {
   readonly scanProgress?: ScanProgress;
   /** Se invoca cuando cambia la relación de aspecto REAL del vídeo (para que el mundo ajuste el plano). */
   readonly onVideoAspect?: (aspect: number) => void;
-  /** Dibuja el cuerpo-oclusor de forma visible (depuración). */
-  readonly debugOccluder?: boolean;
+  /** Depuración del cuerpo-oclusor: 'off' lo desactiva, 'visible' lo muestra como maniquí translúcido. */
+  readonly debugOccluder?: 'on' | 'off' | 'visible';
+  /** Umbrales de seguimiento (histéresis, tiempo hasta «perdido», fundidos). Para equipos lentos o pruebas. */
+  readonly trackingConfig?: Partial<TrackingConfig>;
 }
 
 export type MirrorStageAllProps = MirrorStageProps & MirrorStageExtras;
@@ -99,6 +102,8 @@ export const MirrorStage = forwardRef<MirrorHandle, MirrorStageAllProps>(functio
   }, [gl]);
   useEffect(() => compositor?.setQuality(quality), [compositor, quality]);
   useEffect(() => compositor?.setFov(fov), [compositor, fov]);
+  const debugOccluder = props.debugOccluder ?? 'on';
+  useEffect(() => compositor?.setOccluderMode(debugOccluder), [compositor, debugOccluder]);
   useEffect(() => compositor?.syncModels(models), [compositor, models]);
 
   // ---- tubería de pose
@@ -112,6 +117,8 @@ export const MirrorStage = forwardRef<MirrorHandle, MirrorStageAllProps>(functio
   videoRef.current = cameraVideo;
 
   const camHandleRef = useRef<CameraFeedHandle | null>(null);
+  const trackingConfigRef = useRef(props.trackingConfig);
+  trackingConfigRef.current = props.trackingConfig;
   useEffect(() => {
     if (!compositor) return;
     let rt: PoseRuntime;
@@ -138,6 +145,7 @@ export const MirrorStage = forwardRef<MirrorHandle, MirrorStageAllProps>(functio
         getRest: () => modelsRef.current.body?.skeleton ?? null,
         getIntrinsics: intrinsics,
         getLightSource: () => synth.video.canvas,
+        trackingConfig: trackingConfigRef.current,
       });
     } else {
       const handle = acquireCameraFeed();
@@ -151,6 +159,7 @@ export const MirrorStage = forwardRef<MirrorHandle, MirrorStageAllProps>(functio
         getRest: () => modelsRef.current.body?.skeleton ?? null,
         getIntrinsics: intrinsics,
         getLightSource: () => videoRef.current,
+        trackingConfig: trackingConfigRef.current,
       });
     }
     runtimeRef.current = rt;

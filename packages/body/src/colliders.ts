@@ -138,26 +138,49 @@ function colliderDefs(P: readonly Vec3[], H: number, handLen: number, dirH: (sid
       tMax: 1,
       maxDist: 0.1,
     });
+    // muslo y pantorrilla se dividen en dos cápsulas para seguir el estrechamiento hacia la rodilla / el tobillo
     defs.push({
       name: `thigh_${n}`,
       jointA: jT,
-      jointB: jC,
+      jointB: jT,
       a: P[jT]!,
+      b: mid(P[jT]!, P[jC]!, 0.48),
+      bones: [jT],
+      tMin: 0.2,
+      tMax: 0.98,
+      maxDist: 0.2,
+    });
+    defs.push({
+      name: `thigh_lower_${n}`,
+      jointA: jT,
+      jointB: jC,
+      a: mid(P[jT]!, P[jC]!, 0.48),
       b: P[jC]!,
       bones: [jT],
-      tMin: 0.25,
+      tMin: 0.05,
       tMax: 0.95,
       maxDist: 0.2,
     });
     defs.push({
       name: `calf_${n}`,
       jointA: jC,
-      jointB: jF,
+      jointB: jC,
       a: P[jC]!,
+      b: mid(P[jC]!, P[jF]!, 0.5),
+      bones: [jC],
+      tMin: 0.15,
+      tMax: 0.98,
+      maxDist: 0.15,
+    });
+    defs.push({
+      name: `shin_${n}`,
+      jointA: jC,
+      jointB: jF,
+      a: mid(P[jC]!, P[jF]!, 0.5),
       b: P[jF]!,
       bones: [jC],
-      tMin: 0.1,
-      tMax: 0.95,
+      tMin: 0.05,
+      tMax: 0.9,
       maxDist: 0.15,
     });
     defs.push({
@@ -171,7 +194,6 @@ function colliderDefs(P: readonly Vec3[], H: number, handLen: number, dirH: (sid
       tMax: 0.9,
       maxDist: 0.12,
     });
-    void mid;
   }
   return defs;
 }

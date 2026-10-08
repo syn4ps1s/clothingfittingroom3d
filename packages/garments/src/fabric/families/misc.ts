@@ -32,9 +32,9 @@ export const buildSilkCrepe: FamilyBuilder = (ctx) => {
   const wB = new PeriodicNoise2D(pw, hashU32(seed, 2));
   const warpU = new LowResField(96, (u, v) => wA.sample(u * pw, v * pw));
   const warpV = new LowResField(96, (u, v) => wB.sample(u * pw, v * pw));
-  const nA = new PeriodicValueNoise2D(p1, hashU32(seed, 3));
-  const nB = new PeriodicValueNoise2D(p1 * 2, hashU32(seed, 4));
-  const nC = new PeriodicValueNoise2D(p1 * 4, hashU32(seed, 5));
+  const nA = new PeriodicValueNoise2D(p1, p1, hashU32(seed, 3));
+  const nB = new PeriodicValueNoise2D(p1 * 2, p1 * 2, hashU32(seed, 4));
+  const nC = new PeriodicValueNoise2D(p1 * 4, p1 * 4, hashU32(seed, 5));
   const noiseRow = new Float32Array(S);
   const noiseSeed = hashU32(seed, 0xc4e9e);
   ctx.bands((y0, y1) => {
@@ -200,8 +200,8 @@ export const buildCorduroy: FamilyBuilder = (ctx) => {
   // 1 canutillo ≈ 6 hilos; mínimo ~18 px por canutillo
   const nW = Math.max(3, Math.min(Math.floor(S / 18), Math.round(requested / 6)));
   const nGround = Math.max(nW * 4, Math.min(Math.floor(S / 8), Math.round(requested)));
-  const tuftN = new PeriodicValueNoise2D(nW * 4, hashU32(seed, 62));
-  const tuft = new LowResField(Math.min(512, S), (u, v) => tuftN.sample(u * nW * 4, v * nW * 4 * 0.5));
+  const tuftN = new PeriodicValueNoise2D(nW * 4, nW * 2, hashU32(seed, 62)); // mechones alargados a lo largo del canutillo
+  const tuft = new LowResField(Math.min(512, S), (u, v) => tuftN.sample(u * nW * 4, v * nW * 2));
   const dN = new PeriodicNoise2D(Math.max(2, nW), hashU32(seed, 65));
   const fade = new LowResField(96, (u, v) => dN.sample(u * nW, v * nW));
   const wTone = new Float32Array(nW);

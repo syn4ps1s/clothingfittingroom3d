@@ -1,6 +1,8 @@
 import {
   BODY_REGIONS,
   J,
+  JOINT_COUNT,
+  validateMesh,
   MEASUREMENT_KEYS,
   MeasurementsSchema,
   REST_BONE_DIRECTIONS,
@@ -14,11 +16,13 @@ import { deriveDims, type BodyDims } from './dims.js';
 import { calibrateField } from './calibrate.js';
 import { buildField, type BodyField } from './field.js';
 import { fitColliders } from './colliders.js';
+import { correctGirths } from './refine.js';
 import { computeSkin } from './skin.js';
 import { sampleFieldSteps, surfaceNets, type GridSpec } from './surface.js';
 import {
+  adjacencyIsClosed,
   buildAdjacency,
-  isClosedOrientedManifold,
+  type Adjacency,
   keepLargestComponent,
   repairLabeling,
   taubinSmooth,
@@ -27,9 +31,11 @@ import {
 /** Relación máxima/mínima entrepierna/estatura para la que el esqueleto canónico es físicamente posible. */
 export const INSEAM_RATIO_RANGE: readonly [number, number] = [0.3, 0.52];
 
-/** Resolución de la rejilla: paso = estatura / GRID_DIVISIONS (≈ 10 mm para 1,78 m). */
-const GRID_DIVISIONS = 172;
+/** Nº de vértices objetivo de la malla (≈ 10 mm de paso para un adulto medio). */
+const TARGET_VERTICES = 24000;
 const GRID_MARGIN = 3;
+/** Factores del paso de rejilla en los reintentos de seguridad (el primero es el normal). */
+const RETRY_SCALES: readonly number[] = [1, 1.0173, 0.9831, 1.0411];
 
 /** Valida con zod y comprueba la viabilidad del esqueleto. Lanza `BodyInputError`; nunca sanea en silencio. */
 export function validateBuildInput(input: unknown): Measurements {
@@ -57,6 +63,16 @@ export function validateBuildInput(input: unknown): Measurements {
 /** Clave canónica de caché de unas medidas (determinista). */
 export function measurementsKey(m: Measurements): string {
   return MEASUREMENT_KEYS.map((k) => String(m[k])).join('|') + '|' + m.bodyBase;
+}
+
+/**
+ * Paso de la rejilla (m): se elige para que la malla tenga ≈ TARGET_VERTICES vértices con cualquier talla y
+ * complexión (la superficie crece con la estatura y el perímetro medio del tronco).
+ */
+export function gridStep(dims: BodyDims): number {
+  const area = 1.12 * dims.H * ((dims.chestC + dims.waistC + dims.hipC) / 3);
+  const h = Math.sqrt((1.42 * area) / TARGET_VERTICES);
+  return Math.min(Math.max(h, dims.H / 230), dims.H / 140);
 }
 
 export function gridSpecFor(field: BodyField, h: number): GridSpec {
@@ -148,21 +164,32 @@ export function* buildSteps(
   tick('calibrate');
   yield;
   const field = buildField(dims, cal);
-  const h = dims.H / GRID_DIVISIONS;
-  const spec = gridSpecFor(field, h);
-  const grid = yield* sampleFieldSteps(spec, field);
-  tick('sample');
-  repairLabeling(spec, grid);
-  tick('repair');
-  yield;
-  const raw = surfaceNets(spec, grid);
-  tick('nets');
-  const comp = keepLargestComponent(raw.positions, raw.indices);
-  const positions = comp.positions;
-  const indices = comp.indices;
+  const spec = gridSpecFor(field, gridStep(dims));
+  // La rejilla se genera con reintentos de seguridad: si (muy improbable) el resultado no fuese una malla cerrada
+  // 2-manifold, se vuelve a mallar con un paso ligeramente distinto en lugar de entregar geometría defectuosa.
+  const h0 = gridStep(dims);
+  let positions!: Float32Array;
+  let indices!: Uint32Array;
+  let adj!: Adjacency;
+  let ok = false;
+  for (let attempt = 0; attempt < RETRY_SCALES.length && !ok; attempt++) {
+    const spec = gridSpecFor(field, h0 * RETRY_SCALES[attempt]!);
+    const grid = yield* sampleFieldSteps(spec, field);
+    tick('sample');
+    repairLabeling(spec, grid);
+    tick('repair');
+    yield;
+    const raw = surfaceNets(spec, grid);
+    tick('nets');
+    const comp = keepLargestComponent(raw.positions, raw.indices);
+    positions = comp.positions;
+    indices = comp.indices;
+    adj = buildAdjacency(positions.length / 3, indices);
+    tick('component+adjacency');
+    ok = adjacencyIsClosed(positions.length / 3, adj);
+  }
+  if (!ok) throw new BodyInputError('internal', 'la malla generada no es cerrada/manifold');
   const nv = positions.length / 3;
-  const adj = buildAdjacency(nv, indices);
-  tick('component+adjacency');
   taubinSmooth(positions, adj, 5);
   tick('smooth');
   yield;
@@ -181,17 +208,17 @@ export function* buildSteps(
       positions[i] = y + dTop * t * t * (3 - 2 * t);
     }
   }
-  const normals = computeVertexNormals(positions, indices);
-  tick('normals');
   const skin = computeSkin(field, positions, adj);
   tick('skin');
   yield;
   const dominant = new Uint8Array(nv);
   const regions = new Uint8Array(nv);
-  for (let v = 0; v < nv; v++) {
-    dominant[v] = skin.indices[v * 4]!;
-    regions[v] = regionOf(dominant[v]!, positions[v * 3 + 1]!, dims.lm.crotch);
-  }
+  for (let v = 0; v < nv; v++) dominant[v] = skin.indices[v * 4]!;
+  correctGirths(dims, positions, indices, dominant);
+  tick('girth-correction');
+  const normals = computeVertexNormals(positions, indices);
+  tick('normals');
+  for (let v = 0; v < nv; v++) regions[v] = regionOf(dominant[v]!, positions[v * 3 + 1]!, dims.lm.crotch);
   const handLen = dims.rest.joints[J.l_hand]!.boneLength;
   const colliders = fitColliders(
     dims.P,
@@ -209,10 +236,13 @@ export function* buildSteps(
     skinWeights: skin.weights,
   };
   tick('colliders');
-  const closed = isClosedOrientedManifold(nv, indices);
+  const issues = validateMesh(mesh, JOINT_COUNT);
   tick('topology');
-  if (!closed) {
-    throw new BodyInputError('internal', 'la malla generada no es cerrada/manifold');
+  if (issues.length > 0) {
+    throw new BodyInputError(
+      'internal',
+      `validateMesh: ${issues.map((i) => `${i.code} ${i.detail}`).join('; ')}`,
+    );
   }
   return {
     measurements: m,

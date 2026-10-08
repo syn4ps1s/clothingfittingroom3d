@@ -177,7 +177,7 @@ export function calibrateField(dims: BodyDims, passes = 4): CalibrationResult {
       thigh: secantStep(st.thigh, dims.thighC, measured.thigh),
       crotchDy:
         measured.crotch === measured.crotch
-          ? (crotchDy = clampN(crotchDy + (dims.lm.crotch - measured.crotch), -0.045, 0.045))
+          ? (crotchDy = clampN(crotchDy + (dims.lm.crotch - measured.crotch), -0.06, 0.06))
           : crotchDy,
     };
   }

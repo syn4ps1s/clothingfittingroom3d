@@ -371,6 +371,7 @@ function measureArm(body: BodyModel, side: 1 | -1): ArmAxis {
   // mínimo de circunferencia en una ventana alrededor de la muñeca (±6 cm de la articulación)
   let bestS = armLen;
   let bestP = Infinity;
+  const prof: [number, number][] = [];
   for (let s = armLen - 0.06; s <= armLen + 0.06; s += 0.004) {
     const o: Vec3 = [sh[0] + dir[0] * s, sh[1] + dir[1] * s, sh[2] + dir[2] * s];
     const loops = slicePlane(positions, indices, o, dir);
@@ -386,11 +387,22 @@ function measureArm(body: BodyModel, side: 1 | -1): ArmAxis {
     }
     if (!best) continue;
     const p = loopPerimeter(best);
+    prof.push([s, p]);
     if (p < bestP) {
       bestP = p;
       bestS = s;
     }
   }
+  // centro de la meseta del mínimo (±2 % del perímetro mínimo) para no depender de ruido de la malla
+  let sumS = 0;
+  let cnt = 0;
+  for (const [s, p] of prof) {
+    if (p <= bestP * 1.02 && Math.abs(s - bestS) < 0.02) {
+      sumS += s;
+      cnt++;
+    }
+  }
+  if (cnt > 0) bestS = sumS / cnt;
   return { shoulderX, wristDist: bestS };
 }
 

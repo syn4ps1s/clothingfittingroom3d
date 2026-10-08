@@ -44,20 +44,27 @@ export interface NormalAoParams {
   readonly bumpUnitPx: number;
   readonly aoStrength: number;
   readonly aoRadius: number;
+  /** rugosidad base de la tela (0..1) */
+  readonly roughBase: number;
+  /** cuánto brillan más las crestas (≈ 0,12 · sheen) */
+  readonly sheenGloss: number;
+  /** metalicidad constante en bytes */
+  readonly metalByte: number;
 }
 
 /**
- * Para las filas y0..y1-1: AO (desenfoque vertical de `Hb` menos H) y normal (Sobel) → bytes.
- * Escribe la normal como RGBA en `normal32` y el AO (0..255) en `aoOut` para el empaquetado ORM.
+ * Para las filas y0..y1-1: AO (desenfoque vertical de `Hb` menos H), normal (Sobel) y empaquetado ORM.
+ * Escribe la normal como RGBA en `normal32` y el ORM (R = AO, G = rugosidad, B = metal) en `orm32`.
  */
 export function normalAoBand(
   H: Float32Array,
   Hb: Float32Array,
+  Rough: Float32Array,
   p: NormalAoParams,
   y0: number,
   y1: number,
   normal32: Uint32Array,
-  aoOut: Uint8Array,
+  orm32: Uint32Array,
   colSum: Float32Array,
 ): void {
   const S = p.size;
@@ -65,6 +72,9 @@ export function normalAoBand(
   const inv = 1 / (2 * r + 1);
   const scale = p.strength * p.bumpUnitPx;
   const aoK = p.aoStrength * 3.2;
+  const roughBase = p.roughBase;
+  const sheenGloss = p.sheenGloss;
+  const metal = p.metalByte;
 
   // suma vertical inicial para la fila y0
   colSum.fill(0);
@@ -103,7 +113,13 @@ export function normalAoBand(
       const cav = colSum[x]! * inv - e;
       let ao = 1 - aoK * (cav > 0 ? cav : 0);
       if (ao < 0.22) ao = 0.22;
-      aoOut[o + x] = ao * 255 + 0.5;
+      let rough = roughBase + Rough[o + x]! - sheenGloss * (e - 0.5);
+      rough = rough < 0.04 ? 0.04 : rough > 1 ? 1 : rough;
+      const aoB = (ao * 255 + 0.5) | 0;
+      const roB = (rough * 255 + 0.5) | 0;
+      orm32[o + x] = LITTLE_ENDIAN
+        ? ((255 << 24) | (metal << 16) | (roB << 8) | aoB) >>> 0
+        : ((aoB << 24) | (roB << 16) | (metal << 8) | 255) >>> 0;
       // avanza la ventana
       const xn = x + 2 >= S ? x + 2 - S : x + 2;
       a = b;

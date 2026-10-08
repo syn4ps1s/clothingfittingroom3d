@@ -42,6 +42,8 @@ export interface Surface {
   uOffset: number;
   /** modo UV */
   uv: 'tube' | 'flat';
+  /** v medido desde la última fila (puño/bajo planos) en vez de la primera (extremo oblicuo: sisa, entrepierna) */
+  vFromEnd: boolean;
   /** triángulos invertidos respecto al orden de la rejilla (se decide al emitir) */
   flip: boolean;
 }
@@ -98,6 +100,7 @@ export function newSurface(
     vOffset: 0,
     uOffset: 0,
     uv: 'tube',
+    vFromEnd: false,
     flip: false,
   };
 }

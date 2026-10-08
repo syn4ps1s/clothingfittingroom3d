@@ -1,11 +1,3 @@
-import {
-  NotImplementedError,
-  type CameraIntrinsics,
-  type MeasurementEstimate,
-  type PoseFrame,
-  type ScanSession,
-} from '@fitroom/shared';
-
 // ---- Detector real (MediaPipe, on-device) ---------------------------------------------------------
 export {
   createMediaPipePoseProvider,
@@ -70,18 +62,15 @@ export {
 } from './camera.js';
 export { defaultMeasurementsForHeight, defaultRestForHeight, restLandmarks } from './rig.js';
 
-/** Sesión guiada de escaneo de talla. STUB. */
-export function createScanSession(_opts: {
-  readonly heightCm: number;
-  readonly camera: CameraIntrinsics;
-}): ScanSession {
-  throw new NotImplementedError('pose.createScanSession');
-}
-
-/** Estimación a partir de UNA foto (modo foto). STUB. */
-export function estimateMeasurementsFromFrame(
-  _frame: PoseFrame,
-  _heightCm: number,
-): MeasurementEstimate {
-  throw new NotImplementedError('pose.estimateMeasurementsFromFrame');
-}
+// ---- Escaneo de talla y estimación de medidas -------------------------------------------------------
+export { createScanSession, ALL_SCAN_HINTS } from './scan.js';
+export type { ScanSessionOptions, ScanSessionExt, ScanDiagnostics } from './scan.js';
+export { estimateMeasurements, estimateMeasurementsFromFrame, frameGeometry } from './measure.js';
+export type { EstimatorOptions, MeasureDetails, ScaleEvidence } from './measure.js';
+export { assessFrame, motionBetween, DEFAULT_THRESHOLDS } from './quality.js';
+export type { FrameQuality, QualityThresholds } from './quality.js';
+export { measureSilhouette, runEdges, levelAnchors, rowOfLevel, estimatePxPerMeter } from './girth.js';
+export type { SilhouetteWidths } from './girth.js';
+export { robustLocation, fuse, mad, MAD_TO_SIGMA } from './robust.js';
+export { girthPrior, predictGirth, GIRTH_COEF, RESIDUAL_SIGMA, PRIOR_BMI } from './anthropometry.js';
+export * as calibration from './calibration.js';

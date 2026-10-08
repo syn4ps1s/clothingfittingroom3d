@@ -20,6 +20,55 @@ export interface Emitted {
 
 const grad = new Float64Array(3);
 
+/** Coste de estiramiento UV de una superficie: media de (ln anisotropía)² sobre sus celdas (triángulo A,D,B). */
+function uvCost(P: Float64Array, s: Surface, U: Float64Array, V: Float64Array): number {
+  let sum = 0;
+  let cnt = 0;
+  for (let r = 0; r + 1 < s.rows; r++)
+    for (let c = 0; c + 1 < s.cols; c++) {
+      if (!s.cellOn[r * (s.cols - 1) + c]) continue;
+      const a = r * s.cols + c,
+        b = a + 1,
+        d = a + s.cols;
+      const na = s.node[a]!,
+        nb = s.node[b]!,
+        nd = s.node[d]!;
+      if (na < 0 || nb < 0 || nd < 0) continue;
+      const p1x = P[nd * 3]! - P[na * 3]!,
+        p1y = P[nd * 3 + 1]! - P[na * 3 + 1]!,
+        p1z = P[nd * 3 + 2]! - P[na * 3 + 2]!;
+      const p2x = P[nb * 3]! - P[na * 3]!,
+        p2y = P[nb * 3 + 1]! - P[na * 3 + 1]!,
+        p2z = P[nb * 3 + 2]! - P[na * 3 + 2]!;
+      const du1 = U[d]! - U[a]!,
+        dv1 = V[d]! - V[a]!,
+        du2 = U[b]! - U[a]!,
+        dv2 = V[b]! - V[a]!;
+      const det = du1 * dv2 - du2 * dv1;
+      if (Math.abs(det) < 1e-12) {
+        sum += 9;
+        cnt++;
+        continue;
+      }
+      const sx = (p1x * dv2 - p2x * dv1) / det,
+        sy = (p1y * dv2 - p2y * dv1) / det,
+        sz = (p1z * dv2 - p2z * dv1) / det;
+      const tx = (p2x * du1 - p1x * du2) / det,
+        ty = (p2y * du1 - p1y * du2) / det,
+        tz = (p2z * du1 - p1z * du2) / det;
+      const A = sx * sx + sy * sy + sz * sz,
+        B = sx * tx + sy * ty + sz * tz,
+        C = tx * tx + ty * ty + tz * tz;
+      const disc = Math.sqrt(Math.max(0, (A - C) * (A - C) + 4 * B * B));
+      const l1 = 0.5 * (A + C + disc),
+        l2 = Math.max(1e-18, 0.5 * (A + C - disc));
+      const la = 0.5 * Math.log(l1 / l2);
+      sum += la * la;
+      cnt++;
+    }
+  return cnt ? sum / cnt : 0;
+}
+
 /** Decide si la superficie debe invertirse para que sus normales apunten fuera del cuerpo (votación con el SDF). */
 function decideFlip(mesh: GarmentMesh, f: BodyField, s: Surface): boolean {
   let vote = 0;
@@ -89,12 +138,13 @@ export function emitMesh(mesh: GarmentMesh, f: BodyField): Emitted {
   const uvs = new Float32Array(vcount * 2);
   const vertNode = new Uint32Array(vcount);
   const vertSurface = new Uint16Array(vcount);
-  // 2) posiciones y UV
+  // 2) posiciones y UV (en metros: uvMetersPerTile = 1)
   let vOff = 0;
   mesh.surfaces.forEach((s, si) => {
-    // longitudes de arco a lo largo de filas (u) y columnas (v)
     const U = new Float64Array(s.rows * s.cols);
     const V = new Float64Array(s.rows * s.cols);
+    const rowTotal = new Float64Array(s.rows);
+    // longitud de arco acumulada por fila (fracción f) y total
     for (let r = 0; r < s.rows; r++) {
       let acc = 0;
       let prev = -1;
@@ -105,6 +155,54 @@ export function emitMesh(mesh: GarmentMesh, f: BodyField): Emitted {
           acc += Math.hypot(P[n * 3]! - P[prev * 3]!, P[n * 3 + 1]! - P[prev * 3 + 1]!, P[n * 3 + 2]! - P[prev * 3 + 2]!);
         U[r * s.cols + c] = acc;
         prev = n;
+      }
+      rowTotal[r] = acc;
+    }
+    const Urow = Float64Array.from(U);
+    if (s.wrap) {
+      // u puede ser (A) la longitud de arco propia de cada fila (isométrica a lo largo de las filas pero con cizalla
+      // si las filas encogen: cúpulas/conos) o (B) constante por columna tomada de la fila de perímetro mediano
+      // (sin cizalla, comprimida donde la fila es corta). Se mezclan con el peso que minimice el estiramiento.
+      const complete: number[] = [];
+      for (let r = 0; r < s.rows; r++) {
+        let ok = true;
+        for (let c = 0; c < s.cols && ok; c++) if (s.node[r * s.cols + c]! < 0) ok = false;
+        if (ok && rowTotal[r]! > 0) complete.push(r);
+      }
+      if (complete.length) {
+        complete.sort((a, b) => rowTotal[a]! - rowTotal[b]!);
+        const refRow = complete[complete.length >> 1]!;
+        const Vcol = new Float64Array(s.rows * s.cols);
+        for (let c = 0; c < s.cols; c++) {
+          let acc = 0;
+          let prev = -1;
+          for (let r = 0; r < s.rows; r++) {
+            const n = s.node[r * s.cols + c]!;
+            if (n < 0) continue;
+            if (prev >= 0)
+              acc += Math.hypot(P[n * 3]! - P[prev * 3]!, P[n * 3 + 1]! - P[prev * 3 + 1]!, P[n * 3 + 2]! - P[prev * 3 + 2]!);
+            Vcol[r * s.cols + c] = acc;
+            prev = n;
+          }
+          if (s.vFromEnd) {
+            for (let r = 0; r < s.rows; r++) if (s.node[r * s.cols + c]! >= 0) Vcol[r * s.cols + c] = acc - Vcol[r * s.cols + c]!;
+          }
+        }
+        const Uref = new Float64Array(s.rows * s.cols);
+        for (let r = 0; r < s.rows; r++)
+          for (let c = 0; c < s.cols; c++) Uref[r * s.cols + c] = Urow[refRow * s.cols + c]!;
+        let bestA = 0;
+        let bestCost = Infinity;
+        const Utry = new Float64Array(s.rows * s.cols);
+        for (const alpha of [0, 0.25, 0.5, 0.75, 1]) {
+          for (let i = 0; i < Utry.length; i++) Utry[i] = alpha * Urow[i]! + (1 - alpha) * Uref[i]!;
+          const cost = uvCost(P, s, Utry, Vcol);
+          if (cost < bestCost) {
+            bestCost = cost;
+            bestA = alpha;
+          }
+        }
+        for (let i = 0; i < U.length; i++) U[i] = bestA * Urow[i]! + (1 - bestA) * Uref[i]!;
       }
     }
     for (let c = 0; c < s.cols; c++) {
@@ -119,8 +217,34 @@ export function emitMesh(mesh: GarmentMesh, f: BodyField): Emitted {
         prev = n;
       }
     }
+    if (s.vFromEnd) {
+      for (let c = 0; c < s.cols; c++) {
+        let total = 0;
+        for (let r = 0; r < s.rows; r++) if (s.node[r * s.cols + c]! >= 0) total = Math.max(total, V[r * s.cols + c]!);
+        for (let r = 0; r < s.rows; r++) if (s.node[r * s.cols + c]! >= 0) V[r * s.cols + c] = total - V[r * s.cols + c]!;
+      }
+    }
     let vmax = 0;
-    for (let i = 0; i < V.length; i++) if (used[si]![i] && V[i]! > vmax) vmax = V[i]!;
+    let umax = 0;
+    for (let i = 0; i < V.length; i++)
+      if (used[si]![i]) {
+        if (V[i]! > vmax) vmax = V[i]!;
+        if (U[i]! > umax) umax = U[i]!;
+      }
+    // orientación de UV: el mapa no debe quedar en espejo visto desde fuera (voto con la diagonal por defecto)
+    s.flip = decideFlip(mesh, f, s);
+    let vote = 0;
+    for (let r = 0; r + 1 < s.rows; r++)
+      for (let c = 0; c + 1 < s.cols; c++) {
+        if (!s.cellOn[r * (s.cols - 1) + c]) continue;
+        const a = r * s.cols + c,
+          b = a + 1,
+          d = a + s.cols;
+        // triángulo por defecto (A, D, B): det = (uD-uA)(vB-vA) - (uB-uA)(vD-vA)
+        const det = (U[d]! - U[a]!) * (V[b]! - V[a]!) - (U[b]! - U[a]!) * (V[d]! - V[a]!);
+        vote += s.flip ? -det : det;
+      }
+    const mirror = vote < 0;
     for (let i = 0; i < used[si]!.length; i++) {
       if (!used[si]![i]) continue;
       const v = s.vert[i]!;
@@ -128,7 +252,7 @@ export function emitMesh(mesh: GarmentMesh, f: BodyField): Emitted {
       positions[v * 3] = P[n * 3]!;
       positions[v * 3 + 1] = P[n * 3 + 1]!;
       positions[v * 3 + 2] = P[n * 3 + 2]!;
-      uvs[v * 2] = U[i]! + s.uOffset;
+      uvs[v * 2] = (mirror ? umax - U[i]! : U[i]!) + s.uOffset;
       uvs[v * 2 + 1] = V[i]! + vOff + s.vOffset;
       vertNode[v] = n;
       vertSurface[v] = si;
@@ -138,7 +262,6 @@ export function emitMesh(mesh: GarmentMesh, f: BodyField): Emitted {
   // 3) triángulos por ranura
   const tris: number[][] = SLOT_NAMES.map(() => []);
   mesh.surfaces.forEach((s) => {
-    s.flip = decideFlip(mesh, f, s);
     for (let r = 0; r + 1 < s.rows; r++)
       for (let c = 0; c + 1 < s.cols; c++) {
         const ci = r * (s.cols - 1) + c;

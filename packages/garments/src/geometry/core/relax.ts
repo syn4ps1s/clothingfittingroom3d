@@ -202,3 +202,42 @@ export function smoothBand(
     for (let i = 0; i < n * 3; i++) P[i] = tmp[i]!;
   }
 }
+
+/**
+ * Suavizado laplaciano a lo largo de las COLUMNAS de una superficie (entre filas r0..r1, exclusivas en los extremos):
+ * elimina el rizado horizontal por interpolación entre cortes del cuerpo y ruido de muestreo del SDF, sin encoger los anillos.
+ */
+export function smoothSurfaceRows(
+  mesh: GarmentMesh,
+  s: import('./mesh.js').Surface,
+  r0: number,
+  r1: number,
+  iterations: number,
+  lambda = 0.5,
+  fixed?: ReadonlySet<number>,
+): void {
+  const P = mesh.pos.data;
+  const cMax = s.wrap ? s.cols - 1 : s.cols;
+  const tmp = new Float64Array(s.rows * 3);
+  for (let it = 0; it < iterations; it++) {
+    for (let c = 0; c < cMax; c++) {
+      for (let r = r0 + 1; r < r1; r++) {
+        const n = s.node[r * s.cols + c]!;
+        const a = s.node[(r - 1) * s.cols + c]!;
+        const b = s.node[(r + 1) * s.cols + c]!;
+        tmp[r * 3] = Number.NaN;
+        if (n < 0 || a < 0 || b < 0 || (fixed && fixed.has(n))) continue;
+        tmp[r * 3] = P[n * 3]! + (0.5 * (P[a * 3]! + P[b * 3]!) - P[n * 3]!) * lambda;
+        tmp[r * 3 + 1] = P[n * 3 + 1]! + (0.5 * (P[a * 3 + 1]! + P[b * 3 + 1]!) - P[n * 3 + 1]!) * lambda;
+        tmp[r * 3 + 2] = P[n * 3 + 2]! + (0.5 * (P[a * 3 + 2]! + P[b * 3 + 2]!) - P[n * 3 + 2]!) * lambda;
+      }
+      for (let r = r0 + 1; r < r1; r++) {
+        if (Number.isNaN(tmp[r * 3]!)) continue;
+        const n = s.node[r * s.cols + c]!;
+        P[n * 3] = tmp[r * 3]!;
+        P[n * 3 + 1] = tmp[r * 3 + 1]!;
+        P[n * 3 + 2] = tmp[r * 3 + 2]!;
+      }
+    }
+  }
+}

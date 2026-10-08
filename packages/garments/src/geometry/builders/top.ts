@@ -148,18 +148,20 @@ const cross3 = (a: V3, b: V3): V3 => [
   a[0] * b[1] - a[1] * b[0],
 ];
 
-/** Anillos de la sección del brazo en planos ⟂ al eje, en los ángulos (no uniformes) del lazo de sisa. */
+/** Anillos de la sección del brazo en planos ⟂ al eje (cortes cada `keyStep`), consultables en ángulos arbitrarios. */
 class ArmRings {
   private readonly cache = new Map<number, Float64Array>();
   readonly J: V3;
   readonly a: V3;
   readonly u: V3 = [0, 0, 1];
   readonly v: V3;
+  private readonly kAngles: Float64Array;
   constructor(
     private readonly field: BodyField,
     readonly side: 1 | -1,
-    private readonly angles: Float64Array,
+    readonly flipV = false,
     readonly keyStep = 0.02,
+    private readonly nKey = 72,
   ) {
     const sk = field.body.skeleton;
     const ua = side === 1 ? J.l_upper_arm : J.r_upper_arm;
@@ -168,25 +170,17 @@ class ArmRings {
     // v = componente "arriba" perpendicular al eje (arriba-afuera)
     const up: V3 = [0, 1, 0];
     this.v = norm3(sub3(up, mul3(this.a, dot3(up, this.a))));
+    if (flipV) this.v = mul3(this.v, -1);
+    this.kAngles = new Float64Array(nKey);
+    for (let i = 0; i < nKey; i++) this.kAngles[i] = (2 * Math.PI * i) / nKey;
   }
   center(s: number): V3 {
     return add3(this.J, mul3(this.a, s));
   }
-  /** radios de la envolvente convexa del brazo (por ángulo) en s (interpolados entre cortes cada keyStep) */
-  hullAt(s: number): Float64Array {
-    const f = Math.max(0, s) / this.keyStep;
-    const k0 = Math.floor(f);
-    const t = f - k0;
-    const a = this.key(k0);
-    if (t < 1e-6) return a;
-    const b = this.key(k0 + 1);
-    const out = new Float64Array(a.length);
-    for (let i = 0; i < a.length; i++) out[i] = a[i]! + (b[i]! - a[i]!) * t;
-    return out;
-  }
+  /** polígono (puntos 2D) de la envolvente convexa del brazo en el corte k */
   private key(k: number): Float64Array {
-    let r = this.cache.get(k);
-    if (r) return r;
+    let pts = this.cache.get(k);
+    if (pts) return pts;
     const s = k * this.keyStep;
     const c = this.center(s);
     const fr = {
@@ -200,16 +194,25 @@ class ArmRings {
       vy: this.v[1],
       vz: this.v[2],
     };
-    const raw = bodyRadiiAt(this.field, fr, this.angles, 0.13, 0.02);
+    const raw = bodyRadiiAt(this.field, fr, this.kAngles, 0.13, 0.02);
     // recorta radios anómalos (rayos que salen por el tronco): ≤ 1.6 × mediana
     const sorted = Array.from(raw).sort((x, y) => x - y);
     const med = sorted[sorted.length >> 1]!;
     for (let i = 0; i < raw.length; i++) if (raw[i]! > 1.6 * med) raw[i] = 1.6 * med;
-    const pts = polarToPoints(raw, this.angles);
-    r = hullRadiiAt(pts, this.angles);
-    for (let i = 0; i < r.length; i++) if (r[i]! < raw[i]!) r[i] = raw[i]!;
-    this.cache.set(k, r);
-    return r;
+    pts = polarToPoints(raw, this.kAngles);
+    this.cache.set(k, pts);
+    return pts;
+  }
+  /** radios de la envolvente convexa del brazo en s, evaluados en los ángulos dados (interpola entre cortes) */
+  hullAt(s: number, angles: ArrayLike<number>): Float64Array {
+    const f = Math.max(0, s) / this.keyStep;
+    const k0 = Math.floor(f);
+    const t = f - k0;
+    const a = hullRadiiAt(this.key(k0), angles);
+    if (t < 1e-6) return a;
+    const b = hullRadiiAt(this.key(k0 + 1), angles);
+    for (let i = 0; i < a.length; i++) a[i] = a[i]! + (b[i]! - a[i]!) * t;
+    return a;
   }
 }
 
@@ -288,19 +291,46 @@ export function buildTop(
     tipPts[i * 2] = r * c;
     tipPts[i * 2 + 1] = r * sn;
   }
-  // B: yugo
-  for (let r = 1; r <= nB; r++) {
-    const t = r / nB;
-    const y = mix(plan.yPitG, plan.yTip, t);
-    const zc = mix(pitRing.zc, tipZc, t);
-    const u = smooth01(t);
+  // B + C (yugo y cúpula) se generan más abajo como una curva por columna
+  const neckPt = (i: number): V3 => {
+    const nk = plan.neck;
+    const th = (2 * Math.PI * i) / K;
+    const c = Math.cos(th),
+      sn = Math.sin(th);
+    const rho = superEllipseRadius(c, sn, c > 0 ? nk.bB : nk.bF, nk.aN, 2.2);
+    const front = Math.max(0, -c);
+    const y = mix(nk.yBack, nk.yCenter, smooth01(1 - Math.max(0, c))) + (nk.yFront - nk.yCenter) * Math.pow(front, 1.6);
+    return [rho * sn, y, nk.zc - rho * c];
+  };
+  // curva por columna: pit(A) → punta de hombro (T) → escote (N), polinomio de Lagrange en t ∈ [0,1]
+  {
+    const nBC = nB + nC;
+    const t1 = nB / nBC;
     for (let i = 0; i < K; i++) {
-      const a = mix(pitRing.pts[i * 2]!, tipPts[i * 2]!, u);
-      const b = mix(pitRing.pts[i * 2 + 1]!, tipPts[i * 2 + 1]!, u);
-      put(nA + r, i, [b, y, zc - a]);
+      const th = (2 * Math.PI * i) / K;
+      const wLat = smooth01((Math.abs(Math.sin(th)) - 0.3) / 0.6);
+      const A = get(nA, i);
+      const Nk = neckPt(i);
+      const line: V3 = [mix(A[0], Nk[0], t1), mix(A[1], Nk[1], t1), mix(A[2], Nk[2], t1)];
+      const tipX = tipPts[i * 2 + 1]!;
+      const tipZ = tipZc - tipPts[i * 2]!;
+      const Tp: V3 = [mix(line[0], tipX, wLat), mix(line[1], plan.yTip, wLat), mix(line[2], tipZ, wLat)];
+      const L0 = (t: number): number => ((t - t1) * (t - 1)) / ((0 - t1) * (0 - 1));
+      const L1 = (t: number): number => ((t - 0) * (t - 1)) / ((t1 - 0) * (t1 - 1));
+      const L2 = (t: number): number => ((t - 0) * (t - t1)) / ((1 - 0) * (1 - t1));
+      for (let r = 1; r <= nBC; r++) {
+        const t = r / nBC;
+        const a = L0(t),
+          b = L1(t),
+          c = L2(t);
+        put(nA + r, i, [
+          A[0] * a + Tp[0] * b + Nk[0] * c,
+          A[1] * a + Tp[1] * b + Nk[1] * c,
+          A[2] * a + Tp[2] * b + Nk[2] * c,
+        ]);
+      }
     }
   }
-
   // ---- sisas: bloque rectangular en la rejilla que se convierte en un lazo ovalado 3D ----
   const hasSleeves = plan.sleeve.kind !== 'none';
   const rP = nA,
@@ -353,10 +383,28 @@ export function buildTop(
       const zHat: V3 = [0, 0, 1];
       const nOut = 3;
       const verts: V3[] = [];
-      for (const v of li.verts) {
-        const sc = 1 / Math.pow(Math.pow(Math.abs(v.zq), nOut) + Math.pow(Math.abs(v.hq), nOut), 1 / nOut);
-        const zl = v.zq * sc * Az;
-        const tl = v.hq * sc * At;
+      // superelipse muestreada finamente y remuestreada a longitud de arco uniforme (Lp puntos), empezando en la
+      // esquina inferior-trasera del bloque (φ0 = 225°) y recorriendo en sentido antihorario en (z, t)
+      const M = 1440;
+      const phi0 = Math.atan2(-1, -1);
+      const poly: Array<[number, number]> = [];
+      for (let k = 0; k <= M; k++) {
+        const phi = phi0 + (2 * Math.PI * k) / M;
+        const c = Math.cos(phi),
+          sn = Math.sin(phi);
+        const rr = 1 / Math.pow(Math.pow(Math.abs(c), nOut) + Math.pow(Math.abs(sn), nOut), 1 / nOut);
+        poly.push([c * rr * Az, sn * rr * At]);
+      }
+      const cum = new Float64Array(M + 1);
+      for (let k = 1; k <= M; k++) cum[k] = cum[k - 1]! + Math.hypot(poly[k]![0] - poly[k - 1]![0], poly[k]![1] - poly[k - 1]![1]);
+      const Lp0 = li.verts.length;
+      let kk = 0;
+      for (let j = 0; j < Lp0; j++) {
+        const target = (cum[M]! * j) / Lp0;
+        while (kk < M - 1 && cum[kk + 1]! < target) kk++;
+        const f = (target - cum[kk]!) / Math.max(1e-12, cum[kk + 1]! - cum[kk]!);
+        const zl = poly[kk]![0] + (poly[kk + 1]![0] - poly[kk]![0]) * f;
+        const tl = poly[kk]![1] + (poly[kk + 1]![1] - poly[kk]![1]) * f;
         verts.push(add3(center, add3(mul3(zHat, zl), mul3(tHat, tl))));
       }
       loopPos.push(verts);
@@ -365,8 +413,8 @@ export function buildTop(
     }
   }
 
-  // nodos del torso
-  for (let r = 0; r < rows; r++) {
+  // nodos del torso (hasta la fila del hombro; la cúpula se crea después de aplicar la corrección del lazo)
+  for (let r = 0; r <= rT; r++) {
     const hemExtra = r < 6 ? T * (1 - r / 6) : 0;
     for (let i = 0; i < K; i++) {
       if (inHole[r * K + i]) continue;
@@ -375,17 +423,6 @@ export function buildTop(
     }
     s.node[r * (K + 1) + K] = s.node[r * (K + 1)]!;
   }
-  // los nodos de las neutras del dome: sin cambios
-  const neckPt = (i: number): V3 => {
-    const nk = plan.neck;
-    const th = (2 * Math.PI * i) / K;
-    const c = Math.cos(th),
-      sn = Math.sin(th);
-    const rho = superEllipseRadius(c, sn, c > 0 ? nk.bB : nk.bF, nk.aN, 2.2);
-    const front = Math.max(0, -c);
-    const y = mix(nk.yBack, nk.yCenter, smooth01(1 - Math.max(0, c))) + (nk.yFront - nk.yCenter) * Math.pow(front, 1.6);
-    return [rho * sn, y, nk.zc - rho * c];
-  };
   // C: cúpula hasta el escote (se coloca tras fijar el lazo, partiendo de la fila rT real)
   const loops: number[][] = [];
   const sleeves: Surface[] = [];
@@ -403,14 +440,27 @@ export function buildTop(
       loops.push(nodes);
     });
   }
-  const rowTopNode: V3[] = [];
-  for (let i = 0; i < K; i++) rowTopNode.push(get(rT, i));
+  // en las columnas del bloque de sisa, el borde superior del lazo corrige la cúpula (decae hacia el escote)
+  const rowTopGen: V3[] = [];
+  for (let i = 0; i < K; i++) rowTopGen.push(get(rT, i));
+  if (hasSleeves) {
+    loopsInfo.forEach((li, idx) => {
+      const pos = loopPos[idx]!;
+      li.verts.forEach((v, j) => {
+        if (v.r !== rT) return;
+        const gen = rowTopGen[v.i]!;
+        const d: V3 = [pos[j]![0] - gen[0], pos[j]![1] - gen[1], pos[j]![2] - gen[2]];
+        for (let r = rT; r <= rT + nC; r++) {
+          const f = r === rT ? 1 : Math.pow(1 - (r - rT) / nC, 1.5);
+          const g = get(r, v.i);
+          put(r, v.i, [g[0] + d[0] * f, g[1] + d[1] * f, g[2] + d[2] * f]);
+        }
+      });
+    });
+  }
   for (let r = 1; r <= nC; r++) {
-    const t = r / nC;
     for (let i = 0; i < K; i++) {
-      const a = rowTopNode[i]!;
-      const n = neckPt(i);
-      const p: V3 = [mix(a[0], n[0], t), mix(a[1], n[1], t), mix(a[2], n[2], t)];
+      const p = get(rT + r, i);
       s.node[(rT + r) * (K + 1) + i] = mesh.addNode(p[0], p[1], p[2], clear);
     }
     s.node[(rT + r) * (K + 1) + K] = s.node[(rT + r) * (K + 1)]!;
@@ -445,30 +495,52 @@ function buildSleeve(
   const { clear, T, e } = plan;
   const sl = plan.sleeve;
   // ángulos de cada vértice del lazo alrededor del eje del brazo (u = frente, v = arriba-afuera), crecientes (CCW)
-  const arm0 = new ArmRings(field, side, new Float64Array(0));
-  const cJ = arm0.center(0);
+  // referencia angular: el CENTRO del lazo (siempre interior al óvalo; el eje del brazo puede quedar en su borde)
+  const probe = new ArmRings(field, side);
+  const cJ = probe.center(0);
+  const ctr: V3 = [0, 0, 0];
+  for (const p of loopPos) {
+    ctr[0] += p[0] / Lp;
+    ctr[1] += p[1] / Lp;
+    ctr[2] += p[2] / Lp;
+  }
+  const rawAng = (a: ArmRings): Float64Array => {
+    const out = new Float64Array(Lp);
+    for (let j = 0; j < Lp; j++) {
+      const rel = sub3(loopPos[j]!, ctr);
+      const q = sub3(rel, mul3(a.a, dot3(rel, a.a)));
+      out[j] = Math.atan2(dot3(q, a.v), dot3(q, a.u));
+    }
+    return out;
+  };
+  let turn = 0;
+  {
+    const ra = rawAng(probe);
+    for (let j = 0; j < Lp; j++) {
+      let d = ra[(j + 1) % Lp]! - ra[j]!;
+      while (d > Math.PI) d -= 2 * Math.PI;
+      while (d < -Math.PI) d += 2 * Math.PI;
+      turn += d;
+    }
+  }
+  const arm = new ArmRings(field, side, turn < 0);
+  const arm0 = arm;
+  const psi0 = rawAng(arm)[0]!;
+  // ángulos uniformes (crecientes, CCW en el marco u,v de la manga): espaciado regular en todos los anillos
+  const anglesUni = new Float64Array(Lp);
+  for (let j = 0; j < Lp; j++) anglesUni[j] = psi0 + (2 * Math.PI * j) / Lp;
   const angles = new Float64Array(Lp);
-  for (let j = 0; j < Lp; j++) {
-    const rel = sub3(loopPos[j]!, cJ);
-    // quita la componente axial
-    const ax = dot3(rel, arm0.a);
-    const q = sub3(rel, mul3(arm0.a, ax));
-    angles[j] = Math.atan2(dot3(q, arm0.v), dot3(q, arm0.u));
-  }
-  // hace crecientes los ángulos (desenvuelve)
-  for (let j = 1; j < Lp; j++) {
-    while (angles[j]! < angles[j - 1]!) angles[j] = angles[j]! + 2 * Math.PI;
-  }
-  const arm = new ArmRings(field, side, angles);
   // longitud: de la punta del hombro al puño a lo largo de la línea superior
   const tipPos = loopPos[Math.round(Lp * 0.5) % Lp]!;
   void tipPos;
   const sTip = dot3(sub3(loopPos.reduce((best, p) => (p[1] > best[1] ? p : best), loopPos[0]!), cJ), arm0.a);
+  const sLoop = 0;
   let sEnd = Math.max(0.08, sl.length + sTip);
   // número de filas con paso ≈ e
   const nS = Math.max(6, Math.ceil(sEnd / e));
   const cols = Lp + 1;
   const surf = newSurface(side === 1 ? 'sleeveL' : 'sleeveR', nS + 1, cols, { wrap: true });
+  surf.vFromEnd = true;
   const sBlend = 0.11;
   const sValid = 0.1;
   const pts0 = new Float64Array(Lp * 2);
@@ -479,7 +551,8 @@ function buildSleeve(
     for (let r = 0; r <= nS; r++) {
       const s = (sEnd * r) / nS;
       const c = arm.center(s);
-      const hull = arm.hullAt(Math.max(s, sValid));
+      for (let j = 0; j < Lp; j++) angles[j] = anglesUni[j]!;
+      const hull = arm.hullAt(Math.max(s, sValid), angles);
       polarToPoints(hull, angles, pts0);
       const P0 = perimeter2D(pts0);
       const tNorm = clamp01((s - sBlend) / Math.max(0.05, sEnd - sBlend));
@@ -488,7 +561,7 @@ function buildSleeve(
       const eVar = new Float64Array(Lp);
       const under = 1 - smooth01((s - 0.06) / 0.14);
       for (let j = 0; j < Lp; j++) {
-        const cc = Math.cos(angles[j]! - (3 * Math.PI) / 2);
+        const cc = arm.flipV ? Math.cos(angles[j]! - Math.PI / 2) : Math.cos(angles[j]! - (3 * Math.PI) / 2);
         eVar[j] = -ease * 0.75 * under * Math.pow(Math.max(0, cc), 2);
       }
       const target = P0 + 2 * Math.PI * ease;
@@ -498,7 +571,9 @@ function buildSleeve(
       const row: V3[] = [];
       for (let j = 0; j < Lp; j++) {
         const q: V3 = add3(c, add3(mul3(arm.u, ring[j * 2]!), mul3(arm.v, ring[j * 2 + 1]!)));
-        row.push([mix(loopPos[j]![0], q[0], w), mix(loopPos[j]![1], q[1], w), mix(loopPos[j]![2], q[2], w)]);
+        // el lazo se «extruye» a lo largo del eje y se funde con el anillo real: sin filas colapsadas junto a la sisa
+        const ex: V3 = add3(loopPos[j]!, mul3(arm.a, s - sLoop));
+        row.push([mix(ex[0], q[0], w), mix(ex[1], q[1], w), mix(ex[2], q[2], w)]);
       }
       rowPts.push(row);
     }

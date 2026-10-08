@@ -1,4 +1,4 @@
-import { PoseSmoother, poseToSkeleton } from '@fitroom/pose';
+import { PoseSmoother, createPoseRetargeter } from '@fitroom/pose';
 import {
   type CameraIntrinsics,
   type PoseFrame,
@@ -10,7 +10,7 @@ import type { TrackingState } from '../contracts';
 import { LightEstimator, NEUTRAL_LIGHT, type LightEstimate } from './lightEstimator';
 import { PosePredictor } from './posePredictor';
 import type { FeedEvent, PoseFeed } from './poseFeed';
-import { TrackingMachine } from './trackingMachine';
+import { TrackingMachine, type TrackingConfig } from './trackingMachine';
 
 /** Lo que consume el render en cada fotograma. El objeto se REUTILIZA: no conservarlo. */
 export interface RuntimeSample {
@@ -42,9 +42,12 @@ export interface PoseRuntimeDeps {
   readonly getIntrinsics: () => CameraIntrinsics;
   /** Origen de imagen para estimar la luz (vídeo o canvas); opcional. */
   readonly getLightSource?: () => (CanvasImageSource & { videoWidth?: number; videoHeight?: number }) | null;
+  /** Retargeting alternativo (tests). Por defecto, el retargeter CON memoria de @fitroom/pose. */
   readonly retarget?: PoseToSkeleton;
   readonly createSmoother?: () => { smooth(f: PoseFrame | null): PoseFrame | null; reset(): void };
   readonly now?: () => number;
+  /** Umbrales de la máquina de seguimiento (equipos lentos / pruebas con render software). */
+  readonly trackingConfig?: Partial<TrackingConfig>;
   /** Intervalo (ms) entre muestreos de luz. Por defecto 250. */
   readonly lightEveryMs?: number;
 }
@@ -60,7 +63,9 @@ export class PoseRuntime {
   readonly light = new LightEstimator();
   private readonly deps: PoseRuntimeDeps;
   private readonly smoother: { smooth(f: PoseFrame | null): PoseFrame | null; reset(): void };
-  private readonly retarget: PoseToSkeleton;
+  private readonly retargetOverride: PoseToSkeleton | undefined;
+  private retargeter: { update(f: PoseFrame): SkeletonPose | null; reset(): void } | null = null;
+  private retargeterKey: { rest: RestSkeleton; fov: number; aspect: number } | null = null;
   private readonly now: () => number;
   private unsubscribe: (() => void) | null = null;
   private unsubState: (() => void) | null = null;
@@ -78,9 +83,9 @@ export class PoseRuntime {
   constructor(deps: PoseRuntimeDeps) {
     this.deps = deps;
     this.now = deps.now ?? (() => performance.now());
-    this.retarget = deps.retarget ?? poseToSkeleton;
+    this.retargetOverride = deps.retarget;
     this.smoother = deps.createSmoother?.() ?? new PoseSmoother();
-    this.tracking = new TrackingMachine();
+    this.tracking = new TrackingMachine(deps.trackingConfig);
     this.out = {
       pose: null,
       visibility: 0,
@@ -158,7 +163,7 @@ export class PoseRuntime {
     }
     let skel: SkeletonPose | null = null;
     try {
-      skel = this.retarget(smoothed, rest, this.deps.getIntrinsics());
+      skel = this.retargetFrame(smoothed, rest);
     } catch (err) {
       console.warn('[mirror] retargeting fallido', err);
     }
@@ -176,6 +181,24 @@ export class PoseRuntime {
     }
     this.recordCost(e.detectMs + retargetMs);
     this.maybeSampleLight(now);
+  }
+
+  /** Retargeting con estado (última rotación buena): se recrea sólo si cambian cuerpo o intrínsecos. */
+  private retargetFrame(frame: PoseFrame, rest: RestSkeleton): SkeletonPose | null {
+    const cam = this.deps.getIntrinsics();
+    if (this.retargetOverride) return this.retargetOverride(frame, rest, cam);
+    const k = this.retargeterKey;
+    if (
+      !this.retargeter ||
+      !k ||
+      k.rest !== rest ||
+      Math.abs(k.fov - cam.verticalFovDeg) > 1e-6 ||
+      Math.abs(k.aspect - cam.aspect) > 1e-3
+    ) {
+      this.retargeter = createPoseRetargeter(rest, cam);
+      this.retargeterKey = { rest, fov: cam.verticalFovDeg, aspect: cam.aspect };
+    }
+    return this.retargeter.update(frame);
   }
 
   private recordCost(ms: number): void {

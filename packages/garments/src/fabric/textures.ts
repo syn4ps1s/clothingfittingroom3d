@@ -112,41 +112,30 @@ export function planFabricTextures(
   const patternRes = buildPatternSteps(ctx, plan, variant.pattern);
 
   // ---- normalización de tono medio (respeta variant.color) ----
+  // se estima con una muestra regular (1 de cada 5 píxeles, primo con el periodo de la rejilla): barato y determinista
   let toneScale = 1;
   if (plan.normalizeTone) {
     const partial: number[] = [];
     ctx.bands((y0, y1) => {
-      let s = 0;
-      for (let i = y0 * S; i < y1 * S; i++) s += fields.T[i]!;
-      partial.push(s);
+      let sum = 0;
+      let cnt = 0;
+      for (let i = y0 * S; i < y1 * S; i += 5) {
+        sum += fields.T[i]!;
+        cnt++;
+      }
+      partial.push(sum, cnt);
     });
     steps.push(() => {
       let tot = 0;
-      for (const p of partial) tot += p;
-      const mean = tot / px;
+      let cnt = 0;
+      for (let k = 0; k < partial.length; k += 2) {
+        tot += partial[k]!;
+        cnt += partial[k + 1]!;
+      }
+      const mean = cnt > 0 ? tot / cnt : 1;
       toneScale = mean > 1e-6 ? 1 / mean : 1;
     });
   }
-
-  // ---- reliefe → AO + normal ----
-  // intensidad ligada a la tela: más grueso/pesado = relieve más marcado
-  const reliefFactor = Math.min(1.5, Math.max(0.65, Math.pow(fabric.thicknessMm / 1.2, 0.3)));
-  const normalStrength = plan.normalStrength * reliefFactor;
-  const Hb = new Float32Array(px);
-  const normal = new Uint8Array(px * 4);
-  const normal32 = new Uint32Array(normal.buffer);
-  const aoBytes = new Uint8Array(px);
-  const aoRadius = Math.max(1, Math.min(S >> 2, plan.aoRadiusPx));
-  const nap: NormalAoParams = {
-    size: S,
-    strength: normalStrength,
-    bumpUnitPx: plan.bumpUnitPx,
-    aoStrength: plan.aoStrength,
-    aoRadius,
-  };
-  ctx.bands((y0, y1) => blurRowsH(fields.H, Hb, S, aoRadius, y0, y1));
-  const colSum = new Float32Array(S);
-  ctx.bands((y0, y1) => normalAoBand(fields.H, Hb, nap, y0, y1, normal32, aoBytes, colSum));
 
   // ---- albedo ----
   const albedo = new Uint8Array(px * 4);
@@ -213,20 +202,32 @@ export function planFabricTextures(
     }
   });
 
-  // ---- ORM ----
+  // ---- relieve → AO + normal + ORM ----
+  // intensidad ligada a la tela: más grueso/pesado = relieve más marcado
+  const reliefFactor = Math.min(1.5, Math.max(0.65, Math.pow(fabric.thicknessMm / 1.2, 0.3)));
+  const normalStrength = plan.normalStrength * reliefFactor;
+  // tras componer el albedo el campo de tono ya no se usa: se reutiliza como búfer del desenfoque
+  const Hb = fields.T;
+  const normal = new Uint8Array(px * 4);
+  const normal32 = new Uint32Array(normal.buffer);
   const orm = new Uint8Array(px * 4);
   const orm32 = new Uint32Array(orm.buffer);
-  const roughBase = plan.roughnessBase ?? fabric.roughness;
-  const sheenGloss = 0.12 * fabric.sheen;
-  const metalByte = Math.round(Math.min(1, Math.max(0, plan.metal)) * 255);
-  ctx.bands((y0, y1) => {
-    const { R, H } = fields;
-    for (let i = y0 * S; i < y1 * S; i++) {
-      let r = roughBase + R[i]! - sheenGloss * (H[i]! - 0.5);
-      r = r < 0.04 ? 0.04 : r > 1 ? 1 : r;
-      orm32[i] = packRgba(aoBytes[i]!, (r * 255 + 0.5) | 0, metalByte, 255);
-    }
-  });
+  const aoRadius = Math.max(1, Math.min(S >> 2, plan.aoRadiusPx));
+  const nap: NormalAoParams = {
+    size: S,
+    strength: normalStrength,
+    bumpUnitPx: plan.bumpUnitPx,
+    aoStrength: plan.aoStrength,
+    aoRadius,
+    roughBase: plan.roughnessBase ?? fabric.roughness,
+    sheenGloss: 0.12 * fabric.sheen,
+    metalByte: Math.round(Math.min(1, Math.max(0, plan.metal)) * 255),
+  };
+  ctx.bands((y0, y1) => blurRowsH(fields.H, Hb, S, aoRadius, y0, y1));
+  const colSum = new Float32Array(S);
+  ctx.bands((y0, y1) =>
+    normalAoBand(fields.H, Hb, fields.R, nap, y0, y1, normal32, orm32, colSum),
+  );
 
   const info: FabricTextureInfo = {
     family: fabric.family,

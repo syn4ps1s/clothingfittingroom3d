@@ -326,8 +326,12 @@ export function planWoven(
   const invRange = 1 / hrange;
   const twist = spec.twist;
   const twAmp = twist ? twist.amp : 0;
-  const twTurns = twist ? twist.turnsPerThread : 0;
+  // vueltas de torsión por hilo, redondeadas a un nº ENTERO de vueltas por tile (periodicidad exacta)
+  const twTurnsV = twist ? Math.max(1, Math.round(twist.turnsPerThread * nv)) / nv : 0;
+  const twTurnsU = twist ? Math.max(1, Math.round(twist.turnsPerThread * nu)) / nu : 0;
   const lustre = spec.lustre;
+  // bandas de brillo: un nº entero de ciclos por tile (≈ 1 cada 9 hilos)
+  const lustreFreq = Math.max(1, Math.round(nv * 0.11)) / nv;
   const fiberAmp = spec.fiber * 2;
   const fuzzAmp = spec.fuzz;
   const shadeAmt = spec.shade;
@@ -392,12 +396,12 @@ export function planWoven(
         let hw = -2;
         if (pu >= 0) {
           hw = und * zw + bodyW * pu * thW;
-          if (twAmp !== 0) hw += twAmp * pu * sinTurns(vc * twTurns + colFu[x]! * 0.7 + phaseW[i]!);
+          if (twAmp !== 0) hw += twAmp * pu * sinTurns(vc * twTurnsV + colFu[x]! * 0.7 + phaseW[i]!);
         }
         let hf = -2;
         if (profV >= 0) {
           hf = und * zf + bodyF * profV * thFx;
-          if (twAmp !== 0) hf += twAmp * profV * sinTurns(colUc[x]! * twTurns + fv * 0.7 + phF);
+          if (twAmp !== 0) hf += twAmp * profV * sinTurns(colUc[x]! * twTurnsU + fv * 0.7 + phF);
         }
         const n = noiseRow[x]! - 0.5;
         let h = hw > hf ? hw : hf;
@@ -411,7 +415,7 @@ export function planWoven(
         const t = d <= -1 ? 0 : d >= 1 ? 1 : 0.5 + d * (0.75 - 0.25 * d * d);
         let tone = toFx + (toW - toFx) * t;
         let mix = mFj + (mW[i]! - mFj) * t;
-        if (lustre !== 0) tone *= 1 + lustre * t * sinTurns(vc * 0.11 + phaseW[i]! * 3);
+        if (lustre !== 0) tone *= 1 + lustre * t * sinTurns(vc * lustreFreq + phaseW[i]! * 3);
         if (fd) {
           const f = fd.sample(colUc[x]! / nu, vc / nv);
           const fadeAmt = smooth01(0.4, 0.85, f) * fadeAmount;

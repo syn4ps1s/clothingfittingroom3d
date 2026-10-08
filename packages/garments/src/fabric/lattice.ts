@@ -59,7 +59,8 @@ export function fitStripeLattice(
       if (a === 0 && b === 0) continue;
       const k = Math.hypot(a, b);
       // dirección de la normal del candidato
-      const cAng = Math.acos(Math.max(-1, Math.min(1, (a * nx + b * ny) / k)));
+      // (a,b) y (−a,−b) describen las mismas franjas: se compara con |cos|
+      const cAng = Math.acos(Math.min(1, Math.abs(a * nx + b * ny) / k));
       const periodErr = Math.abs(Math.log(k / idealK));
       const cost = cAng * 2.5 + periodErr;
       if (cost < best.cost - 1e-12) best = { a, b, cost };

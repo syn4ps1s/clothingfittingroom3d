@@ -22,6 +22,7 @@ import {
   type GarmentShaderUniforms,
 } from './garmentMaterial';
 import { computeNormalsInto } from './meshMath';
+import { minHeapGrowth } from '../test-utils/heap';
 import { blankNormalTexture } from './garmentMaterial';
 
 const body = doubleBody(REFERENCE_MEASUREMENTS.adultA);
@@ -206,14 +207,9 @@ describe('GarmentRig', () => {
     const skin = skinAt(1000);
     const c: WorldCapsule[] = [];
     doubleWorldColliders(body, skin, c);
-    for (let i = 0; i < 40; i++) rig.update(skin, c, 1 / 60, true);
-    const g = globalThis as { gc?: () => void };
-    g.gc?.();
-    const before = process.memoryUsage().heapUsed;
-    for (let i = 0; i < 300; i++) rig.update(skin, c, 1 / 60, true);
-    const grown = process.memoryUsage().heapUsed - before;
+    const grown = minHeapGrowth(() => rig.update(skin, c, 1 / 60, true), 300, 4, 80);
     // un buffer de posiciones son ~100 KB: 300 fotogramas con asignaciones superarían 30 MB
-    expect(grown).toBeLessThan(3_000_000);
+    expect(grown).toBeLessThan(1_500_000);
   });
 
   it('dispose(): libera geometría, materiales y texturas, y es idempotente', () => {

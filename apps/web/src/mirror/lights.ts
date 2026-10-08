@@ -43,7 +43,7 @@ export class MirrorLights {
   apply(estimate: LightEstimate, scene: Scene): LightingResult {
     const t = this.target.position;
     const lin = Math.min(1, Math.max(0.004, estimate.lumaLinear));
-    const exposure = clamp(Math.pow(lin / 0.2, 0.5), 0.4, 1.7);
+    const exposure = clamp(0.92 * Math.pow(lin / 0.2, 0.5), 0.35, 1.5);
     const contrast = estimate.contrast;
 
     // la luz clave viene del lado más brillante de la imagen (imagen SIN espejar: +X = derecha de la imagen)
@@ -52,11 +52,11 @@ export class MirrorLights {
       t.y + 1.6 + estimate.dirY * 1.2,
       t.z + 2.4,
     );
-    this.key.intensity = 1.4 + contrast * 1.6;
+    this.key.intensity = 1.0 + contrast * 1.2;
     this.fill.position.set(t.x - estimate.dirX * 2.0, t.y + 0.4, t.z + 1.8);
-    this.fill.intensity = 0.45;
+    this.fill.intensity = 0.28;
 
-    scene.environmentIntensity = 0.9 - 0.3 * contrast;
+    scene.environmentIntensity = 0.62 - 0.2 * contrast;
     scene.environmentRotation.y = estimate.dirX * 0.9;
 
     // tinte: mezcla del color medio con blanco (no teñir en exceso)

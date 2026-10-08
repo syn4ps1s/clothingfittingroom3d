@@ -141,7 +141,11 @@ export function analyzeTopology(vertexCount: number, indices: Uint32Array): Topo
  * aparece exactamente una vez y su gemela b→a también. Usa la adyacencia CSR de aristas dirigidas.
  */
 export function isClosedOrientedManifold(vertexCount: number, indices: Uint32Array): boolean {
-  const adj = buildAdjacency(vertexCount, indices);
+  return adjacencyIsClosed(vertexCount, buildAdjacency(vertexCount, indices));
+}
+
+/** Igual que `isClosedOrientedManifold` pero reutilizando una adyacencia ya construida. */
+export function adjacencyIsClosed(vertexCount: number, adj: Adjacency): boolean {
   const { offsets, neighbors } = adj;
   for (let a = 0; a < vertexCount; a++) {
     const s = offsets[a]!;
@@ -425,4 +429,161 @@ export function repairLabeling(spec: GridSpec, grid: SampledGrid, maxFlips = 200
         }
   }
   return flips;
+}
+
+export interface SelfIntersectionReport {
+  /** triángulos distintos implicados en al menos una intersección */
+  readonly intersectingTriangles: number;
+  readonly triangleCount: number;
+  /** pares candidatos (no adyacentes y con cajas solapadas) realmente comprobados */
+  readonly pairsTested: number;
+  /** intersectingTriangles / triangleCount */
+  readonly rate: number;
+}
+
+/**
+ * Estimación aproximada de autointersecciones: dispersión espacial de triángulos y prueba segmento-triángulo
+ * (Möller–Trumbore) entre las aristas de cada par no adyacente (sin vértices comunes). No detecta triángulos
+ * coplanares ni contactos exactos; sirve para medir tasas y comparar, no como prueba formal.
+ */
+export function estimateSelfIntersections(
+  positions: Float32Array,
+  indices: Uint32Array,
+): SelfIntersectionReport {
+  const nT = indices.length / 3;
+  // tamaño de celda = 3 × longitud media de arista
+  let edgeSum = 0;
+  let edgeN = 0;
+  for (let t = 0; t < nT; t += 7) {
+    const a = indices[t * 3]! * 3;
+    const b = indices[t * 3 + 1]! * 3;
+    edgeSum += Math.hypot(
+      positions[a]! - positions[b]!,
+      positions[a + 1]! - positions[b + 1]!,
+      positions[a + 2]! - positions[b + 2]!,
+    );
+    edgeN++;
+  }
+  const cell = Math.max((3 * edgeSum) / Math.max(edgeN, 1), 1e-4);
+  const lo = new Float64Array(nT * 3);
+  const hi = new Float64Array(nT * 3);
+  const grid = new Map<number, number[]>();
+  const KX = 4096;
+  const key = (i: number, j: number, k: number): number => (i + 2048) + KX * ((j + 2048) + KX * (k + 2048));
+  for (let t = 0; t < nT; t++) {
+    for (let c = 0; c < 3; c++) {
+      lo[t * 3 + c] = Infinity;
+      hi[t * 3 + c] = -Infinity;
+    }
+    for (let e = 0; e < 3; e++) {
+      const v = indices[t * 3 + e]! * 3;
+      for (let c = 0; c < 3; c++) {
+        const x = positions[v + c]!;
+        if (x < lo[t * 3 + c]!) lo[t * 3 + c] = x;
+        if (x > hi[t * 3 + c]!) hi[t * 3 + c] = x;
+      }
+    }
+    const i0 = Math.floor(lo[t * 3]! / cell);
+    const j0 = Math.floor(lo[t * 3 + 1]! / cell);
+    const k0 = Math.floor(lo[t * 3 + 2]! / cell);
+    const i1 = Math.floor(hi[t * 3]! / cell);
+    const j1 = Math.floor(hi[t * 3 + 1]! / cell);
+    const k1 = Math.floor(hi[t * 3 + 2]! / cell);
+    for (let k = k0; k <= k1; k++)
+      for (let j = j0; j <= j1; j++)
+        for (let i = i0; i <= i1; i++) {
+          const kk = key(i, j, k);
+          const l = grid.get(kk);
+          if (l) l.push(t);
+          else grid.set(kk, [t]);
+        }
+  }
+  const hit = new Uint8Array(nT);
+  let pairsTested = 0;
+  const P = positions;
+  const segTri = (
+    p: number,
+    q: number,
+    a: number,
+    b: number,
+    c: number,
+  ): boolean => {
+    const px = P[p]!;
+    const py = P[p + 1]!;
+    const pz = P[p + 2]!;
+    const dx = P[q]! - px;
+    const dy = P[q + 1]! - py;
+    const dz = P[q + 2]! - pz;
+    const e1x = P[b]! - P[a]!;
+    const e1y = P[b + 1]! - P[a + 1]!;
+    const e1z = P[b + 2]! - P[a + 2]!;
+    const e2x = P[c]! - P[a]!;
+    const e2y = P[c + 1]! - P[a + 1]!;
+    const e2z = P[c + 2]! - P[a + 2]!;
+    const hx = dy * e2z - dz * e2y;
+    const hy = dz * e2x - dx * e2z;
+    const hz = dx * e2y - dy * e2x;
+    const det = e1x * hx + e1y * hy + e1z * hz;
+    if (Math.abs(det) < 1e-18) return false;
+    const inv = 1 / det;
+    const sx = px - P[a]!;
+    const sy = py - P[a + 1]!;
+    const sz = pz - P[a + 2]!;
+    const u = (sx * hx + sy * hy + sz * hz) * inv;
+    if (u < 1e-6 || u > 1 - 1e-6) return false;
+    const qx = sy * e1z - sz * e1y;
+    const qy = sz * e1x - sx * e1z;
+    const qz = sx * e1y - sy * e1x;
+    const v = (dx * qx + dy * qy + dz * qz) * inv;
+    if (v < 1e-6 || u + v > 1 - 1e-6) return false;
+    const t = (e2x * qx + e2y * qy + e2z * qz) * inv;
+    return t > 1e-6 && t < 1 - 1e-6;
+  };
+  for (const [kk, list] of grid) {
+    if (list.length < 2) continue;
+    const ci = (kk % KX) - 2048;
+    const cj = (Math.floor(kk / KX) % KX) - 2048;
+    const ck = Math.floor(kk / (KX * KX)) - 2048;
+    for (let x = 0; x < list.length; x++) {
+      const ta = list[x]!;
+      for (let y = x + 1; y < list.length; y++) {
+        const tb = list[y]!;
+        // celda propietaria: la del mínimo de la intersección de cajas
+        const ox = Math.max(lo[ta * 3]!, lo[tb * 3]!);
+        const oy = Math.max(lo[ta * 3 + 1]!, lo[tb * 3 + 1]!);
+        const oz = Math.max(lo[ta * 3 + 2]!, lo[tb * 3 + 2]!);
+        if (
+          ox > Math.min(hi[ta * 3]!, hi[tb * 3]!) ||
+          oy > Math.min(hi[ta * 3 + 1]!, hi[tb * 3 + 1]!) ||
+          oz > Math.min(hi[ta * 3 + 2]!, hi[tb * 3 + 2]!)
+        )
+          continue;
+        if (Math.floor(ox / cell) !== ci || Math.floor(oy / cell) !== cj || Math.floor(oz / cell) !== ck)
+          continue;
+        const a0 = indices[ta * 3]!;
+        const a1 = indices[ta * 3 + 1]!;
+        const a2 = indices[ta * 3 + 2]!;
+        const b0 = indices[tb * 3]!;
+        const b1 = indices[tb * 3 + 1]!;
+        const b2 = indices[tb * 3 + 2]!;
+        if (a0 === b0 || a0 === b1 || a0 === b2 || a1 === b0 || a1 === b1 || a1 === b2 || a2 === b0 || a2 === b1 || a2 === b2)
+          continue;
+        pairsTested++;
+        const A = [a0 * 3, a1 * 3, a2 * 3];
+        const B = [b0 * 3, b1 * 3, b2 * 3];
+        let inter = false;
+        for (let e = 0; e < 3 && !inter; e++) {
+          if (segTri(A[e]!, A[(e + 1) % 3]!, B[0]!, B[1]!, B[2]!)) inter = true;
+          else if (segTri(B[e]!, B[(e + 1) % 3]!, A[0]!, A[1]!, A[2]!)) inter = true;
+        }
+        if (inter) {
+          hit[ta] = 1;
+          hit[tb] = 1;
+        }
+      }
+    }
+  }
+  let n = 0;
+  for (let t = 0; t < nT; t++) n += hit[t]!;
+  return { intersectingTriangles: n, triangleCount: nT, pairsTested, rate: nT > 0 ? n / nT : 0 };
 }
